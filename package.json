@@ -1,0 +1,22 @@
+{
+    "name": "leasury",
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "turbo run dev",
+        "build": "turbo run build",
+        "lint": "turbo run lint",
+        "clean": "turbo run clean",
+        "deploy": "turbo run deploy",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "devDependencies": {
+        "prettier": "^3",
+        "turbo": "^2"
+    },
+    "packageManager": "npm@10.2.0"
+}

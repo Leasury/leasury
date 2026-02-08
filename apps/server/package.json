@@ -1,0 +1,21 @@
+{
+    "name": "@leasury/server",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "partykit dev --live",
+        "build": "tsc --noEmit",
+        "lint": "tsc --noEmit",
+        "deploy": "partykit deploy",
+        "clean": "rm -rf .partykit .turbo"
+    },
+    "dependencies": {
+        "@leasury/game-logic": "*",
+        "partysocket": "^1.0.2"
+    },
+    "devDependencies": {
+        "@leasury/config": "*",
+        "partykit": "^0.0.110",
+        "typescript": "^5"
+    }
+}
