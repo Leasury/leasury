@@ -1,107 +1,59 @@
 /**
- * Timeline Game Utilities
+ * Timeline Game Utilities - MVP Version
  */
 
 import type { TimelineEvent, PlacedEvent, EventCategory } from './types';
 
 /**
- * Format event value for display
+ * Category visual styling (icons and colors)
  */
-export function formatEventValue(event: TimelineEvent, hideValue: boolean = false): string {
-    if (hideValue) return '???';
+export const CATEGORY_STYLES = {
+    Science: { icon: '🔬', color: '#6A9BCC' },  // mutedBlue
+    Tragedy: { icon: '💔', color: '#CC785C' },  // antiqueBrass
+    War: { icon: '⚔️', color: '#CC785C' },     // antiqueBrass
+    Economy: { icon: '📈', color: '#788C5D' },  // sage
+    Tech: { icon: '💻', color: '#6A9BCC' },     // mutedBlue
+    Space: { icon: '🚀', color: '#D97757' },    // terracotta
+    Politics: { icon: '🏛️', color: '#788C5D' }, // sage
+} as const;
 
-    const { value, category, unit } = event;
-
-    switch (category) {
-        case 'time':
-            return value.toString();
-
-        case 'population':
-            return value.toLocaleString();
-
-        case 'area':
-        case 'speed':
-        case 'length':
-        case 'weight':
-        case 'temperature':
-        case 'calories':
-        case 'lifespan':
-        case 'duration':
-        case 'timezone':
-            return unit ? `${value.toLocaleString()} ${unit}` : value.toLocaleString();
-
-        default:
-            return value.toString();
-    }
+/**
+ * Format year for display
+ */
+export function formatYear(event: TimelineEvent, hideYear: boolean = false): string {
+    if (hideYear) return '???';
+    return event.year.toString();
 }
 
 /**
  * Get category icon/emoji
  */
 export function getCategoryIcon(category: EventCategory): string {
-    switch (category) {
-        case 'time':
-            return '📅';
-        case 'population':
-            return '👥';
-        case 'area':
-            return '🗺️';
-        case 'speed':
-            return '⚡';
-        case 'length':
-            return '📏';
-        case 'duration':
-            return '⏱️';
-        case 'weight':
-            return '⚖️';
-        case 'temperature':
-            return '🌡️';
-        case 'calories':
-            return '🍽️';
-        case 'lifespan':
-            return '💚';
-        case 'timezone':
-            return '🕐';
-        default:
-            return '❓';
-    }
+    return CATEGORY_STYLES[category]?.icon || '❓';
 }
 
 /**
- * Get category label
+ * Get category color
+ */
+export function getCategoryColor(category: EventCategory): string {
+    return CATEGORY_STYLES[category]?.color || '#B0AEA5';
+}
+
+/**
+ * Get category label (uppercase)
  */
 export function getCategoryLabel(category: EventCategory): string {
-    switch (category) {
-        case 'time':
-            return 'Year';
-        case 'population':
-            return 'Population';
-        case 'area':
-            return 'Area';
-        case 'speed':
-            return 'Speed';
-        case 'length':
-            return 'Height/Length';
-        case 'duration':
-            return 'Duration';
-        case 'weight':
-            return 'Weight';
-        case 'temperature':
-            return 'Temperature';
-        case 'calories':
-            return 'Calories';
-        case 'lifespan':
-            return 'Lifespan';
-        case 'timezone':
-            return 'Time Zone';
-        default:
-            return 'Unknown';
-    }
+    return category.toUpperCase();
 }
 
 /**
- * Sort placed events by value
+ * Sort placed events by year
  */
 export function sortEvents(events: PlacedEvent[]): PlacedEvent[] {
-    return [...events].sort((a, b) => a.value - b.value);
+    return [...events].sort((a, b) => a.year - b.year);
+}
+
+// Legacy function for backward compatibility
+export function formatEventValue(event: TimelineEvent, hideValue: boolean = false): string {
+    return formatYear(event, hideValue);
 }

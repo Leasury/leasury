@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { TimelineGameState } from '@leasury/game-logic';
-import { getCategoryIcon, getCategoryLabel } from '@leasury/game-logic';
+import { getCategoryIcon, getCategoryLabel, getCategoryColor } from '@leasury/game-logic';
 import GameLayout from '@/components/layout/GameLayout';
+import ControlPad from './ControlPad';
+import ResultOverlay from './ResultOverlay';
 
 interface TimelinePlayerProps {
     state: {
@@ -15,6 +18,8 @@ interface TimelinePlayerProps {
 export default function TimelinePlayer({ state }: TimelinePlayerProps) {
     const { room, game } = state;
     const [playerId, setPlayerId] = useState('');
+    const [showResult, setShowResult] = useState(false);
+    const [lastResult, setLastResult] = useState<'correct' | 'incorrect'>('correct');
 
     useEffect(() => {
         // Get player ID from room
@@ -23,6 +28,19 @@ export default function TimelinePlayer({ state }: TimelinePlayerProps) {
             setPlayerId(player.id);
         }
     }, [room.players]);
+
+    // Show result overlay when revealing
+    useEffect(() => {
+        if (game.status === 'revealing' && game.activeEvent) {
+            const placed = game.placedEvents.find((e) => e.id === game.activeEvent?.id);
+            if (placed) {
+                setLastResult(placed.wasCorrect ? 'correct' : 'incorrect');
+                setShowResult(true);
+            }
+        } else {
+            setShowResult(false);
+        }
+    }, [game.status, game.activeEvent, game.placedEvents]);
 
     const isMyTurn = game.activePlayerId === playerId;
     const socket = (window as any).__partySocket;
@@ -39,22 +57,37 @@ export default function TimelinePlayer({ state }: TimelinePlayerProps) {
 
     // Game Over
     if (game.status === 'gameOver') {
+        const isWinner = game.winner === playerId || game.winner === 'team';
+
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
-                <div className="bg-white rounded-3xl p-8 text-center max-w-md">
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white rounded-3xl p-8 text-center max-w-md shadow-xl"
+                >
                     <div className="text-6xl mb-4">
-                        {game.winner === playerId ? '🏆' : game.winner === 'team' ? '🎉' : '😐'}
+                        {isWinner ? '🏆' : game.winner === 'team' ? '🎉' : '😐'}
                     </div>
-                    <h2 className="text-2xl font-bold mb-2">
-                        {game.winner === 'team' ? 'Team Victory!' :
-                            game.winner === playerId ? 'You Win!' : 'Game Over'}
+                    <h2 className="text-2xl font-bold mb-2 text-[#141413]">
+                        {game.winner === 'team'
+                            ? 'Team Victory!'
+                            : game.winner === playerId
+                                ? 'You Win!'
+                                : 'Game Over'}
                     </h2>
                     {game.mode === 'competitive' && (
                         <p className="text-xl text-[#B0AEA5] mb-4">
                             Your Score: {game.playerScores[playerId] || 0} points
                         </p>
                     )}
-                </div>
+                    <button
+                        onClick={() => (window.location.href = '/games/timeline')}
+                        className="bg-[#D97757] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#CC785C] transition-colors mt-4"
+                    >
+                        New Game
+                    </button>
+                </motion.div>
             </div>
         );
     }
@@ -62,100 +95,126 @@ export default function TimelinePlayer({ state }: TimelinePlayerProps) {
     // Waiting for turn
     if (!isMyTurn) {
         return (
-            <GameLayout backUrl="/games/timeline" theme="dark" backLabel="← Back">
-                <div className="flex items-center justify-center p-6" style={{ minHeight: 'calc(100vh - 60px)' }}>
-                    <div className="text-center">
-                        <div className="text-6xl mb-6 opacity-50">⏳</div>
-                        <p className="text-white text-2xl font-bold mb-2">
-                            {game.activePlayerId || 'Another player'} is playing
-                        </p>
-                        <p className="text-[#B0AEA5] text-lg">
-                            Watch the main screen...
-                        </p>
-                        {game.mode === 'competitive' && (
-                            <div className="mt-6 bg-[#3A3A3A] rounded-xl p-4">
-                                <p className="text-[#B0AEA5] text-sm">Your Score</p>
-                                <p className="text-white text-3xl font-bold">
-                                    {game.playerScores[playerId] || 0}
-                                </p>
-                            </div>
-                        )}
+            <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+                <GameLayout backUrl="/games/timeline" theme="light" backLabel="← Back">
+                    <div className="flex-1 flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-center"
+                        >
+                            <motion.div
+                                animate={{ opacity: [0.5, 1, 0.5] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="text-6xl mb-6"
+                            >
+                                ⏳
+                            </motion.div>
+                            <p className="text-2xl font-bold mb-2 text-[#141413]">
+                                {game.activePlayerId || 'Another player'} is playing
+                            </p>
+                            <p className="text-lg text-[#B0AEA5]">Watch the TV!</p>
+
+                            {game.mode === 'competitive' && (
+                                <div className="mt-6 bg-white rounded-xl p-4 shadow-md">
+                                    <p className="text-sm text-[#B0AEA5]">Your Score</p>
+                                    <p className="text-3xl font-bold text-[#141413]">
+                                        {game.playerScores[playerId] || 0}
+                                    </p>
+                                </div>
+                            )}
+                        </motion.div>
                     </div>
-                </div>
-            </GameLayout>
+                </GameLayout>
+
+                {/* Result overlay */}
+                <ResultOverlay
+                    show={showResult}
+                    isCorrect={lastResult === 'correct'}
+                    onComplete={() => setShowResult(false)}
+                />
+            </div>
         );
     }
 
     // Active turn - show event and controls
     if (!game.activeEvent) {
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
-                <div className="text-white text-xl">Loading...</div>
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
+                <div className="text-xl text-[#B0AEA5]">Loading...</div>
             </div>
         );
     }
 
+    const categoryColor = getCategoryColor(game.activeEvent.category);
+
     return (
-        <div className="min-h-screen bg-[#2A2A2A] flex flex-col">
-            {/* Event Info - Top 1/3 */}
-            <div className="flex-1 flex items-center justify-center p-8 border-b border-[#3A3A3A]">
-                <div className="text-center max-w-md">
-                    <div className="text-7xl mb-4">{getCategoryIcon(game.activeEvent.category)}</div>
-                    <h2 className="text-white text-3xl font-bold mb-2">
+        <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+            {/* Event Info - Top 2/3 */}
+            <div className="flex-[2] bg-[#F0EFEA] p-6 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center max-w-md"
+                >
+                    {/* Category Badge */}
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                        <span className="text-4xl">{getCategoryIcon(game.activeEvent.category)}</span>
+                        <span
+                            className="text-xs font-bold uppercase px-3 py-1 rounded-full"
+                            style={{
+                                backgroundColor: `${categoryColor}20`,
+                                color: categoryColor,
+                            }}
+                        >
+                            {getCategoryLabel(game.activeEvent.category)}
+                        </span>
+                    </div>
+
+                    {/* Event Title */}
+                    <h2 className="text-3xl font-extrabold mb-4 text-[#141413]">
                         {game.activeEvent.title}
                     </h2>
-                    <p className="text-[#B0AEA5] text-lg">
-                        {getCategoryLabel(game.activeEvent.category)}
+
+                    {/* Instructions */}
+                    <p className="text-lg text-[#B0AEA5]">
+                        Place this event in the correct chronological order
                     </p>
-                    {game.activeEvent.description && (
-                        <p className="text-[#B0AEA5] text-sm mt-4">
-                            {game.activeEvent.description}
+
+                    {/* Position indicator */}
+                    <motion.div
+                        key={game.proposedPosition}
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        className="mt-6 bg-white rounded-xl p-4 shadow-md"
+                    >
+                        <p className="text-sm text-[#B0AEA5] mb-1">Position</p>
+                        <p className="text-5xl font-bold text-[#D97757] tabular-nums">
+                            {game.proposedPosition + 1}
                         </p>
-                    )}
-                </div>
+                        <p className="text-xs text-[#B0AEA5] mt-1">
+                            of {game.placedEvents.length + 1} slots
+                        </p>
+                    </motion.div>
+                </motion.div>
             </div>
 
-            {/* Controls - Bottom 2/3 */}
-            <div className="flex-[2] flex flex-col items-center justify-center p-8">
-                {/* Arrow Buttons */}
-                <div className="flex gap-6 mb-8 w-full max-w-md">
-                    <button
-                        onClick={() => handleMove('left')}
-                        className="flex-1 bg-[#E8D5B7] hover:bg-[#D4C4A8] active:bg-[#C0B094] 
-                                   text-[#141413] font-bold text-6xl rounded-2xl py-16
-                                   shadow-lg transition-all active:scale-95"
-                        disabled={game.status !== 'placing'}
-                    >
-                        ⬅
-                    </button>
-                    <button
-                        onClick={() => handleMove('right')}
-                        className="flex-1 bg-[#E8D5B7] hover:bg-[#D4C4A8] active:bg-[#C0B094]
-                                   text-[#141413] font-bold text-6xl rounded-2xl py-16
-                                   shadow-lg transition-all active:scale-95"
-                        disabled={game.status !== 'placing'}
-                    >
-                        ➡
-                    </button>
-                </div>
-
-                {/* Place Button */}
-                <button
-                    onClick={handlePlace}
-                    className="bg-[#7BC47F] hover:bg-[#6AB069] active:bg-[#5A9A58]
-                               text-white font-bold text-2xl rounded-2xl py-6 px-16
-                               shadow-lg transition-all active:scale-95 w-full max-w-md"
+            {/* Control Pad - Bottom 1/3 */}
+            <div className="flex-1 bg-[#E8E6DC] flex items-center justify-center">
+                <ControlPad
+                    onMoveLeft={() => handleMove('left')}
+                    onMoveRight={() => handleMove('right')}
+                    onPlace={handlePlace}
                     disabled={game.status !== 'placing'}
-                >
-                    ✓ PLACE
-                </button>
-
-                {/* Hint */}
-                <p className="text-[#B0AEA5] text-sm mt-6 text-center max-w-md">
-                    Use arrows to position the card on the timeline, then press PLACE to confirm.
-                    Keep your eyes on the main screen!
-                </p>
+                />
             </div>
+
+            {/* Result overlay */}
+            <ResultOverlay
+                show={showResult}
+                isCorrect={lastResult === 'correct'}
+                onComplete={() => setShowResult(false)}
+            />
         </div>
     );
 }

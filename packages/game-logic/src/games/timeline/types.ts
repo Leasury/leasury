@@ -1,29 +1,29 @@
 /**
  * Timeline Game Types
- * Chronological event placement game
+ * Chronological event placement game - MVP Structure
  */
 
+/**
+ * Visual categories for MVP Timeline game
+ */
 export type EventCategory =
-    | 'time'        // Year (e.g., 1969)
-    | 'population'  // Number of people
-    | 'area'        // Square kilometers
-    | 'speed'       // km/h
-    | 'length'      // meters
-    | 'duration'    // seconds/minutes
-    | 'weight'      // kilograms
-    | 'temperature' // Celsius
-    | 'calories'    // kcal
-    | 'lifespan'    // years
-    | 'timezone';   // UTC offset
+    | 'Science'
+    | 'Tragedy'
+    | 'War'
+    | 'Economy'
+    | 'Tech'
+    | 'Space'
+    | 'Politics';
 
+/**
+ * Timeline event with year-based ordering
+ */
 export interface TimelineEvent {
-    id: string;
-    title: string;
+    id: number;           // 1-20
+    title: string;        // "Moon Landing (Apollo 11)"
+    year: number;         // 1969
     category: EventCategory;
-    value: number;        // The actual year/value to compare
-    unit?: string;        // Display unit (e.g., "km/h", "°C")
-    imageUrl?: string;    // Optional image
-    description?: string; // Additional context
+    imageUrl: string;     // Path to event image
 }
 
 export interface PlacedEvent extends TimelineEvent {
@@ -36,7 +36,7 @@ export type GameMode = 'coop' | 'competitive';
 export interface TimelineGameState {
     mode: GameMode;
 
-    // Timeline (always sorted by value)
+    // Timeline (always sorted by year)
     placedEvents: PlacedEvent[];
 
     // Current turn
@@ -58,7 +58,7 @@ export interface TimelineGameState {
 
     // Event deck
     remainingEvents: TimelineEvent[];
-    usedEventIds: string[];
+    usedEventIds: number[];    // Changed from string[] to number[]
 }
 
 export type TimelineMessage =
@@ -68,3 +68,4 @@ export type TimelineMessage =
     | { type: 'placeCard' }
     | { type: 'nextTurn' }
     | { type: 'sync'; state: TimelineGameState };
+

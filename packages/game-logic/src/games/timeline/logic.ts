@@ -83,36 +83,36 @@ export function isPlacementCorrect(
 ): boolean {
     // Edge cases
     if (placedEvents.length === 0) return true;
-    if (position === 0 && event.value <= placedEvents[0].value) return true;
-    if (position === placedEvents.length && event.value >= placedEvents[placedEvents.length - 1].value) return true;
+    if (position === 0 && event.year <= placedEvents[0].year) return true;
+    if (position === placedEvents.length && event.year >= placedEvents[placedEvents.length - 1].year) return true;
 
-    // Check if value fits between neighbors
+    // Check if year fits between neighbors
     const leftNeighbor = placedEvents[position - 1];
     const rightNeighbor = placedEvents[position];
 
     if (!leftNeighbor) {
-        return event.value <= rightNeighbor.value;
+        return event.year <= rightNeighbor.year;
     }
     if (!rightNeighbor) {
-        return event.value >= leftNeighbor.value;
+        return event.year >= leftNeighbor.year;
     }
 
-    return event.value >= leftNeighbor.value && event.value <= rightNeighbor.value;
+    return event.year >= leftNeighbor.year && event.year <= rightNeighbor.year;
 }
 
 /**
  * Find correct position for an event
  */
 export function findCorrectPosition(event: TimelineEvent, placedEvents: PlacedEvent[]): number {
-    // Binary search for correct position
+    // Find correct position based on year
     for (let i = 0; i <= placedEvents.length; i++) {
-        if (i === 0 && event.value <= placedEvents[0]?.value) return 0;
+        if (i === 0 && event.year <= placedEvents[0]?.year) return 0;
         if (i === placedEvents.length) return placedEvents.length;
 
         const left = placedEvents[i - 1];
         const right = placedEvents[i];
 
-        if (event.value >= left?.value && event.value <= right?.value) {
+        if (event.year >= left?.year && event.year <= right?.year) {
             return i;
         }
     }

@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { TimelineGameState, PlacedEvent } from '@leasury/game-logic';
-import { formatEventValue, getCategoryIcon } from '@leasury/game-logic';
+import { formatYear, getCategoryIcon } from '@leasury/game-logic';
 import GameLayout from '@/components/layout/GameLayout';
+import EventCard from './EventCard';
 
 interface TimelineHostProps {
     state: {
@@ -14,195 +16,261 @@ interface TimelineHostProps {
 
 export default function TimelineHost({ state }: TimelineHostProps) {
     const { game } = state;
-    const [revealingCardId, setRevealingCardId] = useState<string | null>(null);
+    const timelineRef = useRef<HTMLDivElement>(null);
 
-    // Trigger card flip animation when status changes to 'revealing'
+    // Auto-scroll to keep active slot centered
     useEffect(() => {
-        if (game.status === 'revealing' && game.activeEvent) {
-            setRevealingCardId(game.activeEvent.id);
+        if (game.status === 'placing' && timelineRef.current) {
+            // Calculate scroll position to center active slot
+            const container = timelineRef.current;
+            const activeSlotIndex = game.proposedPosition;
+            const cardWidth = 160; // w-40 = 160px
+            const slotWidth = game.proposedPosition === activeSlotIndex ? 160 : 8;
+            const gap = 12; // gap-3 = 12px
 
-            // Auto-advance to next turn after animation
-            setTimeout(() => {
-                setRevealingCardId(null);
-                const socket = (window as any).__partySocket;
-                if (socket) {
-                    socket.send(JSON.stringify({ type: 'nextTurn' }));
-                }
-            }, 3000);
+            const scrollPosition = activeSlotIndex * (cardWidth + gap + slotWidth);
+            const containerCenter = container.offsetWidth / 2;
+            const scrollTo = scrollPosition - containerCenter + cardWidth / 2;
+
+            container.scrollTo({
+                left: Math.max(0, scrollTo),
+                behavior: 'smooth',
+            });
         }
-    }, [game.status, game.activeEvent]);
+    }, [game.proposedPosition, game.status]);
 
-    const getStatusBar = () => {
-        if (game.mode === 'coop') {
-            const hearts = '❤️'.repeat(game.lives) + '🤍'.repeat(Math.max(0, 3 - game.lives));
-            return (
-                <div className="flex items-center justify-between">
-                    <div className="text-2xl">{hearts}</div>
-                    <div className="text-lg font-bold">
-                        {game.cardsPlaced} / {game.cardsGoal} cards
-                    </div>
-                </div>
-            );
-        } else {
-            // Competitive mode - show scores
-            return (
-                <div className="flex gap-6">
-                    {Object.entries(game.playerScores).map(([playerId, score]) => (
-                        <div
-                            key={playerId}
-                            className={`px-4 py-2 rounded-lg ${playerId === game.activePlayerId
-                                ? 'bg-[#D97757] text-white'
-                                : 'bg-[#F0EFEA]'
-                                }`}
-                        >
-                            <span className="font-bold">{playerId}: </span>
-                            <span>{score}pts</span>
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-    };
-
-    const renderCard = (event: PlacedEvent, index: number, isActive: boolean = false) => {
-        const isRevealing = revealingCardId === event.id;
-        const showValue = !isActive || game.status === 'revealing' || isRevealing;
-
-        // Determine card color
-        let cardBg = 'bg-[#FAF9F5]';
-        if (isRevealing) {
-            cardBg = event.wasCorrect ? 'bg-green-100' : 'bg-red-100';
-        } else if (!event.wasCorrect && !isActive) {
-            cardBg = 'bg-gray-200 opacity-70';
-        }
-
-        return (
-            <div
-                key={event.id || `card-${index}`}
-                className={`${cardBg} rounded-2xl p-6 min-w-[280px] shadow-lg border-2 border-[#E8E6DC] transition-all duration-300 ${isRevealing ? 'scale-105' : ''
-                    }`}
-                style={{
-                    transform: isRevealing ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                    transformStyle: 'preserve-3d',
-                }}
-            >
-                <div className="text-center">
-                    <div className="text-3xl mb-2">{getCategoryIcon(event.category)}</div>
-                    <h3 className="font-bold text-lg mb-2">{event.title}</h3>
-                    <div className="text-3xl font-bold text-[#D97757] tabular-nums">
-                        {showValue ? formatEventValue(event) : '???'}
-                    </div>
-                    {event.description && showValue && (
-                        <p className="text-xs text-[#B0AEA5] mt-2">{event.description}</p>
-                    )}
-                </div>
-            </div>
-        );
-    };
-
+    // Game Over Screen
     if (game.status === 'gameOver') {
+        const winner = game.winner === 'team'
+            ? 'Team Victory!'
+            : game.winner
+                ? `${game.winner} Wins!`
+                : 'Game Over';
+
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
-                <div className="bg-white rounded-3xl p-12 text-center max-w-2xl">
-                    <div className="text-7xl mb-6">🎉</div>
-                    <h1 className="text-4xl font-bold mb-4">
-                        {game.winner === 'team' ? 'Team Victory!' :
-                            game.winner ? `${game.winner} Wins!` : 'Game Over'}
-                    </h1>
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white rounded-3xl p-12 text-center max-w-2xl shadow-xl"
+                >
+                    <div className="text-7xl mb-6">🏆</div>
+                    <h1 className="text-4xl font-bold mb-4 text-[#141413]">{winner}</h1>
+
                     {game.mode === 'coop' && (
                         <p className="text-xl text-[#B0AEA5] mb-6">
-                            {game.winner ?
-                                `You placed ${game.cardsPlaced} cards successfully!` :
-                                'Better luck next time!'}
+                            {game.winner
+                                ? `You placed ${game.cardsPlaced} cards successfully!`
+                                : 'Better luck next time!'}
                         </p>
                     )}
+
+                    {game.mode === 'competitive' && (
+                        <div className="space-y-2 mb-6">
+                            {Object.entries(game.playerScores)
+                                .sort(([, a], [, b]) => b - a)
+                                .map(([playerId, score], idx) => (
+                                    <div
+                                        key={playerId}
+                                        className="flex justify-between items-center p-3 bg-[#F0EFEA] rounded-xl"
+                                    >
+                                        <span className="font-bold">
+                                            #{idx + 1} {playerId}
+                                        </span>
+                                        <span className="font-bold text-[#D97757]">
+                                            {score} pts
+                                        </span>
+                                    </div>
+                                ))}
+                        </div>
+                    )}
+
                     <button
-                        onClick={() => window.location.href = '/games/timeline'}
-                        className="bg-[#D97757] text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-[#CC785C]"
+                        onClick={() => (window.location.href = '/games/timeline')}
+                        className="bg-[#D97757] text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-[#CC785C] transition-colors shadow-lg"
                     >
                         Play Again
                     </button>
-                </div>
+                </motion.div>
             </div>
         );
     }
 
     return (
-        <GameLayout backUrl="/games/timeline" theme="dark">
-            <div className="p-8">
-                {/* Status Bar */}
-                <div className="max-w-7xl mx-auto mb-8">
-                    {getStatusBar()}
-                </div>
+        <GameLayout backUrl="/games/timeline" theme="light">
+            <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+                {/* Header Bar */}
+                <div className="bg-[#F0EFEA] border-b border-[#E8E6DC] py-4 px-6">
+                    <div className="max-w-7xl mx-auto flex items-center justify-between">
+                        <h1 className="text-2xl font-bold text-[#141413]">Timeline</h1>
 
-                {/* Timeline */}
-                <div className="max-w-7xl mx-auto mb-12">
-                    <div className="overflow-x-auto pb-4">
-                        <div className="flex gap-4 items-center min-w-max">
-                            {game.placedEvents.map((event, index) => {
-                                // Check if active card should be inserted here
-                                const showActiveHere =
-                                    game.status === 'placing' &&
-                                    game.activeEvent &&
-                                    game.proposedPosition === index;
-
-                                return (
-                                    <div key={`slot-${index}`} className="flex gap-4 items-center">
-                                        {showActiveHere && game.activeEvent && (
-                                            <>
-                                                {renderCard(
-                                                    { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
-                                                    -1,
-                                                    true
-                                                )}
-                                                <div className="text-4xl">→</div>
-                                            </>
-                                        )}
-                                        {renderCard(event, index)}
-                                        {index < game.placedEvents.length - 1 && (
-                                            <div className="text-4xl">→</div>
-                                        )}
+                        {/* Player Scores / Status */}
+                        <div className="flex gap-3">
+                            {game.mode === 'coop' ? (
+                                <div className="flex items-center gap-4">
+                                    <div className="text-2xl">
+                                        {'❤️'.repeat(game.lives)}
+                                        {'🤍'.repeat(Math.max(0, 3 - game.lives))}
                                     </div>
-                                );
-                            })}
-
-                            {/* Active card at end */}
-                            {game.status === 'placing' &&
-                                game.activeEvent &&
-                                game.proposedPosition === game.placedEvents.length && (
-                                    <>
-                                        <div className="text-4xl">→</div>
-                                        {renderCard(
-                                            { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
-                                            -1,
-                                            true
-                                        )}
-                                    </>
-                                )}
+                                    <div className="text-lg font-bold text-[#141413]">
+                                        {game.cardsPlaced} / {game.cardsGoal} cards
+                                    </div>
+                                </div>
+                            ) : (
+                                Object.entries(game.playerScores).map(([playerId, score]) => (
+                                    <div
+                                        key={playerId}
+                                        className={`px-4 py-2 rounded-full font-bold transition-all ${playerId === game.activePlayerId
+                                                ? 'bg-[#D97757] text-white shadow-md'
+                                                : 'bg-white text-[#141413]'
+                                            }`}
+                                    >
+                                        {playerId}: {score}
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* Active Card Zone */}
-                <div className="max-w-7xl mx-auto">
-                    <div className="bg-[#3A3A3A] rounded-3xl p-8 text-center">
-                        {game.status === 'placing' && game.activeEvent ? (
-                            <>
-                                <p className="text-lg text-[#B0AEA5] mb-4">
-                                    Current Turn: <span className="font-bold text-white">{game.activePlayerId || 'Player'}</span>
-                                </p>
-                                <p className="text-[#B0AEA5]">
-                                    Use your phone to place the card on the timeline
-                                </p>
-                            </>
-                        ) : game.status === 'revealing' ? (
-                            <p className="text-xl">Revealing card...</p>
-                        ) : (
-                            <p className="text-xl text-[#B0AEA5]">Waiting for next turn...</p>
-                        )}
+                {/* Main Timeline Area */}
+                <div className="flex-1 py-12 relative">
+                    <div
+                        ref={timelineRef}
+                        className="max-w-7xl mx-auto px-6 overflow-x-auto pb-4 scrollbar-hide"
+                        style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                        }}
+                    >
+                        {/* Timeline horizontal scroll container */}
+                        <div className="relative min-w-max">
+                            {/* Timeline line */}
+                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#E8E6DC] -translate-y-1/2" />
+
+                            {/* Cards and slots */}
+                            <div className="relative z-10 flex items-center gap-3">
+                                <AnimatePresence mode="popLayout">
+                                    {game.placedEvents.map((event, index) => {
+                                        const showActiveHere =
+                                            game.status === 'placing' &&
+                                            game.activeEvent &&
+                                            game.proposedPosition === index;
+
+                                        return (
+                                            <div key={`slot-${index}`} className="flex items-center gap-3">
+                                                {/* Placement slot before this card */}
+                                                {showActiveHere && game.activeEvent && (
+                                                    <motion.div
+                                                        initial={{ width: 8, opacity: 0 }}
+                                                        animate={{ width: 160, opacity: 1 }}
+                                                        exit={{ width: 8, opacity: 0 }}
+                                                        className="h-64 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex items-center justify-center"
+                                                    >
+                                                        <motion.div
+                                                            initial={{ scale: 0.9 }}
+                                                            animate={{ scale: 1 }}
+                                                            className="scale-90"
+                                                        >
+                                                            <EventCard
+                                                                event={game.activeEvent}
+                                                                showYear={false}
+                                                                isActive={true}
+                                                            />
+                                                        </motion.div>
+                                                    </motion.div>
+                                                )}
+
+                                                {!showActiveHere && (
+                                                    <div className="w-2 h-12 bg-[#E8E6DC]/50 rounded-full" />
+                                                )}
+
+                                                {/* Placed card */}
+                                                <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 25 }}>
+                                                    <EventCard
+                                                        event={event}
+                                                        showYear={true}
+                                                        result={
+                                                            game.status === 'revealing' && event.id === game.activeEvent?.id
+                                                                ? event.wasCorrect
+                                                                    ? 'correct'
+                                                                    : 'incorrect'
+                                                                : null
+                                                        }
+                                                    />
+                                                </motion.div>
+                                            </div>
+                                        );
+                                    })}
+
+                                    {/* Active card at end */}
+                                    {game.status === 'placing' &&
+                                        game.activeEvent &&
+                                        game.proposedPosition === game.placedEvents.length && (
+                                            <>
+                                                <div className="w-2 h-12 bg-[#E8E6DC]/50 rounded-full" />
+                                                <motion.div
+                                                    initial={{ width: 8, opacity: 0 }}
+                                                    animate={{ width: 160, opacity: 1 }}
+                                                    exit={{ width: 8, opacity: 0 }}
+                                                    className="h-64 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex items-center justify-center"
+                                                >
+                                                    <motion.div
+                                                        initial={{ scale: 0.9 }}
+                                                        animate={{ scale: 1 }}
+                                                        className="scale-90"
+                                                    >
+                                                        <EventCard
+                                                            event={game.activeEvent}
+                                                            showYear={false}
+                                                            isActive={true}
+                                                        />
+                                                    </motion.div>
+                                                </motion.div>
+                                            </>
+                                        )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* Gradient fade indicators */}
+                        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#FAF9F5] to-transparent pointer-events-none" />
+                        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#FAF9F5] to-transparent pointer-events-none" />
+                    </div>
+                </div>
+
+                {/* Footer Bar */}
+                <div className="bg-[#F0EFEA] border-t border-[#E8E6DC] py-4 px-6">
+                    <div className="max-w-7xl mx-auto flex items-center justify-between">
+                        {/* Current card preview */}
+                        <div className="flex items-center gap-4">
+                            {game.activeEvent && (
+                                <>
+                                    <div className="text-3xl">{getCategoryIcon(game.activeEvent.category)}</div>
+                                    <div>
+                                        <p className="text-sm text-[#B0AEA5]">Current Card</p>
+                                        <p className="font-bold text-[#141413]">{game.activeEvent.title}</p>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Current turn */}
+                        <div className="text-right">
+                            <p className="text-sm text-[#B0AEA5]">Current Turn</p>
+                            <p className="font-bold text-[#D97757] text-lg">
+                                {game.activePlayerId || 'Waiting...'}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <style jsx global>{`
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
         </GameLayout>
     );
 }
