@@ -20,11 +20,9 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
     const searchParams = useSearchParams();
     const roomFromUrl = searchParams.get('room');
 
-    const [mode, setMode] = useState<'input' | 'scan' | 'connected'>(
-        roomFromUrl ? 'connected' : 'input'
-    );
-    const [roomCode, setRoomCode] = useState(roomFromUrl || '');
-    const [inputCode, setInputCode] = useState('');
+    const [mode, setMode] = useState<'input' | 'scan' | 'connected'>('input');
+    const [roomCode, setRoomCode] = useState('');
+    const [inputCode, setInputCode] = useState(roomFromUrl || '');
     const [playerName, setPlayerName] = useState('');
     const [roomState, setRoomState] = useState<RoomState | null>(null);
     const [gameState, setGameState] = useState<any>(null);
@@ -88,7 +86,11 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
 
     const handleJoinManually = () => {
         if (validateRoomCode(inputCode) && playerName.trim()) {
-            setRoomCode(inputCode.toUpperCase());
+            const upperCode = inputCode.toUpperCase();
+            setRoomCode(upperCode);
+            // Update URL to include room param
+            const newUrl = `/join?room=${upperCode}`;
+            window.history.pushState({}, '', newUrl);
         }
     };
 
