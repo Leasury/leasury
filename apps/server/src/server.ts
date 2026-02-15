@@ -26,6 +26,7 @@ interface ServerState {
 
 export default class Server implements Party.Server {
     state: ServerState;
+    gameInitialized: boolean = false;
 
     constructor(readonly room: Party.Room) {
         // Initialize with room code from room.id
@@ -102,9 +103,12 @@ export default class Server implements Party.Server {
     handleRoomMessage(msg: RoomMessage, sender: Party.Connection) {
         switch (msg.type) {
             case 'join':
-                // If this is the first join (host), set game type and initialize game
-                if (msg.gameType && !this.state.room.hostId) {
+                // If this is the first join (host) and game provided, initialize
+                if (msg.gameType && !this.gameInitialized) {
                     this.state.room.gameType = msg.gameType;
+                    this.gameInitialized = true;
+
+                    console.log(`Initializing game type: ${msg.gameType}`);
 
                     // Initialize appropriate game state
                     if (msg.gameType === 'timeline') {

@@ -171,7 +171,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                 <>
                                     <div className="text-4xl">→</div>
                                     {renderCard(
-                                        { ...game.activeEvent, placedBy: '', wasCorrect: false },
+                                        { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
                                         -1,
                                         true
                                     )}
