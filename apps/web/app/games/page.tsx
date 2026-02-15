@@ -23,19 +23,16 @@ export default function GamesPage() {
             {/* Games Grid */}
             <section className="max-w-7xl mx-auto px-6 pb-16">
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {/* Timeline - Featured */}
-                    <div className="md:col-span-2 lg:col-span-2">
-                        <GameCard
-                            title="Timeline"
-                            description="Place historical events in chronological order. Test your knowledge of history with friends!"
-                            emoji="⏳"
-                            players="2-8"
-                            duration="15-25 min"
-                            href="/games/timeline"
-                            featured
-                            index={0}
-                        />
-                    </div>
+                    {/* Timeline */}
+                    <GameCard
+                        title="Timeline"
+                        description="Place historical events in chronological order. Test your knowledge of history with friends!"
+                        emoji="⏳"
+                        players="2-8"
+                        duration="15-25 min"
+                        href="/games/timeline"
+                        index={0}
+                    />
 
                     {/* Demo */}
                     <GameCard

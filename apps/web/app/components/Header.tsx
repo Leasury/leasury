@@ -6,15 +6,15 @@ export default function Header() {
         <header className="w-full py-4 px-6">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <Image
                         src="/logo.png"
                         alt="Leasury"
-                        width={32}
-                        height={32}
-                        className="w-8 h-8"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full object-cover"
                     />
-                    <span className="text-xl font-bold text-[#141413]">
+                    <span className="text-2xl font-extrabold text-[#141413]">
                         leasury
                     </span>
                 </Link>
@@ -22,7 +22,7 @@ export default function Header() {
                 {/* Navigation */}
                 <Link
                     href="/games"
-                    className="bg-[#141413] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#2a2a28] transition-colors text-sm"
+                    className="bg-[#141413] text-[#FAF9F5] px-6 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-all duration-200 text-sm"
                 >
                     Browse Games
                 </Link>

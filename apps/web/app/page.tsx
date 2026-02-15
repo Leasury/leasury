@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import Image from 'next/image';
 import Header from './components/Header';
 import Button from './components/Button';
 import GameCard from './components/GameCard';
@@ -107,8 +109,9 @@ export default function Home() {
                     title="Timeline"
                     description="Place historical events in chronological order. Test your knowledge of history with friends!"
                     emoji="⏳"
+                    players="2-8"
+                    duration="15-25 min"
                     href="/games/timeline"
-                    featured
                 />
             </section>
 
@@ -116,10 +119,16 @@ export default function Home() {
             <footer className="border-t border-[#E8E6DC] py-8">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-[#B0AEA5]">
-                            <span className="text-xl">⊙</span>
+                        <Link href="/" className="flex items-center gap-2 text-[#B0AEA5] hover:opacity-80 transition-opacity">
+                            <Image
+                                src="/logo.png"
+                                alt="Leasury"
+                                width={24}
+                                height={24}
+                                className="w-6 h-6 rounded-full object-cover"
+                            />
                             <span className="font-semibold">leasury</span>
-                        </div>
+                        </Link>
                         <div className="text-sm text-[#B0AEA5]">
                             © 2025 Leasury. Board games, reimagined.
                         </div>
