@@ -74,17 +74,8 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
         };
     }, []);
 
-    // Generate QR code
-    useEffect(() => {
-        if (!roomCode) {
-            console.log('QR: No room code yet');
-            return;
-        }
-
-        if (!canvasRef.current) {
-            console.log('QR: Canvas ref not ready');
-            return;
-        }
+    const generateQR = () => {
+        if (!canvasRef.current || !roomCode) return;
 
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
         const url = generateRoomUrl(gameType, roomCode, baseUrl);
@@ -112,7 +103,28 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
         );
 
         setQrCodeUrl(url);
-    }, [roomCode, gameType]);
+    };
+
+    // Generate QR code
+    useEffect(() => {
+        if (!roomCode) {
+            console.log('QR: No room code yet');
+            return;
+        }
+
+        if (!canvasRef.current) {
+            console.log('QR: Canvas ref not ready');
+            // Retry after a short delay to wait for canvas to mount
+            const timer = setTimeout(() => {
+                if (canvasRef.current && roomCode) {
+                    generateQR();
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+
+        generateQR();
+    }, [roomCode, gameType, roomState]); // Add roomState to re-trigger when canvas appears
 
     const handleStart = () => {
         if (socket && roomState) {
