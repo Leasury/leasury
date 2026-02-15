@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import PartySocket from 'partysocket';
 import type { DemoGameState, DemoMessage } from '@leasury/game-logic';
@@ -18,7 +18,7 @@ function generateRoomCode(): string {
     return code;
 }
 
-export default function DemoPage() {
+function DemoPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const roomFromUrl = searchParams.get('room');
@@ -236,10 +236,10 @@ export default function DemoPage() {
                 <div className="flex items-center justify-center gap-2 mb-6">
                     <div
                         className={`w-3 h-3 rounded-full ${connectionStatus === 'connected'
-                                ? 'bg-green-400 animate-pulse'
-                                : connectionStatus === 'connecting'
-                                    ? 'bg-yellow-400 animate-pulse'
-                                    : 'bg-red-400'
+                            ? 'bg-green-400 animate-pulse'
+                            : connectionStatus === 'connecting'
+                                ? 'bg-yellow-400 animate-pulse'
+                                : 'bg-red-400'
                             }`}
                     />
                     <span className="text-white/80 text-sm capitalize">
@@ -309,5 +309,20 @@ export default function DemoPage() {
                 </a>
             </div>
         </div>
+    );
+}
+
+// Wrap in Suspense to satisfy Next.js requirements for useSearchParams
+export default function DemoPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+                    <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full" />
+                </div>
+            }
+        >
+            <DemoPageContent />
+        </Suspense>
     );
 }
