@@ -28,3 +28,4 @@ jobs:
         run: npx turbo run deploy --filter=@leasury/server
         env:
           PARTYKIT_TOKEN: ${{ secrets.PARTYKIT_TOKEN }}
+          PARTYKIT_LOGIN: ${{ secrets.PARTYKIT_LOGIN }}
