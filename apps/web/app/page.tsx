@@ -1,39 +1,128 @@
-import Link from 'next/link';
+import Header from './components/Header';
+import Button from './components/Button';
+import GameCard from './components/GameCard';
 
 export default function Home() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-            <div className="text-center">
-                {/* Logo */}
-                <div className="mb-8">
-                    <h1 className="text-6xl font-bold text-white mb-2">
-                        🎲 Leasury
-                    </h1>
-                    <p className="text-purple-200 text-lg">
-                        Local Multiplayer Party Games
-                    </p>
+        <div className="min-h-screen">
+            <Header />
+
+            {/* Hero Section */}
+            <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                            Turn any screen into a{' '}
+                            <span className="text-[#D97757]">game night</span>
+                        </h1>
+                        <p className="text-[#B0AEA5] text-lg mb-8">
+                            Play board games together using your phones as
+                            controllers. No apps to install, just scan and
+                            play.
+                        </p>
+                        <div className="flex flex-wrap gap-4">
+                            <Button href="/games">Explore Games</Button>
+                            <Button href="/games/timeline" variant="outline">
+                                Try Timeline Free
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Illustration */}
+                    <div className="flex justify-center">
+                        <div className="relative">
+                            {/* Main Screen */}
+                            <div className="bg-white border-4 border-[#141413] rounded-2xl p-8 w-80 h-52 flex items-center justify-center shadow-lg">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-2">🎮</div>
+                                    <div className="text-sm font-semibold">
+                                        Game Screen
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Left Phone */}
+                            <div className="absolute -left-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg">
+                                <div className="text-2xl">📱</div>
+                            </div>
+                            {/* Right Phone */}
+                            <div className="absolute -right-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg">
+                                <div className="text-2xl">📱</div>
+                            </div>
+                            {/* Dots */}
+                            <div className="absolute top-1/2 -left-16 flex gap-1">
+                                <div className="w-2 h-2 rounded-full bg-[#D97757]"></div>
+                                <div className="w-2 h-2 rounded-full bg-[#D97757]"></div>
+                                <div className="w-2 h-2 rounded-full bg-[#D97757]"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                {/* Tagline */}
-                <p className="text-white/60 max-w-md mx-auto mb-12">
-                    Jackbox-style digital board games. One screen for everyone,
-                    phones as controllers. No app downloads required.
-                </p>
+            {/* How It Works */}
+            <section className="bg-[#F0EFEA] py-16">
+                <div className="max-w-7xl mx-auto px-6">
+                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+                        How It Works
+                    </h2>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <div className="bg-white p-8 rounded-2xl text-center">
+                            <div className="text-5xl mb-4">📺</div>
+                            <h3 className="text-xl font-bold mb-3">
+                                Open on TV
+                            </h3>
+                            <p className="text-[#B0AEA5]">
+                                Launch any game on your big screen or computer.
+                            </p>
+                        </div>
+                        <div className="bg-white p-8 rounded-2xl text-center">
+                            <div className="text-5xl mb-4">📱</div>
+                            <h3 className="text-xl font-bold mb-3">
+                                Scan QR Code
+                            </h3>
+                            <p className="text-[#B0AEA5]">
+                                Players scan with their phones to join
+                                instantly.
+                            </p>
+                        </div>
+                        <div className="bg-white p-8 rounded-2xl text-center">
+                            <div className="text-5xl mb-4">🎉</div>
+                            <h3 className="text-xl font-bold mb-3">
+                                Play Together
+                            </h3>
+                            <p className="text-[#B0AEA5]">
+                                Use your phone as a personal controller.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                {/* Demo Button */}
-                <Link
-                    href="/demo"
-                    className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white text-xl font-semibold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25"
-                >
-                    <span>🎮</span>
-                    <span>Play Demo</span>
-                </Link>
+            {/* Featured Game */}
+            <section className="max-w-7xl mx-auto px-6 py-16">
+                <GameCard
+                    title="Timeline"
+                    description="Place historical events in chronological order. Test your knowledge of history with friends!"
+                    emoji="⏳"
+                    href="/games/timeline"
+                    featured
+                />
+            </section>
 
-                {/* Subtitle */}
-                <p className="text-white/40 text-sm mt-6">
-                    Create a room and join from any device to test real-time sync
-                </p>
-            </div>
+            {/* Footer */}
+            <footer className="border-t border-[#E8E6DC] py-8">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-[#B0AEA5]">
+                            <span className="text-xl">⊙</span>
+                            <span className="font-semibold">leasury</span>
+                        </div>
+                        <div className="text-sm text-[#B0AEA5]">
+                            © 2025 Leasury. Board games, reimagined.
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }

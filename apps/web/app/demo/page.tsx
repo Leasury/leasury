@@ -110,13 +110,13 @@ function DemoPageContent() {
     // Landing Screen
     if (mode === 'landing') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-white mb-2">
+                        <h1 className="text-3xl font-bold text-[#141413] mb-2">
                             🎮 Demo Game
                         </h1>
-                        <p className="text-purple-200 text-sm">
+                        <p className="text-[#B0AEA5] text-sm">
                             Test real-time sync across devices
                         </p>
                     </div>
@@ -124,14 +124,14 @@ function DemoPageContent() {
                     <div className="space-y-4">
                         <button
                             onClick={createRoom}
-                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg"
+                            className="w-full bg-[#141413] hover:bg-[#2a2a28] text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg"
                         >
                             🎲 Create New Room
                         </button>
 
                         <button
                             onClick={() => setMode('join')}
-                            className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 border border-white/20"
+                            className="w-full bg-[#F0EFEA] hover:bg-[#E8E6DC] text-[#141413] font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 border border-[#E8E6DC]"
                         >
                             🔗 Join Existing Room
                         </button>
@@ -139,7 +139,7 @@ function DemoPageContent() {
 
                     <a
                         href="/"
-                        className="block text-center text-purple-300 hover:text-white text-sm mt-8 transition-colors"
+                        className="block text-center text-[#B0AEA5] hover:text-[#141413] text-sm mt-8 transition-colors"
                     >
                         ← Back to Home
                     </a>
@@ -151,13 +151,13 @@ function DemoPageContent() {
     // Join Room Screen
     if (mode === 'join') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-white mb-2">
+                        <h1 className="text-3xl font-bold text-[#141413] mb-2">
                             🔗 Join Room
                         </h1>
-                        <p className="text-purple-200 text-sm">
+                        <p className="text-[#B0AEA5] text-sm">
                             Enter the room code to connect
                         </p>
                     </div>
@@ -171,20 +171,20 @@ function DemoPageContent() {
                             }
                             placeholder="ABC123"
                             maxLength={6}
-                            className="w-full bg-black/30 text-white text-2xl font-bold text-center py-4 rounded-xl border border-white/20 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/50 placeholder-white/30"
+                            className="w-full bg-[#F0EFEA] text-[#141413] text-2xl font-bold text-center py-4 rounded-xl border border-[#E8E6DC] focus:border-[#D97757] focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 placeholder-[#B0AEA5]"
                         />
 
                         <button
                             onClick={joinRoom}
                             disabled={inputCode.trim().length < 4}
-                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 disabled:hover:scale-100 shadow-lg"
+                            className="w-full bg-[#141413] hover:bg-[#2a2a28] disabled:bg-[#B0AEA5] disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 disabled:hover:scale-100 shadow-lg"
                         >
                             Join Room
                         </button>
 
                         <button
                             onClick={() => setMode('landing')}
-                            className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-xl transition-all duration-200"
+                            className="w-full bg-[#F0EFEA] hover:bg-[#E8E6DC] text-[#141413] font-semibold py-3 rounded-xl transition-all duration-200"
                         >
                             ← Back
                         </button>
@@ -196,38 +196,38 @@ function DemoPageContent() {
 
     // In Room Screen
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
+        <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
                 {/* Header */}
                 <div className="text-center mb-6">
-                    <h1 className="text-3xl font-bold text-white mb-2">
+                    <h1 className="text-3xl font-bold text-[#141413] mb-2">
                         🎮 Demo Game
                     </h1>
-                    <p className="text-purple-200 text-sm">
+                    <p className="text-[#B0AEA5] text-sm">
                         Testing PartyKit + Next.js Integration
                     </p>
                 </div>
 
                 {/* Room Code Display */}
-                <div className="bg-black/30 rounded-xl p-4 mb-6">
-                    <p className="text-purple-200 text-xs text-center mb-2">
+                <div className="bg-[#F0EFEA] rounded-xl p-4 mb-6">
+                    <p className="text-[#B0AEA5] text-xs text-center mb-2">
                         Room Code
                     </p>
                     <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-white/10 rounded-lg py-3 px-4 text-center">
-                            <span className="text-white text-2xl font-bold tracking-wider">
+                        <div className="flex-1 bg-white rounded-lg py-3 px-4 text-center border border-[#E8E6DC]">
+                            <span className="text-[#141413] text-2xl font-bold tracking-wider">
                                 {roomCode}
                             </span>
                         </div>
                         <button
                             onClick={copyRoomLink}
-                            className="bg-purple-500/80 hover:bg-purple-500 text-white px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                            className="bg-[#D97757] hover:bg-[#CC785C] text-white px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
                             title="Copy room link"
                         >
                             {copied ? '✓' : '📋'}
                         </button>
                     </div>
-                    <p className="text-purple-300/60 text-xs text-center mt-2">
+                    <p className="text-[#B0AEA5] text-xs text-center mt-2">
                         Share this code to invite others
                     </p>
                 </div>
@@ -242,7 +242,7 @@ function DemoPageContent() {
                                 : 'bg-red-400'
                             }`}
                     />
-                    <span className="text-white/80 text-sm capitalize">
+                    <span className="text-[#141413] text-sm capitalize">
                         {connectionStatus}
                     </span>
                 </div>
@@ -250,8 +250,8 @@ function DemoPageContent() {
                 {gameState ? (
                     <>
                         {/* Counter Display */}
-                        <div className="bg-black/30 rounded-2xl p-8 mb-6">
-                            <div className="text-7xl font-bold text-white text-center tabular-nums">
+                        <div className="bg-[#F0EFEA] rounded-2xl p-8 mb-6">
+                            <div className="text-7xl font-bold text-[#141413] text-center tabular-nums">
                                 {gameState.counter}
                             </div>
                         </div>
@@ -260,22 +260,22 @@ function DemoPageContent() {
                         <div className="flex gap-4 mb-6">
                             <button
                                 onClick={decrement}
-                                className="flex-1 bg-red-500/80 hover:bg-red-500 text-white text-4xl font-bold py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg"
+                                className="flex-1 bg-[#141413] hover:bg-[#2a2a28] text-white text-4xl font-bold py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg"
                             >
                                 −
                             </button>
                             <button
                                 onClick={increment}
-                                className="flex-1 bg-green-500/80 hover:bg-green-500 text-white text-4xl font-bold py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg"
+                                className="flex-1 bg-[#D97757] hover:bg-[#CC785C] text-white text-4xl font-bold py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg"
                             >
                                 +
                             </button>
                         </div>
 
                         {/* Players Info */}
-                        <div className="bg-white/5 rounded-xl p-4">
-                            <p className="text-purple-200 text-sm text-center">
-                                <span className="font-semibold text-white">
+                        <div className="bg-[#F0EFEA] rounded-xl p-4">
+                            <p className="text-[#B0AEA5] text-sm text-center">
+                                <span className="font-semibold text-[#141413]">
                                     {gameState.connectedPlayers.length}
                                 </span>{' '}
                                 player
@@ -287,8 +287,8 @@ function DemoPageContent() {
                         </div>
                     </>
                 ) : (
-                    <div className="text-center text-white/60 py-12">
-                        <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full mx-auto mb-4" />
+                    <div className="text-center text-[#B0AEA5] py-12">
+                        <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full mx-auto mb-4" />
                         Connecting to server...
                     </div>
                 )}
@@ -303,7 +303,7 @@ function DemoPageContent() {
                         setInputCode('');
                         router.push('/demo');
                     }}
-                    className="block text-center text-purple-300 hover:text-white text-sm mt-6 transition-colors"
+                    className="block text-center text-[#B0AEA5] hover:text-[#141413] text-sm mt-6 transition-colors"
                 >
                     ← Leave Room
                 </a>
@@ -317,8 +317,8 @@ export default function DemoPage() {
     return (
         <Suspense
             fallback={
-                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-                    <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full" />
+                <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
+                    <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full" />
                 </div>
             }
         >
