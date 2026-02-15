@@ -18,11 +18,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
           cache: 'npm'
       - run: npm ci
       - name: Deploy to PartyKit
-        run: npx turbo run deploy --filter=@leasury/server
+        working-directory: apps/server
+        run: |
+          echo "Deploying PartyKit from $(pwd)"
+          echo "PARTYKIT_LOGIN: $PARTYKIT_LOGIN"
+          npx partykit deploy --verbose
         env:
           PARTYKIT_TOKEN: ${{ secrets.PARTYKIT_TOKEN }}
           PARTYKIT_LOGIN: ${{ secrets.PARTYKIT_LOGIN }}
