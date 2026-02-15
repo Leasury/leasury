@@ -26,4 +26,29 @@ body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F0EFEA;
+    /* cararra */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #B0AEA5;
+    /* midGray */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #141413;
+    /* codGray */
 }

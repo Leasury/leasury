@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
 import Button from '../components/Button';
@@ -30,6 +33,7 @@ export default function GamesPage() {
                             duration="15-25 min"
                             href="/games/timeline"
                             featured
+                            index={0}
                         />
                     </div>
 
@@ -41,6 +45,7 @@ export default function GamesPage() {
                         players="2-12"
                         duration="10-20 min"
                         href="/games/demo"
+                        index={1}
                     />
 
                     {/* Coming Soon Games */}
@@ -52,6 +57,7 @@ export default function GamesPage() {
                         duration="20-30 min"
                         href="/games/mindshot"
                         comingSoon
+                        index={2}
                     />
 
                     <GameCard
@@ -62,6 +68,7 @@ export default function GamesPage() {
                         duration="10-20 min"
                         href="/games/zoom-out"
                         comingSoon
+                        index={3}
                     />
 
                     <GameCard
@@ -72,6 +79,7 @@ export default function GamesPage() {
                         duration="15-25 min"
                         href="/games/spectrum"
                         comingSoon
+                        index={4}
                     />
                 </div>
             </section>

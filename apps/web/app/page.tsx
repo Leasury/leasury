@@ -1,8 +1,10 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import Header from './components/Header';
 import Button from './components/Button';
 import GameCard from './components/GameCard';
+import AnimatedHero from './components/AnimatedHero';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
 export default function Home() {
@@ -13,19 +15,28 @@ export default function Home() {
             <Header />
 
             {/* Hero Section */}
-            <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+            <section className="max-w-7xl mx-auto px-8 py-16 md:py-24">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
                             Turn any screen into a{' '}
                             <span className="text-[#D97757]">game night</span>
                         </h1>
-                        <p className="text-[#B0AEA5] text-lg mb-8">
+                        <p className="text-xl md:text-2xl text-[#B0AEA5] mb-8">
                             Play board games together using your phones as
                             controllers. No apps to install, just scan and
                             play.
                         </p>
-                        <div className="flex flex-wrap gap-4">
+                        <motion.div
+                            className="flex flex-wrap gap-4"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7, delay: 0.2 }}
+                        >
                             {device === 'mobile' ? (
                                 /* Mobile: Show Join Game button */
                                 <Button href="/join">Join Game</Button>
@@ -33,65 +44,21 @@ export default function Home() {
                                 /* PC: Show Browse Games */
                                 <Button href="/games">Explore Games</Button>
                             )}
-                            <Button href="/games/timeline" variant="outline">
+                            <Button href="/games/timeline" variant="secondary">
                                 Try Timeline Free
                             </Button>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
-                    {/* Illustration */}
-                    <div className="flex justify-center">
-                        <div className="relative">
-                            {/* Main Screen */}
-                            <div className="bg-white border-4 border-[#141413] rounded-2xl p-8 w-80 h-52 flex items-center justify-center shadow-lg">
-                                <div className="text-center">
-                                    <div className="text-4xl mb-2">🎮</div>
-                                    <div className="text-sm font-semibold">
-                                        Game Screen
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Left Phone */}
-                            <div
-                                className="absolute -left-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg"
-                                style={{
-                                    animation: 'float-phone 3s ease-in-out infinite'
-                                }}
-                            >
-                                <div className="text-2xl">📱</div>
-                            </div>
-                            {/* Right Phone */}
-                            <div
-                                className="absolute -right-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg"
-                                style={{
-                                    animation: 'float-phone 3s ease-in-out infinite 0.5s'
-                                }}
-                            >
-                                <div className="text-2xl">📱</div>
-                            </div>
-                            {/* Animated Dots (connection indicator) */}
-                            <div className="absolute top-1/2 -left-20 flex gap-1.5">
-                                <div
-                                    className="w-2 h-2 rounded-full bg-[#D97757]"
-                                    style={{
-                                        animation: 'pulse-dot 1.5s ease-in-out infinite'
-                                    }}
-                                ></div>
-                                <div
-                                    className="w-2 h-2 rounded-full bg-[#D97757]"
-                                    style={{
-                                        animation: 'pulse-dot 1.5s ease-in-out infinite 0.3s'
-                                    }}
-                                ></div>
-                                <div
-                                    className="w-2 h-2 rounded-full bg-[#D97757]"
-                                    style={{
-                                        animation: 'pulse-dot 1.5s ease-in-out infinite 0.6s'
-                                    }}
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
+                    {/* Animated Illustration */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
+                        className="flex justify-center"
+                    >
+                        <AnimatedHero />
+                    </motion.div>
                 </div>
             </section>
 
