@@ -76,10 +76,20 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
 
     // Generate QR code
     useEffect(() => {
-        if (!roomCode || !canvasRef.current) return;
+        if (!roomCode) {
+            console.log('QR: No room code yet');
+            return;
+        }
+
+        if (!canvasRef.current) {
+            console.log('QR: Canvas ref not ready');
+            return;
+        }
 
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
         const url = generateRoomUrl(gameType, roomCode, baseUrl);
+
+        console.log('QR: Generating code for URL:', url);
 
         QRCode.toCanvas(
             canvasRef.current,
@@ -93,7 +103,11 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
                 },
             },
             (error) => {
-                if (error) console.error('QR code generation failed:', error);
+                if (error) {
+                    console.error('QR code generation failed:', error);
+                } else {
+                    console.log('QR code generated successfully');
+                }
             }
         );
 
