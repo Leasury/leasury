@@ -31,7 +31,7 @@ export default function Home() {
 
                 {/* Subtitle */}
                 <p className="text-white/40 text-sm mt-6">
-                    Test the real-time sync between browser tabs
+                    Create a room and join from any device to test real-time sync
                 </p>
             </div>
         </div>

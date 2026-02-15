@@ -1,24 +1,47 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import PartySocket from 'partysocket';
 import type { DemoGameState, DemoMessage } from '@leasury/game-logic';
 
 const PARTYKIT_HOST =
     process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
-const ROOM_ID = 'demo-room';
+
+// Generate a random 6-character room code
+function generateRoomCode(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude similar chars
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+}
 
 export default function DemoPage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const roomFromUrl = searchParams.get('room');
+
+    const [mode, setMode] = useState<'landing' | 'join' | 'in-room'>(
+        roomFromUrl ? 'in-room' : 'landing'
+    );
+    const [roomCode, setRoomCode] = useState(roomFromUrl || '');
+    const [inputCode, setInputCode] = useState('');
     const [gameState, setGameState] = useState<DemoGameState | null>(null);
     const [socket, setSocket] = useState<PartySocket | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<
         'connecting' | 'connected' | 'disconnected'
     >('connecting');
+    const [copied, setCopied] = useState(false);
 
+    // Connect to room when in-room mode
     useEffect(() => {
+        if (mode !== 'in-room' || !roomCode) return;
+
         const conn = new PartySocket({
             host: PARTYKIT_HOST,
-            room: ROOM_ID,
+            room: roomCode.toLowerCase(),
         });
 
         conn.addEventListener('open', () => {
@@ -47,7 +70,7 @@ export default function DemoPage() {
         return () => {
             conn.close();
         };
-    }, []);
+    }, [mode, roomCode]);
 
     const sendMessage = useCallback(
         (message: DemoMessage) => {
@@ -58,14 +81,125 @@ export default function DemoPage() {
         [socket]
     );
 
+    const createRoom = () => {
+        const code = generateRoomCode();
+        setRoomCode(code);
+        setMode('in-room');
+        router.push(`/demo?room=${code}`);
+    };
+
+    const joinRoom = () => {
+        if (inputCode.trim()) {
+            const code = inputCode.trim().toUpperCase();
+            setRoomCode(code);
+            setMode('in-room');
+            router.push(`/demo?room=${code}`);
+        }
+    };
+
+    const copyRoomLink = async () => {
+        const url = `${window.location.origin}/demo?room=${roomCode}`;
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     const increment = () => sendMessage({ type: 'increment' });
     const decrement = () => sendMessage({ type: 'decrement' });
 
+    // Landing Screen
+    if (mode === 'landing') {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-white mb-2">
+                            🎮 Demo Game
+                        </h1>
+                        <p className="text-purple-200 text-sm">
+                            Test real-time sync across devices
+                        </p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <button
+                            onClick={createRoom}
+                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg"
+                        >
+                            🎲 Create New Room
+                        </button>
+
+                        <button
+                            onClick={() => setMode('join')}
+                            className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 border border-white/20"
+                        >
+                            🔗 Join Existing Room
+                        </button>
+                    </div>
+
+                    <a
+                        href="/"
+                        className="block text-center text-purple-300 hover:text-white text-sm mt-8 transition-colors"
+                    >
+                        ← Back to Home
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
+    // Join Room Screen
+    if (mode === 'join') {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-white mb-2">
+                            🔗 Join Room
+                        </h1>
+                        <p className="text-purple-200 text-sm">
+                            Enter the room code to connect
+                        </p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            value={inputCode}
+                            onChange={(e) =>
+                                setInputCode(e.target.value.toUpperCase())
+                            }
+                            placeholder="ABC123"
+                            maxLength={6}
+                            className="w-full bg-black/30 text-white text-2xl font-bold text-center py-4 rounded-xl border border-white/20 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/50 placeholder-white/30"
+                        />
+
+                        <button
+                            onClick={joinRoom}
+                            disabled={inputCode.trim().length < 4}
+                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all duration-200 hover:scale-105 disabled:hover:scale-100 shadow-lg"
+                        >
+                            Join Room
+                        </button>
+
+                        <button
+                            onClick={() => setMode('landing')}
+                            className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-xl transition-all duration-200"
+                        >
+                            ← Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // In Room Screen
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
             <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
                 {/* Header */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-6">
                     <h1 className="text-3xl font-bold text-white mb-2">
                         🎮 Demo Game
                     </h1>
@@ -74,14 +208,38 @@ export default function DemoPage() {
                     </p>
                 </div>
 
+                {/* Room Code Display */}
+                <div className="bg-black/30 rounded-xl p-4 mb-6">
+                    <p className="text-purple-200 text-xs text-center mb-2">
+                        Room Code
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-white/10 rounded-lg py-3 px-4 text-center">
+                            <span className="text-white text-2xl font-bold tracking-wider">
+                                {roomCode}
+                            </span>
+                        </div>
+                        <button
+                            onClick={copyRoomLink}
+                            className="bg-purple-500/80 hover:bg-purple-500 text-white px-4 py-3 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                            title="Copy room link"
+                        >
+                            {copied ? '✓' : '📋'}
+                        </button>
+                    </div>
+                    <p className="text-purple-300/60 text-xs text-center mt-2">
+                        Share this code to invite others
+                    </p>
+                </div>
+
                 {/* Connection Status */}
                 <div className="flex items-center justify-center gap-2 mb-6">
                     <div
                         className={`w-3 h-3 rounded-full ${connectionStatus === 'connected'
-                            ? 'bg-green-400 animate-pulse'
-                            : connectionStatus === 'connecting'
-                                ? 'bg-yellow-400 animate-pulse'
-                                : 'bg-red-400'
+                                ? 'bg-green-400 animate-pulse'
+                                : connectionStatus === 'connecting'
+                                    ? 'bg-yellow-400 animate-pulse'
+                                    : 'bg-red-400'
                             }`}
                     />
                     <span className="text-white/80 text-sm capitalize">
@@ -126,9 +284,6 @@ export default function DemoPage() {
                                     : ''}{' '}
                                 connected
                             </p>
-                            <p className="text-purple-300/60 text-xs text-center mt-1">
-                                Room: {ROOM_ID}
-                            </p>
                         </div>
                     </>
                 ) : (
@@ -140,10 +295,17 @@ export default function DemoPage() {
 
                 {/* Back Link */}
                 <a
-                    href="/"
+                    href="/demo"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setMode('landing');
+                        setRoomCode('');
+                        setInputCode('');
+                        router.push('/demo');
+                    }}
                     className="block text-center text-purple-300 hover:text-white text-sm mt-6 transition-colors"
                 >
-                    ← Back to Home
+                    ← Leave Room
                 </a>
             </div>
         </div>
