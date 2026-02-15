@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { TimelineGameState, PlacedEvent } from '@leasury/game-logic';
 import { formatEventValue, getCategoryIcon } from '@leasury/game-logic';
+import GameLayout from '@/components/layout/GameLayout';
 
 interface TimelineHostProps {
     state: {
@@ -127,79 +128,81 @@ export default function TimelineHost({ state }: TimelineHostProps) {
     }
 
     return (
-        <div className="min-h-screen bg-[#2A2A2A] text-white p-8">
-            {/* Status Bar */}
-            <div className="max-w-7xl mx-auto mb-8">
-                {getStatusBar()}
-            </div>
+        <GameLayout backUrl="/games/timeline" theme="dark">
+            <div className="p-8">
+                {/* Status Bar */}
+                <div className="max-w-7xl mx-auto mb-8">
+                    {getStatusBar()}
+                </div>
 
-            {/* Timeline */}
-            <div className="max-w-7xl mx-auto mb-12">
-                <div className="overflow-x-auto pb-4">
-                    <div className="flex gap-4 items-center min-w-max">
-                        {game.placedEvents.map((event, index) => {
-                            // Check if active card should be inserted here
-                            const showActiveHere =
-                                game.status === 'placing' &&
-                                game.activeEvent &&
-                                game.proposedPosition === index;
+                {/* Timeline */}
+                <div className="max-w-7xl mx-auto mb-12">
+                    <div className="overflow-x-auto pb-4">
+                        <div className="flex gap-4 items-center min-w-max">
+                            {game.placedEvents.map((event, index) => {
+                                // Check if active card should be inserted here
+                                const showActiveHere =
+                                    game.status === 'placing' &&
+                                    game.activeEvent &&
+                                    game.proposedPosition === index;
 
-                            return (
-                                <div key={`slot-${index}`} className="flex gap-4 items-center">
-                                    {showActiveHere && game.activeEvent && (
-                                        <>
-                                            {renderCard(
-                                                { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
-                                                -1,
-                                                true
-                                            )}
+                                return (
+                                    <div key={`slot-${index}`} className="flex gap-4 items-center">
+                                        {showActiveHere && game.activeEvent && (
+                                            <>
+                                                {renderCard(
+                                                    { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
+                                                    -1,
+                                                    true
+                                                )}
+                                                <div className="text-4xl">→</div>
+                                            </>
+                                        )}
+                                        {renderCard(event, index)}
+                                        {index < game.placedEvents.length - 1 && (
                                             <div className="text-4xl">→</div>
-                                        </>
-                                    )}
-                                    {renderCard(event, index)}
-                                    {index < game.placedEvents.length - 1 && (
-                                        <div className="text-4xl">→</div>
-                                    )}
-                                </div>
-                            );
-                        })}
+                                        )}
+                                    </div>
+                                );
+                            })}
 
-                        {/* Active card at end */}
-                        {game.status === 'placing' &&
-                            game.activeEvent &&
-                            game.proposedPosition === game.placedEvents.length && (
-                                <>
-                                    <div className="text-4xl">→</div>
-                                    {renderCard(
-                                        { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
-                                        -1,
-                                        true
-                                    )}
-                                </>
-                            )}
+                            {/* Active card at end */}
+                            {game.status === 'placing' &&
+                                game.activeEvent &&
+                                game.proposedPosition === game.placedEvents.length && (
+                                    <>
+                                        <div className="text-4xl">→</div>
+                                        {renderCard(
+                                            { ...game.activeEvent, placedBy: '', wasCorrect: false } as PlacedEvent,
+                                            -1,
+                                            true
+                                        )}
+                                    </>
+                                )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Active Card Zone */}
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-[#3A3A3A] rounded-3xl p-8 text-center">
+                        {game.status === 'placing' && game.activeEvent ? (
+                            <>
+                                <p className="text-lg text-[#B0AEA5] mb-4">
+                                    Current Turn: <span className="font-bold text-white">{game.activePlayerId || 'Player'}</span>
+                                </p>
+                                <p className="text-[#B0AEA5]">
+                                    Use your phone to place the card on the timeline
+                                </p>
+                            </>
+                        ) : game.status === 'revealing' ? (
+                            <p className="text-xl">Revealing card...</p>
+                        ) : (
+                            <p className="text-xl text-[#B0AEA5]">Waiting for next turn...</p>
+                        )}
                     </div>
                 </div>
             </div>
-
-            {/* Active Card Zone */}
-            <div className="max-w-7xl mx-auto">
-                <div className="bg-[#3A3A3A] rounded-3xl p-8 text-center">
-                    {game.status === 'placing' && game.activeEvent ? (
-                        <>
-                            <p className="text-lg text-[#B0AEA5] mb-4">
-                                Current Turn: <span className="font-bold text-white">{game.activePlayerId || 'Player'}</span>
-                            </p>
-                            <p className="text-[#B0AEA5]">
-                                Use your phone to place the card on the timeline
-                            </p>
-                        </>
-                    ) : game.status === 'revealing' ? (
-                        <p className="text-xl">Revealing card...</p>
-                    ) : (
-                        <p className="text-xl text-[#B0AEA5]">Waiting for next turn...</p>
-                    )}
-                </div>
-            </div>
-        </div>
+        </GameLayout>
     );
 }

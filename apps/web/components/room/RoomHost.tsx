@@ -168,81 +168,87 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
     // Waiting room (show QR, player list, start button)
     return (
         <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-2xl w-full">
-                <h1 className="text-3xl font-bold text-center mb-6">
-                    Waiting for Players
-                </h1>
-
-                {/* QR Code */}
-                <div className="bg-[#F0EFEA] rounded-2xl p-6 mb-6">
-                    <p className="text-sm text-[#B0AEA5] text-center mb-4">
-                        Scan to join on mobile
-                    </p>
-                    <div className="flex justify-center">
-                        <canvas ref={canvasRef} width={300} height={300} className="rounded-xl" />
-                    </div>
-                </div>
-
-                {/* Room Code */}
-                <div className="bg-[#F0EFEA] rounded-xl p-4 mb-6">
-                    <p className="text-xs text-[#B0AEA5] text-center mb-2">
-                        Or enter this code manually
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-white rounded-lg py-3 px-4 text-center border border-[#E8E6DC]">
-                            <span className="text-2xl font-bold tracking-wider">
-                                {roomCode}
-                            </span>
-                        </div>
-                        <button
-                            onClick={copyRoomCode}
-                            className="bg-[#D97757] hover:bg-[#CC785C] text-white px-4 py-3 rounded-lg"
-                        >
-                            📋
-                        </button>
-                    </div>
-                </div>
-
-                {/* Player List */}
-                <div className="bg-[#F0EFEA] rounded-xl p-4 mb-6">
-                    <h3 className="font-semibold mb-3">
-                        Connected Players ({roomState.players.length})
-                    </h3>
-                    {roomState.players.length === 0 ? (
-                        <p className="text-[#B0AEA5] text-sm text-center py-4">
-                            No players yet. Share the QR code!
-                        </p>
-                    ) : (
-                        <div className="space-y-2">
-                            {roomState.players.map((player: any) => (
-                                <div
-                                    key={player.id}
-                                    className="flex items-center justify-between bg-white p-3 rounded-lg"
-                                >
-                                    <span className="font-medium">{player.name}</span>
-                                    {player.isHost && (
-                                        <span className="text-xs bg-[#D97757] text-white px-2 py-1 rounded">
-                                            HOST
-                                        </span>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Start Button */}
-                <Button
-                    onClick={handleStart}
-                    className="w-full"
-                // disabled={roomState.players.length < 2}
+            <div className="w-full max-w-2xl">
+                {/* Back Button */}
+                <button
+                    onClick={() => window.location.href = `/games/${gameType}`}
+                    className="text-[#B0AEA5] hover:text-[#141413] flex items-center gap-2 mb-4 transition-colors"
                 >
-                    Start Game
-                </Button>
+                    ← Back
+                </button>
 
-                <p className="text-xs text-[#B0AEA5] text-center mt-4">
-                    Connection: {connectionStatus}
-                </p>
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC]">
+                    <h1 className="text-3xl font-bold text-center mb-6">
+                        Waiting for Players
+                    </h1>
+
+                    {/* QR Code */}
+                    <div className="bg-[#F0EFEA] rounded-2xl p-6 mb-6">
+                        <p className="text-sm text-[#B0AEA5] text-center mb-4">
+                            Scan to join on mobile
+                        </p>
+                        <div className="flex justify-center">
+                            <canvas ref={canvasRef} width={300} height={300} className="rounded-xl" />
+                        </div>
+                    </div>
+
+                    {/* Room Code */}
+                    <div className="bg-[#F0EFEA] rounded-xl p-4 mb-6">
+                        <p className="text-xs text-[#B0AEA5] text-center mb-2">
+                            Or enter this code manually
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-white rounded-lg py-3 px-4 text-center border border-[#E8E6DC]">
+                                <span className="text-2xl font-bold tracking-wider">
+                                    {roomCode}
+                                </span>
+                            </div>
+                            <button
+                                onClick={copyRoomCode}
+                                className="bg-[#D97757] hover:bg-[#CC785C] text-white px-4 py-3 rounded-lg"
+                            >
+                                📋
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Player List */}
+                    <div className="bg-[#F0EFEA] rounded-xl p-4 mb-6">
+                        <h3 className="font-semibold mb-3">
+                            Connected Players ({roomState.players.filter(p => !p.isHost).length})
+                        </h3>
+                        {roomState.players.filter(p => !p.isHost).length === 0 ? (
+                            <p className="text-sm text-[#B0AEA5] text-center py-4">
+                                Waiting for players to join...
+                            </p>
+                        ) : (
+                            <ul className="space-y-2">
+                                {roomState.players.filter(p => !p.isHost).map((player) => (
+                                    <li
+                                        key={player.id}
+                                        className="flex items-center gap-2 bg-white rounded-lg px-3 py-2"
+                                    >
+                                        <span className="text-xl">👤</span>
+                                        <span className="font-medium">{player.name}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    {/* Start Button */}
+                    <Button
+                        onClick={handleStart}
+                        className="w-full"
+                    // disabled={roomState.players.length < 2}
+                    >
+                        Start Game
+                    </Button>
+
+                    <p className="text-xs text-[#B0AEA5] text-center mt-4">
+                        Connection: {connectionStatus}
+                    </p>
+                </div>
             </div>
         </div>
     );

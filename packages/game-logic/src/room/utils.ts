@@ -30,5 +30,5 @@ export function formatRoomCode(code: string): string {
  * Generate a room URL for QR code
  */
 export function generateRoomUrl(gameType: string, roomCode: string, baseUrl: string): string {
-    return `${baseUrl}/games/${gameType}/player?room=${roomCode}`;
+    return `${baseUrl}/join?room=${roomCode}`;
 }

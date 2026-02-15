@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { TimelineGameState } from '@leasury/game-logic';
 import { getCategoryIcon, getCategoryLabel } from '@leasury/game-logic';
+import GameLayout from '@/components/layout/GameLayout';
 
 interface TimelinePlayerProps {
     state: {
@@ -61,25 +62,27 @@ export default function TimelinePlayer({ state }: TimelinePlayerProps) {
     // Waiting for turn
     if (!isMyTurn) {
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
-                <div className="text-center">
-                    <div className="text-6xl mb-6 opacity-50">⏳</div>
-                    <p className="text-white text-2xl font-bold mb-2">
-                        {game.activePlayerId || 'Another player'} is playing
-                    </p>
-                    <p className="text-[#B0AEA5] text-lg">
-                        Watch the main screen...
-                    </p>
-                    {game.mode === 'competitive' && (
-                        <div className="mt-6 bg-[#3A3A3A] rounded-xl p-4">
-                            <p className="text-[#B0AEA5] text-sm">Your Score</p>
-                            <p className="text-white text-3xl font-bold">
-                                {game.playerScores[playerId] || 0}
-                            </p>
-                        </div>
-                    )}
+            <GameLayout backUrl="/games/timeline" theme="dark" backLabel="← Back">
+                <div className="flex items-center justify-center p-6" style={{ minHeight: 'calc(100vh - 60px)' }}>
+                    <div className="text-center">
+                        <div className="text-6xl mb-6 opacity-50">⏳</div>
+                        <p className="text-white text-2xl font-bold mb-2">
+                            {game.activePlayerId || 'Another player'} is playing
+                        </p>
+                        <p className="text-[#B0AEA5] text-lg">
+                            Watch the main screen...
+                        </p>
+                        {game.mode === 'competitive' && (
+                            <div className="mt-6 bg-[#3A3A3A] rounded-xl p-4">
+                                <p className="text-[#B0AEA5] text-sm">Your Score</p>
+                                <p className="text-white text-3xl font-bold">
+                                    {game.playerScores[playerId] || 0}
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </GameLayout>
         );
     }
 
