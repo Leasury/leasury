@@ -41,18 +41,43 @@ export default function Home() {
                                 </div>
                             </div>
                             {/* Left Phone */}
-                            <div className="absolute -left-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg">
+                            <div
+                                className="absolute -left-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg"
+                                style={{
+                                    animation: 'float-phone 3s ease-in-out infinite'
+                                }}
+                            >
                                 <div className="text-2xl">📱</div>
                             </div>
                             {/* Right Phone */}
-                            <div className="absolute -right-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg">
+                            <div
+                                className="absolute -right-8 bottom-4 bg-white border-4 border-[#141413] rounded-xl w-16 h-24 flex items-center justify-center shadow-lg"
+                                style={{
+                                    animation: 'float-phone 3s ease-in-out infinite 0.5s'
+                                }}
+                            >
                                 <div className="text-2xl">📱</div>
                             </div>
-                            {/* Dots */}
-                            <div className="absolute top-1/2 -left-16 flex gap-1">
-                                <div className="w-2 h-2 rounded-full bg-[#D97757]"></div>
-                                <div className="w-2 h-2 rounded-full bg-[#D97757]"></div>
-                                <div className="w-2 h-2 rounded-full bg-[#D97757]"></div>
+                            {/* Animated Dots (connection indicator) */}
+                            <div className="absolute top-1/2 -left-20 flex gap-1.5">
+                                <div
+                                    className="w-2 h-2 rounded-full bg-[#D97757]"
+                                    style={{
+                                        animation: 'pulse-dot 1.5s ease-in-out infinite'
+                                    }}
+                                ></div>
+                                <div
+                                    className="w-2 h-2 rounded-full bg-[#D97757]"
+                                    style={{
+                                        animation: 'pulse-dot 1.5s ease-in-out infinite 0.3s'
+                                    }}
+                                ></div>
+                                <div
+                                    className="w-2 h-2 rounded-full bg-[#D97757]"
+                                    style={{
+                                        animation: 'pulse-dot 1.5s ease-in-out infinite 0.6s'
+                                    }}
+                                ></div>
                             </div>
                         </div>
                     </div>
@@ -66,7 +91,7 @@ export default function Home() {
                         How It Works
                     </h2>
                     <div className="grid md:grid-cols-3 gap-8">
-                        <div className="bg-white p-8 rounded-2xl text-center">
+                        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transition-shadow">
                             <div className="text-5xl mb-4">📺</div>
                             <h3 className="text-xl font-bold mb-3">
                                 Open on TV
@@ -75,7 +100,7 @@ export default function Home() {
                                 Launch any game on your big screen or computer.
                             </p>
                         </div>
-                        <div className="bg-white p-8 rounded-2xl text-center">
+                        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transition-shadow">
                             <div className="text-5xl mb-4">📱</div>
                             <h3 className="text-xl font-bold mb-3">
                                 Scan QR Code
@@ -85,7 +110,7 @@ export default function Home() {
                                 instantly.
                             </p>
                         </div>
-                        <div className="bg-white p-8 rounded-2xl text-center">
+                        <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transition-shadow">
                             <div className="text-5xl mb-4">🎉</div>
                             <h3 className="text-xl font-bold mb-3">
                                 Play Together

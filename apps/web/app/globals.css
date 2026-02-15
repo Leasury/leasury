@@ -5,11 +5,11 @@
     --background: #FAF9F5;
     --background-secondary: #F0EFEA;
     --background-tertiary: #E8E6DC;
-    
+
     /* Text colors */
     --foreground: #141413;
     --foreground-secondary: #B0AEA5;
-    
+
     /* Accent colors */
     --accent: #D97757;
     --accent-blue: #6A9BCC;
@@ -19,8 +19,7 @@
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+    --font-sans: var(--font-inter);
 }
 
 body {
