@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
       - run: npm ci
       - name: Deploy to PartyKit
@@ -26,7 +26,7 @@ jobs:
         run: |
           echo "Deploying PartyKit from $(pwd)"
           echo "PARTYKIT_LOGIN: $PARTYKIT_LOGIN"
-          npx partykit deploy --verbose
+          npx partykit deploy
         env:
           PARTYKIT_TOKEN: ${{ secrets.PARTYKIT_TOKEN }}
           PARTYKIT_LOGIN: ${{ secrets.PARTYKIT_LOGIN }}
