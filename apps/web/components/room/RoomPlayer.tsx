@@ -3,7 +3,6 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import PartySocket from 'partysocket';
-import { Html5Qrcode } from 'html5-qrcode';
 import { RoomState, validateRoomCode } from '@leasury/game-logic';
 import Button from '@/app/components/Button';
 
@@ -20,7 +19,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
     const searchParams = useSearchParams();
     const roomFromUrl = searchParams.get('room');
 
-    const [mode, setMode] = useState<'input' | 'scan' | 'connected'>('input');
+    const [mode, setMode] = useState<'input' | 'connected'>('input');
     const [roomCode, setRoomCode] = useState('');
     const [inputCode, setInputCode] = useState(roomFromUrl || '');
     const [playerName, setPlayerName] = useState('');
@@ -28,7 +27,6 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
     const [gameState, setGameState] = useState<any>(null);
     const [socket, setSocket] = useState<PartySocket | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<string>('');
-    const [scanError, setScanError] = useState<string>('');
 
     // Connect to room when roomCode is set
     useEffect(() => {
@@ -94,43 +92,6 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
         }
     };
 
-    const startQRScanner = async () => {
-        setMode('scan');
-        setScanError('');
-
-        try {
-            const html5QrCode = new Html5Qrcode('qr-reader');
-
-            await html5QrCode.start(
-                { facingMode: 'environment' },
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                },
-                (decodedText) => {
-                    // Extract room code from URL
-                    try {
-                        const url = new URL(decodedText);
-                        const code = url.searchParams.get('room');
-                        if (code) {
-                            html5QrCode.stop();
-                            setInputCode(code);
-                            setRoomCode(code.toUpperCase());
-                        }
-                    } catch (e) {
-                        setScanError('Invalid QR code');
-                    }
-                },
-                (errorMessage) => {
-                    // Ignore scan errors (they're frequent)
-                }
-            );
-        } catch (err) {
-            setScanError('Camera access denied or not available');
-            setMode('input');
-        }
-    };
-
     // If game is playing, show game component
     if (roomState?.status === 'playing' && gameState) {
         return <>{children({ room: roomState, game: gameState })}</>;
@@ -171,48 +132,11 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
                         />
                     </div>
 
-                    <div className="space-y-3">
-                        <Button
-                            onClick={handleJoinManually}
-                            className="w-full"
-                        >
-                            Join Room
-                        </Button>
-
-                        <Button
-                            onClick={startQRScanner}
-                            variant="outline"
-                            className="w-full"
-                        >
-                            📷 Scan QR Code
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // QR Scanner mode
-    if (mode === 'scan') {
-        return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center p-4">
-                <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
-                    <h2 className="text-2xl font-bold text-center mb-6">
-                        Scan QR Code
-                    </h2>
-
-                    <div id="qr-reader" className="rounded-xl overflow-hidden mb-4"></div>
-
-                    {scanError && (
-                        <p className="text-red-500 text-sm text-center mb-4">{scanError}</p>
-                    )}
-
                     <Button
-                        onClick={() => setMode('input')}
-                        variant="outline"
+                        onClick={handleJoinManually}
                         className="w-full"
                     >
-                        Cancel
+                        Join Room
                     </Button>
                 </div>
             </div>
