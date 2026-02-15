@@ -153,7 +153,7 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
                         Scan to join on mobile
                     </p>
                     <div className="flex justify-center">
-                        <canvas ref={canvasRef} className="rounded-xl" />
+                        <canvas ref={canvasRef} width={300} height={300} className="rounded-xl" />
                     </div>
                 </div>
 
