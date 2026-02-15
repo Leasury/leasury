@@ -102,6 +102,18 @@ export default class Server implements Party.Server {
     handleRoomMessage(msg: RoomMessage, sender: Party.Connection) {
         switch (msg.type) {
             case 'join':
+                // If this is the first join (host), set game type and initialize game
+                if (msg.gameType && !this.state.room.hostId) {
+                    this.state.room.gameType = msg.gameType;
+
+                    // Initialize appropriate game state
+                    if (msg.gameType === 'timeline') {
+                        this.state.game = createInitialTimelineState();
+                    } else {
+                        this.state.game = createInitialDemoState();
+                    }
+                }
+
                 this.addPlayer(sender.id, msg.playerName);
                 break;
             case 'leave':

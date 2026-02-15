@@ -40,10 +40,11 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
             console.log('Connected to PartyKit as host!');
             setConnectionStatus('connected');
 
-            // Join as host
+            // Join as host and specify game type
             conn.send(JSON.stringify({
                 type: 'join',
-                playerName: 'Host'
+                playerName: 'Host',
+                gameType: gameType
             }));
         });
 
