@@ -24,6 +24,6 @@ jobs:
         run: npm install
 
       - name: Deploy to PartyKit
-        run: npm run deploy
+        run: npx turbo run deploy --filter=@leasury/server
         env:
           PARTYKIT_TOKEN: ${{ secrets.PARTYKIT_TOKEN }}
