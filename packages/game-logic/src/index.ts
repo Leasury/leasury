@@ -1,13 +1,13 @@
-// @leasury/game-logic
-// THE SOURCE OF TRUTH - All game logic must live here
+/**
+ * Game Logic Package
+ * Shared game logic for all Leasury games
+ */
 
-export * from './types';
-
-// Room management
+// Room Management
 export * from './room';
 
-// Games
+// Demo Game
 export * from './games/demo';
 
-// Game exports will be added here as games are implemented
-// export * from './games/timeline';
+// Timeline Game
+export * from './games/timeline';

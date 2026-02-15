@@ -3,10 +3,17 @@ import {
     type RoomState,
     type RoomMessage,
     type Player,
+    // Demo
     createInitialDemoState,
     applyDemoMessage,
     type DemoGameState,
     type DemoGameMessage,
+    // Timeline
+    createInitialTimelineState,
+    applyTimelineMessage,
+    dealNextEvent,
+    type TimelineGameState,
+    type TimelineMessage,
 } from '@leasury/game-logic';
 
 /**
@@ -14,7 +21,7 @@ import {
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState; // This will be dynamic per game type
+    game: DemoGameState | TimelineGameState;
 }
 
 export default class Server implements Party.Server {
@@ -28,7 +35,7 @@ export default class Server implements Party.Server {
                 hostId: '',
                 players: [],
                 status: 'waiting',
-                gameType: 'demo', // TODO: Get from query param
+                gameType: 'demo', // Default, will be updated
             },
             game: createInitialDemoState(),
         };
@@ -72,9 +79,14 @@ export default class Server implements Party.Server {
                 return;
             }
 
-            // Handle game-specific messages
-            if (this.isDemoMessage(msg)) {
+            // Handle game-specific messages based on game type
+            if (this.state.room.gameType === 'demo' && this.isDemoMessage(msg)) {
                 this.handleDemoMessage(msg);
+                return;
+            }
+
+            if (this.state.room.gameType === 'timeline' && this.isTimelineMessage(msg)) {
+                this.handleTimelineMessage(msg, sender);
                 return;
             }
         } catch (e) {
@@ -98,6 +110,19 @@ export default class Server implements Party.Server {
             case 'start':
                 if (sender.id === this.state.room.hostId) {
                     this.state.room.status = 'playing';
+
+                    // Initialize game based on type
+                    if (this.state.room.gameType === 'timeline') {
+                        // Deal first card to first non-host player
+                        const firstPlayer = this.state.room.players.find(p => !p.isHost);
+                        if (firstPlayer) {
+                            this.state.game = dealNextEvent(
+                                this.state.game as TimelineGameState,
+                                firstPlayer.id
+                            );
+                        }
+                    }
+
                     this.broadcastState();
                 }
                 break;
@@ -134,12 +159,37 @@ export default class Server implements Party.Server {
     }
 
     handleDemoMessage(msg: DemoGameMessage) {
-        // Only allow game messages when playing
-        if (this.state.room.status !== 'playing') {
-            return;
+        if (this.state.room.status !== 'playing') return;
+
+        this.state.game = applyDemoMessage(this.state.game as DemoGameState, msg);
+        this.broadcastState();
+    }
+
+    // Timeline game message handling
+    isTimelineMessage(msg: any): msg is TimelineMessage {
+        return ['startGame', 'moveCard', 'setPosition', 'placeCard', 'nextTurn'].includes(msg.type);
+    }
+
+    handleTimelineMessage(msg: TimelineMessage, sender: Party.Connection) {
+        if (this.state.room.status !== 'playing') return;
+
+        let gameState = this.state.game as TimelineGameState;
+
+        // Handle next turn - deal new card
+        if (msg.type === 'nextTurn') {
+            // Find next player in sequence
+            const currentIndex = this.state.room.players.findIndex(p => p.id === gameState.activePlayerId);
+            const nextIndex = (currentIndex + 1) % this.state.room.players.length;
+            const nextPlayer = this.state.room.players[nextIndex];
+
+            if (nextPlayer && !nextPlayer.isHost) {
+                gameState = dealNextEvent(gameState, nextPlayer.id);
+            }
+        } else {
+            gameState = applyTimelineMessage(gameState, msg);
         }
 
-        this.state.game = applyDemoMessage(this.state.game, msg);
+        this.state.game = gameState;
         this.broadcastState();
     }
 
