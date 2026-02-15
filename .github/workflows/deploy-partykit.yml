@@ -20,10 +20,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
+      - run: npm ci
       - name: Deploy to PartyKit
         run: npx turbo run deploy --filter=@leasury/server
         env:
