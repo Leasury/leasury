@@ -1,8 +1,13 @@
+'use client';
+
 import Header from './components/Header';
 import Button from './components/Button';
 import GameCard from './components/GameCard';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
 export default function Home() {
+    const device = useDeviceDetection();
+
     return (
         <div className="min-h-screen">
             <Header />
@@ -21,7 +26,13 @@ export default function Home() {
                             play.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Button href="/games">Explore Games</Button>
+                            {device === 'mobile' ? (
+                                /* Mobile: Show Join Game button */
+                                <Button href="/join">Join Game</Button>
+                            ) : (
+                                /* PC: Show Browse Games */
+                                <Button href="/games">Explore Games</Button>
+                            )}
                             <Button href="/games/timeline" variant="outline">
                                 Try Timeline Free
                             </Button>

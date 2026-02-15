@@ -1,7 +1,12 @@
+'use client';
+
 import Header from '@/app/components/Header';
 import Button from '@/app/components/Button';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
 export default function DemoLandingPage() {
+    const device = useDeviceDetection();
+
     return (
         <div className="min-h-screen bg-[#FAF9F5]">
             <Header />
@@ -18,36 +23,42 @@ export default function DemoLandingPage() {
                     </p>
                 </div>
 
-                {/* Choice Cards */}
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    {/* Host Card */}
-                    <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-shadow">
-                        <div className="text-5xl mb-4 text-center">🖥️</div>
-                        <h2 className="text-2xl font-bold mb-3 text-center">
-                            Host Game
+                {/* Device-Aware Actions */}
+                {device === 'desktop' ? (
+                    /* PC: Show Host Button */
+                    <div className="bg-white rounded-2xl p-8 shadow-md mb-8 text-center">
+                        <div className="text-5xl mb-4">🖥️</div>
+                        <h2 className="text-2xl font-bold mb-3">
+                            Host on PC/TV
                         </h2>
-                        <p className="text-[#B0AEA5] mb-6 text-center">
-                            Start a game session on your PC or TV. Show a QR code for others to join.
+                        <p className="text-[#B0AEA5] mb-6">
+                            Start a game session and show a QR code for others to join.
                         </p>
-                        <Button href="/games/demo/host" className="w-full">
-                            I'm the Host
+                        <Button href="/host?game=demo" className="w-full max-w-md mx-auto">
+                            Host Demo Game
                         </Button>
                     </div>
-
-                    {/* Join Card */}
-                    <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-shadow">
-                        <div className="text-5xl mb-4 text-center">📱</div>
-                        <h2 className="text-2xl font-bold mb-3 text-center">
+                ) : device === 'mobile' ? (
+                    /* Mobile: Show Join Button */
+                    <div className="bg-white rounded-2xl p-8 shadow-md mb-8 text-center">
+                        <div className="text-5xl mb-4">📱</div>
+                        <h2 className="text-2xl font-bold mb-3">
+                            Join on Mobile
+                        </h2>
+                        <p className="text-[#B0AEA5] mb-6">
+                            Scan a QR code or enter a room code to join the game.
+                        </p>
+                        <Button href="/join" className="w-full">
                             Join Game
-                        </h2>
-                        <p className="text-[#B0AEA5] mb-6 text-center">
-                            Join an existing game by scanning a QR code or entering a room code.
-                        </p>
-                        <Button href="/games/demo/player" variant="outline" className="w-full">
-                            I'm a Player
                         </Button>
                     </div>
-                </div>
+                ) : (
+                    /* Loading: Detecting device */
+                    <div className="bg-white rounded-2xl p-12 shadow-md mb-8 text-center">
+                        <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full mx-auto mb-4" />
+                        <p className="text-[#B0AEA5]">Detecting device...</p>
+                    </div>
+                )}
 
                 {/* How It Works */}
                 <div className="bg-[#F0EFEA] rounded-2xl p-8">

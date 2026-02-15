@@ -12,9 +12,10 @@ const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
 interface RoomHostProps {
     gameType: string;
     children: (state: { room: RoomState; game: any }) => ReactNode;
+    onGameStart?: (roomState: RoomState) => void;
 }
 
-export default function RoomHost({ gameType, children }: RoomHostProps) {
+export default function RoomHost({ gameType, children, onGameStart }: RoomHostProps) {
     const router = useRouter();
     const [roomCode, setRoomCode] = useState<string>('');
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
@@ -99,8 +100,12 @@ export default function RoomHost({ gameType, children }: RoomHostProps) {
     }, [roomCode, gameType]);
 
     const handleStart = () => {
-        if (socket) {
+        if (socket && roomState) {
             socket.send(JSON.stringify({ type: 'start' }));
+            // Call callback if provided (for redirects)
+            if (onGameStart) {
+                onGameStart(roomState);
+            }
         }
     };
 

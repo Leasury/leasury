@@ -10,11 +10,12 @@ import Button from '@/app/components/Button';
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
 
 interface RoomPlayerProps {
-    gameType: string;
+    gameType: string; // Can be 'unknown' if joining without selecting game
     children: (state: { room: RoomState; game: any }) => ReactNode;
+    onGameStart?: (roomState: RoomState) => void;
 }
 
-export default function RoomPlayer({ gameType, children }: RoomPlayerProps) {
+export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlayerProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const roomFromUrl = searchParams.get('room');
@@ -77,6 +78,13 @@ export default function RoomPlayer({ gameType, children }: RoomPlayerProps) {
             delete (window as any).__partySocket;
         };
     }, [roomCode, playerName]);
+
+    // Detect game start and trigger callback
+    useEffect(() => {
+        if (roomState?.status === 'playing' && onGameStart) {
+            onGameStart(roomState);
+        }
+    }, [roomState?.status, onGameStart, roomState]);
 
     const handleJoinManually = () => {
         if (validateRoomCode(inputCode) && playerName.trim()) {
