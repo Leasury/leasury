@@ -52,7 +52,7 @@ export default function TimelinePage() {
                     </p>
                     <div className="flex gap-4 justify-center">
                         <Button href="/games">Browse Other Games</Button>
-                        <Button href="/demo" variant="outline">
+                        <Button href="/games/demo" variant="outline">
                             Try Demo Instead
                         </Button>
                     </div>

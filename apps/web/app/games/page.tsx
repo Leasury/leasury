@@ -40,7 +40,7 @@ export default function GamesPage() {
                         emoji="🎮"
                         players="2-12"
                         duration="10-20 min"
-                        href="/demo"
+                        href="/games/demo"
                     />
 
                     {/* Coming Soon Games */}
