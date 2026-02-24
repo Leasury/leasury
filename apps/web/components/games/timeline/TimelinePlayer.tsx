@@ -13,21 +13,16 @@ interface TimelinePlayerProps {
         room: any;
         game: TimelineGameState;
     };
+    myPlayerId?: string;
 }
 
-export default function TimelinePlayer({ state }: TimelinePlayerProps) {
+export default function TimelinePlayer({ state, myPlayerId = '' }: TimelinePlayerProps) {
     const { room, game } = state;
-    const [playerId, setPlayerId] = useState('');
     const [showResult, setShowResult] = useState(false);
     const [lastResult, setLastResult] = useState<'correct' | 'incorrect'>('correct');
 
-    useEffect(() => {
-        // Get player ID from room
-        const player = room.players.find((p: any) => !p.isHost);
-        if (player) {
-            setPlayerId(player.id);
-        }
-    }, [room.players]);
+    // Derive playerId: prefer the explicitly passed myPlayerId, fall back to first non-host
+    const playerId = myPlayerId || room.players.find((p: any) => !p.isHost)?.id || '';
 
     // Show result overlay when revealing
     useEffect(() => {

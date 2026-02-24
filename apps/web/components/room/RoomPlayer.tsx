@@ -160,7 +160,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
                             <div className="text-5xl mb-3">⏳</div>
                             <p className="font-semibold">Waiting for host to start...</p>
                             <p className="text-sm text-[#B0AEA5] mt-2">
-                                {roomState.players.length} player{roomState.players.length !== 1 ? 's' : ''} connected
+                                {roomState.players.filter(p => !p.isHost).length} player{roomState.players.filter(p => !p.isHost).length !== 1 ? 's' : ''} connected
                             </p>
                         </div>
 

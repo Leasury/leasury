@@ -193,12 +193,13 @@ export default class Server implements Party.Server {
 
         // Handle next turn - deal new card
         if (msg.type === 'nextTurn') {
-            // Find next player in sequence
-            const currentIndex = this.state.room.players.findIndex(p => p.id === gameState.activePlayerId);
-            const nextIndex = (currentIndex + 1) % this.state.room.players.length;
-            const nextPlayer = this.state.room.players[nextIndex];
+            // Find next player in sequence (non-host players only)
+            const nonHostPlayers = this.state.room.players.filter(p => !p.isHost);
+            const currentIndex = nonHostPlayers.findIndex(p => p.id === gameState.activePlayerId);
+            const nextIndex = (currentIndex + 1) % nonHostPlayers.length;
+            const nextPlayer = nonHostPlayers[nextIndex];
 
-            if (nextPlayer && !nextPlayer.isHost) {
+            if (nextPlayer) {
                 gameState = dealNextEvent(gameState, nextPlayer.id);
             }
         } else {

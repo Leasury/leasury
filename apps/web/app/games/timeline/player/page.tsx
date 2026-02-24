@@ -16,6 +16,7 @@ function TimelinePlayerContent() {
     const [gameState, setGameState] = useState<TimelineGameState | null>(null);
     const [socket, setSocket] = useState<PartySocket | null>(null);
     const [playerName, setPlayerName] = useState('Player');
+    const [myPlayerId, setMyPlayerId] = useState<string>('');
 
     useEffect(() => {
         if (!roomCode) {
@@ -29,6 +30,8 @@ function TimelinePlayerContent() {
         });
 
         conn.addEventListener('open', () => {
+            // Save our own connection ID so we know which player we are
+            setMyPlayerId(conn.id);
             conn.send(JSON.stringify({
                 type: 'join',
                 playerName: playerName
@@ -64,7 +67,7 @@ function TimelinePlayerContent() {
         );
     }
 
-    return <TimelinePlayer state={{ room: roomState, game: gameState }} />;
+    return <TimelinePlayer state={{ room: roomState, game: gameState }} myPlayerId={myPlayerId} />;
 }
 
 export default function TimelinePlayerPage() {
