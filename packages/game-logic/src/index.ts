@@ -9,5 +9,5 @@ export * from './room';
 // Demo Game
 export * from './games/demo';
 
-// Timeline Game
-export * from './games/timeline';
+// The Line Game
+export * from './games/the-line';

@@ -8,13 +8,12 @@ import {
     applyDemoMessage,
     type DemoGameState,
     type DemoGameMessage,
-    // Timeline
-    createInitialTimelineState,
-    applyTimelineMessage,
-    dealNextEvent,
+    // The Line
+    createInitialTheLineState,
+    applyTheLineMessage,
     getNextPlayerId,
-    type TimelineGameState,
-    type TimelineMessage,
+    type TheLineGameState,
+    type TheLineMessage,
 } from '@lesury/game-logic';
 
 /**
@@ -22,7 +21,7 @@ import {
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TimelineGameState;
+    game: DemoGameState | TheLineGameState;
 }
 
 export default class Server implements Party.Server {
@@ -93,8 +92,8 @@ export default class Server implements Party.Server {
                 return;
             }
 
-            if (this.state.room.gameType === 'timeline' && this.isTimelineMessage(msg)) {
-                this.handleTimelineMessage(msg, sender);
+            if (this.state.room.gameType === 'the-line' && this.isTheLineMessage(msg)) {
+                this.handleTheLineMessage(msg, sender);
                 return;
             }
         } catch (e) {
@@ -118,8 +117,23 @@ export default class Server implements Party.Server {
                     console.log(`Initializing game type: ${msg.gameType}`);
 
                     // Initialize appropriate game state
-                    if (msg.gameType === 'timeline') {
-                        this.state.game = createInitialTimelineState();
+                    if (msg.gameType === 'the-line') {
+                        // The Line starts in 'setup' on the host — actual game
+                        // state is created when the host sends start_game.
+                        this.state.game = {
+                            selectedCategory: '',
+                            roundLimit: 5,
+                            roundIndex: 0,
+                            line: [],
+                            deck: [],
+                            playQueue: [],
+                            activePlayerId: '',
+                            activeEvent: null,
+                            cursorIndex: 0,
+                            scores: {},
+                            status: 'setup',
+                            last_action: null,
+                        } satisfies TheLineGameState;
                     } else {
                         this.state.game = createInitialDemoState();
                     }
@@ -134,18 +148,6 @@ export default class Server implements Party.Server {
             case 'start':
                 if (sender.id === this.state.room.hostId) {
                     this.state.room.status = 'playing';
-
-                    // Initialize game based on type
-                    if (this.state.room.gameType === 'timeline') {
-                        // Deal first card to first non-host player
-                        const firstPlayer = this.state.room.players.find(p => !p.isHost);
-                        if (firstPlayer) {
-                            this.state.game = dealNextEvent(
-                                this.state.game as TimelineGameState,
-                                firstPlayer.id
-                            );
-                        }
-                    }
 
                     this.broadcastState();
                 }
@@ -196,25 +198,30 @@ export default class Server implements Party.Server {
         this.broadcastState();
     }
 
-    // Timeline game message handling
-    isTimelineMessage(msg: any): msg is TimelineMessage {
-        return ['startGame', 'moveCard', 'setPosition', 'placeCard', 'nextTurn'].includes(msg.type);
+    // The Line game message handling
+    isTheLineMessage(msg: any): msg is TheLineMessage {
+        return ['start_game', 'move_cursor', 'place_card', 'next_turn'].includes(msg.type);
     }
 
-    handleTimelineMessage(msg: TimelineMessage, sender: Party.Connection) {
-        if (this.state.room.status !== 'playing') return;
+    handleTheLineMessage(msg: TheLineMessage, sender: Party.Connection) {
+        let gameState = this.state.game as TheLineGameState;
 
-        let gameState = this.state.game as TimelineGameState;
-
-        // Handle next turn - deal new card
-        if (msg.type === 'nextTurn') {
-            const nonHostIds = this.state.room.players
+        if (msg.type === 'start_game') {
+            // Create initial state with all non-host player IDs
+            const playerIds = this.state.room.players
                 .filter(p => !p.isHost)
                 .map(p => p.id);
-            const nextPlayerId = getNextPlayerId(nonHostIds, gameState.activePlayerId);
-            gameState = dealNextEvent(gameState, nextPlayerId);
+            gameState = createInitialTheLineState(
+                msg.category,
+                msg.roundLimit,
+                playerIds
+            );
+            this.state.room.status = 'playing';
+        } else if (msg.type === 'next_turn') {
+            // next_turn needs server-side handling for player rotation
+            gameState = applyTheLineMessage(gameState, msg);
         } else {
-            gameState = applyTimelineMessage(gameState, msg);
+            gameState = applyTheLineMessage(gameState, msg);
         }
 
         this.state.game = gameState;
