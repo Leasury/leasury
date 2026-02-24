@@ -1,6 +1,6 @@
 /**
  * Game Logic Package
- * Shared game logic for all Leasury games
+ * Shared game logic for all Lesury games
  */
 
 // Room Management

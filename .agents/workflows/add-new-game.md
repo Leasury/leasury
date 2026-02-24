@@ -1,8 +1,8 @@
 ---
-description: Step-by-step guide for adding a new game to the Leasury platform
+description: Step-by-step guide for adding a new game to the Lesury platform
 ---
 
-> **First:** Read [.agents/AGENTS.md](file:///home/clickout/Projekty/leasury/.agents/AGENTS.md) for project rules before proceeding.
+> **First:** Read [.agents/AGENTS.md](file:///home/clickout/Projekty/lesury/.agents/AGENTS.md) for project rules before proceeding.
 
 # Adding a New Game
 
@@ -46,7 +46,7 @@ Cover at minimum:
 
 Run tests and promote snapshots:
 ```bash
-cd /home/clickout/Projekty/leasury/packages/game-logic && npm test
+cd /home/clickout/Projekty/lesury/packages/game-logic && npm test
 # Then promote:
 for f in src/games/<name>/__tests__/*.received.txt; do cp "$f" "${f/.received.txt/.approved.txt}"; done
 ```
@@ -85,7 +85,7 @@ Send messages via `(window as any).__partySocket.send(JSON.stringify({ type: '..
 ## Step 8: Build and test
 
 ```bash
-cd /home/clickout/Projekty/leasury
+cd /home/clickout/Projekty/lesury
 npm run build   # must pass
 npm run test    # must pass
 ```

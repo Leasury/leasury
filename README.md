@@ -1,116 +1,92 @@
-# README.md - Project Leasury Context & Guidelines
+# Lesury 🦥
 
-## 1. Project Overview
+A web-based multiplayer party game platform. Think Jackbox — one shared screen on a TV, everyone plays from their phone. No app install needed.
 
-**Leasury** is a web-based platform for local multiplayer "digital board games."
+---
 
-- **Core Concept:** "Jackbox-style" architecture.
-- **Hardware:** A shared screen (TV/Laptop) acts as the **Host**. Players' smartphones act as **Controllers**.
-- **Connection:** Players join via QR Code / Room Code. No app installation allowed.
-- **Primary Goal:** Social interaction in the real world. The app is a facilitator, not the center of attention.
+## Games
 
-## 2. Design Philosophies (Strict Adherence)
+| Game | Players | Status |
+|---|---|---|
+| **Timeline** | 2–8 | ✅ Live |
+| **Demo** | Any | ✅ (dev reference) |
 
-All code and UI/UX decisions must respect these pillars:
+### How to play
+1. Open the game on a TV/laptop — this is the **host screen**
+2. Players scan the QR code or enter the room code on their phones
+3. Phones act as controllers — the TV is the source of truth
 
-1.  **Heads-Up Design:** The "Truth" is on the TV. The phone is a dumb controller. Minimize time spent looking at the phone screen.
-2.  **Zero Friction:** No login required to play. No app stores. Instant load via WebSockets.
-3.  **Anti-Dopamine:** No loot boxes, no infinite loops. Games have a distinct start and end.
-4.  **Accessibility:** Mobile UI must be strictly touch-friendly (huge buttons, high contrast).
+---
 
-## 3. Technical Architecture (The Stack)
+## Stack
 
-We use a **Turborepo Monorepo** structure. All agents must respect module boundaries.
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js (App Router) |
+| Realtime server | PartyKit (Cloudflare Workers) |
+| Game logic | Shared TypeScript package (`@lesury/game-logic`) |
+| Styling | Tailwind CSS + Framer Motion |
+| Monorepo | Turborepo |
 
-### Core Technologies
+---
 
-- **Runtime:** Node.js (Dev), Cloudflare Workers / Edge (Prod).
-- **Language:** TypeScript (Strict mode).
-- **Frontend:** Next.js 14+ (App Router).
-- **Game Engine:** `boardgame.io` (State Management & Move Validation).
-- **Realtime Server:** `PartyKit` (Serverless WebSockets, compatible with `boardgame.io`).
-- **Styling:** Tailwind CSS + `shadcn/ui`.
-- **Animation:** Framer Motion (DOM-based animation). **DO NOT use Canvas/Phaser.**
-- **Persistence:** Supabase (Only for match history/user profiles, NOT for realtime game state).
+## Project Structure
 
-## 4. Directory Structure & Responsibilities
+```
+apps/
+  web/          → Next.js app (host + player pages)
+  server/       → PartyKit server (WebSocket state broadcaster)
 
-/leasury
-|-- README.md // This file. Important for context of the project.
-|-- documentation // Folder which contains documentation of the project.
-|-- scripts // Folder which contains scripts for the project.
-├── apps
-│ ├── web // Next.js Application
-│ │ ├── app/host // The TV View (Observer/Board)
-│ │ └── app/play // The Mobile View (Controller)
-│ └── server // PartyKit Server (WebSocket Host)
-│
-├── packages
-│ ├── game-logic // THE SOURCE OF TRUTH
-│ │ ├── games/ // Specific game definitions (Timeline, etc.)
-│ │ ├── types.ts // Shared TS interfaces
-│ │ └── index.ts // Exports
-│ ├── ui // Shared React components (Buttons, Cards)
-│ └── config // Shared TS/Eslint configs
+packages/
+  game-logic/   → All game rules, types, and state transitions
+  config/       → Shared TypeScript & ESLint configs
+```
 
-````
+---
 
-### 🔴 Critical Architectural Rules
+## Development
 
-1. **Isomorphic Logic:** Game logic (`G` state, `moves`, `phases`) MUST live in `packages/game-logic`.
-2. **No Logic in UI:** The Next.js frontend (`apps/web`) should only *render* state and *dispatch* moves. It must not calculate game rules.
-3. **No UI in Logic:** `packages/game-logic` must not import React or UI libraries. It must be pure TypeScript.
-4. **Serverless Constraints:** The `server` runs on Edge. Do not use Node.js specific APIs (`fs`, `child_process`) in shared code.
+```bash
+npm install
+npm run dev     # starts Next.js + PartyKit locally
+```
 
-## 5. Implementation Guidelines
+Player pages open on `localhost:3000`, server on `localhost:1999`.
 
-### A. Game Logic (`packages/game-logic`)
+---
 
-We use `boardgame.io` style definitions.
+## Deployment
 
-* **State (`G`):** Must be a serializable JSON object.
-* **Moves:** Functions that mutate `G`. Use strict typing.
-* **Secret State:** Use `playerView` to strip sensitive data (e.g., other players' cards) before sending to client.
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full guide.
 
-```typescript
-// Example Pattern
-export const MyGame: Game<MyState> = {
-  setup: () => ({ ... }),
-  moves: {
-    myMove: ({ G, ctx }, payload) => { ... }
-  }
-};
+**Short version:**
+- **Frontend (Vercel):** auto-deploys from `main` branch
+- **Server (PartyKit):** `npm run deploy`
 
-````
+Tests run automatically before every deployment.
 
-### B. The Server (`apps/server`)
+---
 
-- Uses `partykit` to host the `boardgame.io` backend.
-- Keep this lightweight. It mostly just imports logic from `packages/game-logic` and passes it to the PartyKit adapter.
+## Design Principles
 
-### C. The Frontend (`apps/web`)
+- **Heads-up design** — the TV is the game. The phone is just a controller.
+- **Zero friction** — no login, no app install, instant join via room code.
+- **Clear start and end** — games have a defined arc, no infinite loops.
 
-- **Host View (`/host`):**
-- Use `Framer Motion` for smooth transitions of cards/avatars.
-- Optimized for 1920x1080 (Landscape).
+---
 
-- **Controller View (`/play`):**
-- Optimized for Portrait mobile.
-- Use `navigator.vibrate` for haptic feedback on buttons.
-- Prevent screen sleep (`use-wake-lock`).
+## For Developers
 
-## 6. Coding Standards
+Agent instructions, workflows, and design specs live in `.agents/`:
 
-- **TypeScript:** No `any`. Define interfaces for all Game States and Props.
-- **Components:** Functional components only.
-- **Naming:**
-- Files: `kebab-case.ts` or `PascalCase.tsx` (components).
-- Variables: `camelCase`.
-
-- **Data Fetching:** Realtime data comes via `boardgame.io` hooks (`useBoardgame`). Static data via Next.js Server Actions.
-
-## 7. Current Project Status (Context)
-
-- **Phase:** Setting up the MVP Architecture.
-- **Current Task:** Scaffolding the Monorepo and implementing the first game ("Timeline") using the shared engine approach.
-- **Creator Persona:** Fullstack Architect. Prefers clean, modular code over "quick hacks."
+```
+.agents/
+  AGENTS.md                     → Rules every AI agent follows
+  design_guide.md               → UI/design system reference
+  timeline_game_guide.md        → Timeline game complete spec
+  workflows/
+    after-code-change.md        → Run after every code change
+    add-new-game.md             → Guide for adding a new game
+  skills/
+    approve-tests/              → Approval test snapshot workflow
+```

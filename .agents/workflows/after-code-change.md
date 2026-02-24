@@ -1,8 +1,8 @@
 ---
-description: Checklist to run after every code change in the Leasury project
+description: Checklist to run after every code change in the Lesury project
 ---
 
-> **First:** Read [.agents/AGENTS.md](file:///home/clickout/Projekty/leasury/.agents/AGENTS.md) for project rules before proceeding.
+> **First:** Read [.agents/AGENTS.md](file:///home/clickout/Projekty/lesury/.agents/AGENTS.md) for project rules before proceeding.
 
 // turbo-all
 
@@ -15,7 +15,7 @@ Run these steps after making **any** code change, in order.
 Run from the monorepo root to check TypeScript compiles cleanly:
 
 ```bash
-cd /home/clickout/Projekty/leasury && npm run build
+cd /home/clickout/Projekty/lesury && npm run build
 ```
 
 If it fails: fix all TypeScript errors before proceeding.
@@ -23,7 +23,7 @@ If it fails: fix all TypeScript errors before proceeding.
 ## Step 2: Run Tests
 
 ```bash
-cd /home/clickout/Projekty/leasury && npm run test
+cd /home/clickout/Projekty/lesury && npm run test
 ```
 
 ### If tests fail:
@@ -41,7 +41,7 @@ cd /home/clickout/Projekty/leasury && npm run test
 
 ### Bulk promoting all received files (first run / large refactor):
 ```bash
-for f in /home/clickout/Projekty/leasury/packages/game-logic/src/**/__tests__/*.received.txt; do
+for f in /home/clickout/Projekty/lesury/packages/game-logic/src/**/__tests__/*.received.txt; do
     cp "$f" "${f/.received.txt/.approved.txt}"
 done
 ```

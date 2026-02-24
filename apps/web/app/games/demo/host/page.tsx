@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePartyRoom } from '@/hooks/usePartyRoom';
 import DemoHost from '@/components/games/demo/DemoHost';
-import type { DemoGameState } from '@leasury/game-logic';
+import type { DemoGameState } from '@lesury/game-logic';
 
 function DemoHostContent() {
     const searchParams = useSearchParams();

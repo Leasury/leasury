@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import PartySocket from 'partysocket';
 import QRCode from 'qrcode';
-import { RoomState, generateRoomCode, generateRoomUrl } from '@leasury/game-logic';
+import { RoomState, generateRoomCode, generateRoomUrl } from '@lesury/game-logic';
 import Button from '@/app/components/Button';
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';

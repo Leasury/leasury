@@ -1,5 +1,5 @@
 {
-    "name": "@leasury/web",
+    "name": "@lesury/web",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -10,8 +10,7 @@
         "clean": "rm -rf .next .turbo"
     },
     "dependencies": {
-        "@leasury/game-logic": "*",
-        "@leasury/ui": "*",
+        "@lesury/game-logic": "*",
         "@types/qrcode": "^1.5.6",
         "framer-motion": "^12.34.0",
         "html5-qrcode": "^2.3.8",
@@ -22,7 +21,7 @@
         "react-dom": "19.2.3"
     },
     "devDependencies": {
-        "@leasury/config": "*",
+        "@lesury/config": "*",
         "@tailwindcss/postcss": "^4",
         "@types/node": "^20",
         "@types/react": "^19",

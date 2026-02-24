@@ -1,7 +1,7 @@
 'use client';
 
-import { TimelineEvent, PlacedEvent } from '@leasury/game-logic';
-import { CATEGORY_STYLES, formatYear, getCategoryIcon, getCategoryColor, getCategoryLabel } from '@leasury/game-logic';
+import { TimelineEvent, PlacedEvent } from '@lesury/game-logic';
+import { CATEGORY_STYLES, formatYear, getCategoryIcon, getCategoryColor, getCategoryLabel } from '@lesury/game-logic';
 
 interface EventCardProps {
     event: TimelineEvent | PlacedEvent;

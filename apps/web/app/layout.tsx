@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: 'Leasury - Board Games Reimagined',
+    title: 'Lesury - Board Games Reimagined',
     description: 'Turn any screen into a game night. Play board games together using your phones as controllers.',
 };
 

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { TimelineGameState } from '@leasury/game-logic';
-import { getCategoryIcon, getCategoryLabel, getCategoryColor } from '@leasury/game-logic';
+import type { TimelineGameState } from '@lesury/game-logic';
+import { getCategoryIcon, getCategoryLabel, getCategoryColor } from '@lesury/game-logic';
 import GameLayout from '@/components/layout/GameLayout';
 import ControlPad from './ControlPad';
 import ResultOverlay from './ResultOverlay';

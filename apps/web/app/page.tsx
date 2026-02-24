@@ -122,15 +122,15 @@ export default function Home() {
                         <Link href="/" className="flex items-center gap-2 text-[#B0AEA5] hover:opacity-80 transition-opacity">
                             <Image
                                 src="/logo.png"
-                                alt="Leasury"
+                                alt="Lesury"
                                 width={24}
                                 height={24}
                                 className="w-6 h-6 rounded-full object-cover"
                             />
-                            <span className="font-semibold">leasury</span>
+                            <span className="font-semibold">lesury</span>
                         </Link>
                         <div className="text-sm text-[#B0AEA5]">
-                            © 2025 Leasury. Board games, reimagined.
+                            © 2025 Lesury. Board games, reimagined.
                         </div>
                     </div>
                 </div>

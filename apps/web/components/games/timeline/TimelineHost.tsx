@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { TimelineGameState, PlacedEvent } from '@leasury/game-logic';
-import { formatYear, getCategoryIcon } from '@leasury/game-logic';
-import type { RoomState } from '@leasury/game-logic';
+import type { TimelineGameState, PlacedEvent } from '@lesury/game-logic';
+import { formatYear, getCategoryIcon } from '@lesury/game-logic';
+import type { RoomState } from '@lesury/game-logic';
 import GameLayout from '@/components/layout/GameLayout';
 import EventCard from './EventCard';
 

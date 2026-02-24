@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePartyRoom } from '@/hooks/usePartyRoom';
 import TimelinePlayer from '@/components/games/timeline/TimelinePlayer';
-import type { TimelineGameState } from '@leasury/game-logic';
+import type { TimelineGameState } from '@lesury/game-logic';
 
 function TimelinePlayerContent() {
     const searchParams = useSearchParams();

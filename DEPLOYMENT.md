@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers deploying the Leasury platform to production.
+This guide covers deploying the Lesury platform to production.
 
 ## Architecture
 
@@ -27,7 +27,7 @@ npx partykit login
 npx partykit deploy
 ```
 
-This will output your PartyKit URL, e.g., `leasury-username.partykit.dev`
+This will output your PartyKit URL, e.g., `lesury-username.partykit.dev`
 
 **Important:** Save this URL - you'll need it for Vercel.
 
@@ -41,10 +41,10 @@ This will output your PartyKit URL, e.g., `leasury-username.partykit.dev`
 2. Connect your GitHub repository
 3. **Root Directory:** `apps/web`
 4. **Framework Preset:** Next.js
-5. **Build Command:** `cd ../.. && npx turbo run test --filter=@leasury/game-logic && npx turbo run build --filter=@leasury/web`
+5. **Build Command:** `cd ../.. && npx turbo run test --filter=@lesury/game-logic && npx turbo run build --filter=@lesury/web`
 6. Add environment variable:
    - **Name:** `NEXT_PUBLIC_PARTYKIT_HOST`
-   - **Value:** `leasury-username.partykit.dev` (from step 1)
+   - **Value:** `lesury-username.partykit.dev` (from step 1)
 7. Click "Deploy"
 
 #### Option B: Vercel CLI
@@ -114,7 +114,7 @@ jobs:
 
 | Variable | Where | Value |
 |----------|-------|-------|
-| `NEXT_PUBLIC_PARTYKIT_HOST` | Vercel | Your PartyKit URL (e.g., `leasury-username.partykit.dev`) |
+| `NEXT_PUBLIC_PARTYKIT_HOST` | Vercel | Your PartyKit URL (e.g., `lesury-username.partykit.dev`) |
 
 ### Local Development
 

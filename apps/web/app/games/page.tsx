@@ -91,7 +91,7 @@ export default function GamesPage() {
                         We're always looking to expand our library. Let us know
                         what games you'd love to play!
                     </p>
-                    <Button href="mailto:hello@leasury.com">
+                    <Button href="mailto:hello@lesury.com">
                         Suggest a Game
                     </Button>
                 </div>
@@ -103,10 +103,10 @@ export default function GamesPage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-[#B0AEA5]">
                             <span className="text-xl">⊙</span>
-                            <span className="font-semibold">leasury</span>
+                            <span className="font-semibold">lesury</span>
                         </div>
                         <div className="text-sm text-[#B0AEA5]">
-                            © 2025 Leasury. Board games, reimagined.
+                            © 2025 Lesury. Board games, reimagined.
                         </div>
                     </div>
                 </div>

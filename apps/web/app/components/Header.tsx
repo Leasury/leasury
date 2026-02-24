@@ -9,13 +9,13 @@ export default function Header() {
                 <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <Image
                         src="/logo.png"
-                        alt="Leasury"
+                        alt="Lesury"
                         width={40}
                         height={40}
                         className="w-10 h-10 rounded-full object-cover"
                     />
                     <span className="text-2xl font-extrabold text-[#141413]">
-                        leasury
+                        lesury
                     </span>
                 </Link>
 

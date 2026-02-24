@@ -1,6 +1,6 @@
 'use client';
 
-import { RoomState, DemoGameState } from '@leasury/game-logic';
+import { RoomState, DemoGameState } from '@lesury/game-logic';
 import PartySocket from 'partysocket';
 import GameLayout from '@/components/layout/GameLayout';
 

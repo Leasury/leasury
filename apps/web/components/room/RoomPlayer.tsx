@@ -3,7 +3,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import PartySocket from 'partysocket';
-import { RoomState, validateRoomCode } from '@leasury/game-logic';
+import { RoomState, validateRoomCode } from '@lesury/game-logic';
 import Button from '@/app/components/Button';
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';

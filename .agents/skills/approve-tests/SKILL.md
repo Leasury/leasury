@@ -13,7 +13,7 @@ Use this skill when:
 ## Step 1: Run tests and capture the diff
 
 ```bash
-cd /home/clickout/Projekty/leasury/packages/game-logic && npm test 2>&1
+cd /home/clickout/Projekty/lesury/packages/game-logic && npm test 2>&1
 ```
 
 Read the output carefully. The `nodediff` reporter prints a colored diff for each mismatch.
@@ -31,7 +31,7 @@ Read the output carefully. The `nodediff` reporter prints a colored diff for eac
 Run the promotion script:
 
 ```bash
-/home/clickout/Projekty/leasury/.agents/skills/approve-tests/scripts/approve.sh
+/home/clickout/Projekty/lesury/.agents/skills/approve-tests/scripts/approve.sh
 ```
 
 Or promote specific tests only (safer for targeted changes):
@@ -45,7 +45,7 @@ cp packages/game-logic/src/games/timeline/__tests__/<testname>.received.txt \
 ## Step 4: Verify tests now pass
 
 ```bash
-cd /home/clickout/Projekty/leasury/packages/game-logic && npm test 2>&1 | tail -8
+cd /home/clickout/Projekty/lesury/packages/game-logic && npm test 2>&1 | tail -8
 ```
 
 All tests must show ✓ before finishing.

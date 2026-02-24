@@ -15,7 +15,7 @@ import {
     getNextPlayerId,
     type TimelineGameState,
     type TimelineMessage,
-} from '@leasury/game-logic';
+} from '@lesury/game-logic';
 
 /**
  * Combined state for room + game

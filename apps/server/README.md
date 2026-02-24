@@ -1,4 +1,4 @@
-## 🎈 leasury
+## 🎈 lesury
 
 Welcome to the party, pal!
 

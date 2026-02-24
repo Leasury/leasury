@@ -1,8 +1,8 @@
 ---
-description: Leasury project rules and practices for AI agents. Read this before making any changes.
+description: Lesury project rules and practices for AI agents. Read this before making any changes.
 ---
 
-# Leasury — Agent Instructions
+# Lesury — Agent Instructions
 
 This file is read automatically at the start of every agent session. Follow all rules here without needing to be told.
 
@@ -10,7 +10,7 @@ This file is read automatically at the start of every agent session. Follow all 
 
 ## Project Overview
 
-Leasury is a **multiplayer party game platform** built as a monorepo:
+Lesury is a **multiplayer party game platform** built as a monorepo:
 
 | Package | Purpose |
 |---|---|
@@ -50,7 +50,7 @@ packages/game-logic/src/games/<gameName>/index.ts   ← re-export everything
 - **After every code change**, run `npm run build` from the monorepo root and fix any TypeScript errors before finishing.
 
 ```bash
-cd /home/clickout/Projekty/leasury
+cd /home/clickout/Projekty/lesury
 npm run build
 ```
 
@@ -64,7 +64,7 @@ All game logic in `packages/game-logic` must be covered by approval tests.
 
 **Run tests after every change to game-logic:**
 ```bash
-cd /home/clickout/Projekty/leasury
+cd /home/clickout/Projekty/lesury
 npm run test
 ```
 
@@ -124,7 +124,7 @@ for f in packages/game-logic/src/**/__tests__/*.received.txt; do cp "$f" "${f/.r
 
 ## Architecture: Adding a New Game
 
-See `/home/clickout/Projekty/leasury/.agents/workflows/add-new-game.md` for the full step-by-step.
+See `/home/clickout/Projekty/lesury/.agents/workflows/add-new-game.md` for the full step-by-step.
 
 ---
 

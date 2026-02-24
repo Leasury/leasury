@@ -22,7 +22,7 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Build dependencies
-        run: npx turbo run build --filter=@leasury/game-logic
+        run: npx turbo run build --filter=@lesury/game-logic
       - name: Deploy to PartyKit
         working-directory: apps/server
         run: |

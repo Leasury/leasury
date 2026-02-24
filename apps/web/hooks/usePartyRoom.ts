@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PartySocket from 'partysocket';
-import type { RoomState } from '@leasury/game-logic';
+import type { RoomState } from '@lesury/game-logic';
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
 
