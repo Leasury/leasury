@@ -196,6 +196,19 @@ export function placeCard(state: TimelineGameState): TimelineGameState {
 }
 
 /**
+ * Get the ID of the next player in turn order.
+ * @param playerIds - Ordered list of non-host player IDs
+ * @param currentPlayerId - The player who just finished their turn
+ * @returns The ID of the next player
+ */
+export function getNextPlayerId(playerIds: string[], currentPlayerId: string): string {
+    if (playerIds.length === 0) return currentPlayerId;
+    const currentIndex = playerIds.indexOf(currentPlayerId);
+    const nextIndex = (currentIndex + 1) % playerIds.length;
+    return playerIds[nextIndex];
+}
+
+/**
  * Apply Timeline message to state
  */
 export function applyTimelineMessage(state: TimelineGameState, message: TimelineMessage): TimelineGameState {

@@ -4,19 +4,23 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TimelineGameState, PlacedEvent } from '@leasury/game-logic';
 import { formatYear, getCategoryIcon } from '@leasury/game-logic';
+import type { RoomState } from '@leasury/game-logic';
 import GameLayout from '@/components/layout/GameLayout';
 import EventCard from './EventCard';
 
 interface TimelineHostProps {
     state: {
-        room: any;
+        room: RoomState;
         game: TimelineGameState;
     };
 }
 
 export default function TimelineHost({ state }: TimelineHostProps) {
-    const { game } = state;
+    const { room, game } = state;
     const timelineRef = useRef<HTMLDivElement>(null);
+
+    const playerName = (id: string) =>
+        room.players.find((p: { id: string; name: string }) => p.id === id)?.name ?? id;
 
     // Auto-scroll to keep active slot centered
     useEffect(() => {
@@ -121,11 +125,11 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                     <div
                                         key={playerId}
                                         className={`px-4 py-2 rounded-full font-bold transition-all ${playerId === game.activePlayerId
-                                                ? 'bg-[#D97757] text-white shadow-md'
-                                                : 'bg-white text-[#141413]'
+                                            ? 'bg-[#D97757] text-white shadow-md'
+                                            : 'bg-white text-[#141413]'
                                             }`}
                                     >
-                                        {playerId}: {score}
+                                        {playerName(playerId)}: {score}
                                     </div>
                                 ))
                             )}
@@ -259,7 +263,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                         <div className="text-right">
                             <p className="text-sm text-[#B0AEA5]">Current Turn</p>
                             <p className="font-bold text-[#D97757] text-lg">
-                                {game.activePlayerId || 'Waiting...'}
+                                {game.activePlayerId ? playerName(game.activePlayerId) : 'Waiting...'}
                             </p>
                         </div>
                     </div>

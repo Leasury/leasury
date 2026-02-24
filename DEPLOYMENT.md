@@ -41,7 +41,7 @@ This will output your PartyKit URL, e.g., `leasury-username.partykit.dev`
 2. Connect your GitHub repository
 3. **Root Directory:** `apps/web`
 4. **Framework Preset:** Next.js
-5. **Build Command:** `cd ../.. && npx turbo run build --filter=@leasury/web`
+5. **Build Command:** `cd ../.. && npx turbo run test --filter=@leasury/game-logic && npx turbo run build --filter=@leasury/web`
 6. Add environment variable:
    - **Name:** `NEXT_PUBLIC_PARTYKIT_HOST`
    - **Value:** `leasury-username.partykit.dev` (from step 1)
@@ -96,6 +96,7 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
+      - run: npm run test
       - run: npm run deploy
         env:
           PARTYKIT_TOKEN: \${{ secrets.PARTYKIT_TOKEN }}
@@ -146,9 +147,10 @@ No environment variables needed - defaults to `localhost:1999`.
 
 1. Make changes locally
 2. Test with `npm run dev`
-3. Commit and push to `main`
-4. **Vercel:** Auto-deploys Next.js
-5. **PartyKit:** Run `npm run deploy` (or wait for GitHub Actions)
+3. Run `npm run test` — fix any failures before pushing
+4. Commit and push to `main`
+5. **Vercel:** Auto-deploys Next.js (tests run as part of build command)
+6. **PartyKit:** Run `npm run deploy` (tests run automatically via turbo) or wait for GitHub Actions
 
 ---
 

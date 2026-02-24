@@ -1,73 +1,23 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import PartySocket from 'partysocket';
+import { usePartyRoom } from '@/hooks/usePartyRoom';
 import TimelinePlayer from '@/components/games/timeline/TimelinePlayer';
-import type { RoomState, TimelineGameState } from '@leasury/game-logic';
-
-const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
+import type { TimelineGameState } from '@leasury/game-logic';
 
 function TimelinePlayerContent() {
     const searchParams = useSearchParams();
     const roomCode = searchParams.get('room');
 
-    const [roomState, setRoomState] = useState<RoomState | null>(null);
-    const [gameState, setGameState] = useState<TimelineGameState | null>(null);
-    const [socket, setSocket] = useState<PartySocket | null>(null);
-    const [playerName, setPlayerName] = useState('Player');
-    const [myPlayerId, setMyPlayerId] = useState<string>('');
+    const { roomState, gameState, myPlayerId } = usePartyRoom<TimelineGameState>(roomCode, {
+        sessionKeyPrefix: 'lobby',
+    });
 
-    useEffect(() => {
-        if (!roomCode) {
-            window.location.href = '/join';
-            return;
-        }
-
-        const conn = new PartySocket({
-            host: PARTYKIT_HOST,
-            room: roomCode.toLowerCase(),
-        });
-
-        conn.addEventListener('open', () => {
-            // Restore the lobby socket ID saved by RoomPlayer before the redirect.
-            // This lets the server register us under the same canonical player ID
-            // that game.activePlayerId was set to during the lobby phase.
-            const sessionKey = `lobbyPlayerId_${roomCode!.toUpperCase()}`;
-            const sessionId = sessionStorage.getItem(sessionKey) ?? undefined;
-            const savedName = sessionStorage.getItem(`lobbyPlayerName_${roomCode!.toUpperCase()}`) || 'Player';
-
-            // Use the sessionId as our local player identity
-            setMyPlayerId(sessionId || conn.id);
-            setPlayerName(savedName);
-
-            conn.send(JSON.stringify({
-                type: 'join',
-                playerName: savedName,
-                sessionId,
-            }));
-        });
-
-        conn.addEventListener('message', (evt) => {
-            try {
-                const data = JSON.parse(evt.data as string);
-                if (data.type === 'sync') {
-                    setRoomState(data.room);
-                    setGameState(data.game);
-                }
-            } catch (e) {
-                console.error('Failed to parse message:', e);
-            }
-        });
-
-        setSocket(conn);
-        (window as any).__partySocket = conn;
-
-        return () => {
-            conn.close();
-            delete (window as any).__partySocket;
-        };
-    }, [roomCode, playerName]);
+    if (!roomCode) {
+        if (typeof window !== 'undefined') window.location.href = '/join';
+        return null;
+    }
 
     if (!roomState || !gameState) {
         return (

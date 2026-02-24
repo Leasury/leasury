@@ -12,6 +12,7 @@ import {
     createInitialTimelineState,
     applyTimelineMessage,
     dealNextEvent,
+    getNextPlayerId,
     type TimelineGameState,
     type TimelineMessage,
 } from '@leasury/game-logic';
@@ -207,15 +208,11 @@ export default class Server implements Party.Server {
 
         // Handle next turn - deal new card
         if (msg.type === 'nextTurn') {
-            // Find next player in sequence (non-host players only)
-            const nonHostPlayers = this.state.room.players.filter(p => !p.isHost);
-            const currentIndex = nonHostPlayers.findIndex(p => p.id === gameState.activePlayerId);
-            const nextIndex = (currentIndex + 1) % nonHostPlayers.length;
-            const nextPlayer = nonHostPlayers[nextIndex];
-
-            if (nextPlayer) {
-                gameState = dealNextEvent(gameState, nextPlayer.id);
-            }
+            const nonHostIds = this.state.room.players
+                .filter(p => !p.isHost)
+                .map(p => p.id);
+            const nextPlayerId = getNextPlayerId(nonHostIds, gameState.activePlayerId);
+            gameState = dealNextEvent(gameState, nextPlayerId);
         } else {
             gameState = applyTimelineMessage(gameState, msg);
         }

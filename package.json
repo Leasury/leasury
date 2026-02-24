@@ -11,6 +11,7 @@
         "lint": "turbo run lint",
         "clean": "turbo run clean",
         "deploy": "turbo run deploy",
+        "test": "turbo run test",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },

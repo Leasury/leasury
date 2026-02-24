@@ -36,3 +36,7 @@ yarn-error.log*
 
 # Misc
 *.tsbuildinfo
+
+# Approval tests — received files are never committed (only .approved.txt are)
+*.received.txt
+.approval_tests_temp/

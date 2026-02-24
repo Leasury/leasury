@@ -1,52 +1,23 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import PartySocket from 'partysocket';
+import { usePartyRoom } from '@/hooks/usePartyRoom';
 import TimelineHost from '@/components/games/timeline/TimelineHost';
-import type { RoomState, TimelineGameState } from '@leasury/game-logic';
-
-const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
+import type { TimelineGameState } from '@leasury/game-logic';
 
 function TimelineHostContent() {
     const searchParams = useSearchParams();
     const roomCode = searchParams.get('room');
 
-    const [roomState, setRoomState] = useState<RoomState | null>(null);
-    const [gameState, setGameState] = useState<TimelineGameState | null>(null);
-    const [socket, setSocket] = useState<PartySocket | null>(null);
+    const { roomState, gameState } = usePartyRoom<TimelineGameState>(roomCode, {
+        asHost: true,
+    });
 
-    useEffect(() => {
-        if (!roomCode) {
-            window.location.href = '/games/timeline';
-            return;
-        }
-
-        const conn = new PartySocket({
-            host: PARTYKIT_HOST,
-            room: roomCode.toLowerCase(),
-        });
-
-        conn.addEventListener('message', (evt) => {
-            try {
-                const data = JSON.parse(evt.data as string);
-                if (data.type === 'sync') {
-                    setRoomState(data.room);
-                    setGameState(data.game);
-                }
-            } catch (e) {
-                console.error('Failed to parse message:', e);
-            }
-        });
-
-        setSocket(conn);
-        (window as any).__partySocket = conn;
-
-        return () => {
-            conn.close();
-            delete (window as any).__partySocket;
-        };
-    }, [roomCode]);
+    if (!roomCode) {
+        if (typeof window !== 'undefined') window.location.href = '/games/timeline';
+        return null;
+    }
 
     if (!roomState || !gameState) {
         return (
