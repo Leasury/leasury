@@ -208,7 +208,12 @@ export default function TimelinePlayer({ state, myPlayerId = '' }: TimelinePlaye
             <ResultOverlay
                 show={showResult}
                 isCorrect={lastResult === 'correct'}
-                onComplete={() => setShowResult(false)}
+                onComplete={() => {
+                    setShowResult(false);
+                    // Active player advances the turn after the reveal animation
+                    const s = (window as any).__partySocket;
+                    if (s) s.send(JSON.stringify({ type: 'nextTurn' }));
+                }}
             />
         </div>
     );

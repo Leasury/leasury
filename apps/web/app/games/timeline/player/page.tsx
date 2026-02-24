@@ -35,13 +35,15 @@ function TimelinePlayerContent() {
             // that game.activePlayerId was set to during the lobby phase.
             const sessionKey = `lobbyPlayerId_${roomCode!.toUpperCase()}`;
             const sessionId = sessionStorage.getItem(sessionKey) ?? undefined;
+            const savedName = sessionStorage.getItem(`lobbyPlayerName_${roomCode!.toUpperCase()}`) || 'Player';
 
             // Use the sessionId as our local player identity
             setMyPlayerId(sessionId || conn.id);
+            setPlayerName(savedName);
 
             conn.send(JSON.stringify({
                 type: 'join',
-                playerName: playerName,
+                playerName: savedName,
                 sessionId,
             }));
         });

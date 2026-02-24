@@ -85,6 +85,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
             // can use the same player identity after the redirect creates a new socket.
             if (myPlayerId && roomState.roomCode) {
                 sessionStorage.setItem(`lobbyPlayerId_${roomState.roomCode}`, myPlayerId);
+                sessionStorage.setItem(`lobbyPlayerName_${roomState.roomCode}`, playerName);
             }
             onGameStart(roomState);
         }
