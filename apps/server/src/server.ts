@@ -27,6 +27,8 @@ interface ServerState {
 export default class Server implements Party.Server {
     state: ServerState;
     gameInitialized: boolean = false;
+    // Maps current conn.id → canonical player id (sessionId from lobby)
+    connToPlayer: Map<string, string> = new Map();
 
     constructor(readonly room: Party.Room) {
         // Initialize with room code from room.id
@@ -59,9 +61,13 @@ export default class Server implements Party.Server {
     onClose(conn: Party.Connection) {
         console.log(`Disconnected: id=${conn.id}`);
 
+        // Use the canonical player id (may differ from conn.id after a rejoin)
+        const playerId = this.connToPlayer.get(conn.id) || conn.id;
+        this.connToPlayer.delete(conn.id);
+
         // Remove player from list
         this.state.room.players = this.state.room.players.filter(
-            (p) => p.id !== conn.id
+            (p) => p.id !== playerId
         );
 
         // Broadcast updated state
@@ -118,7 +124,8 @@ export default class Server implements Party.Server {
                     }
                 }
 
-                this.addPlayer(sender.id, msg.playerName);
+                // Use sessionId if provided (player rejoining after redirect keeps same canonical ID)
+                this.addPlayer(sender.id, msg.playerName, msg.sessionId);
                 break;
             case 'leave':
                 this.removePlayer(sender.id);
@@ -145,16 +152,22 @@ export default class Server implements Party.Server {
         }
     }
 
-    addPlayer(id: string, name: string) {
-        // Don't add if already exists
-        if (this.state.room.players.some((p) => p.id === id)) {
+    addPlayer(connId: string, name: string, sessionId?: string) {
+        // The canonical player id: prefer sessionId (from lobby before redirect)
+        const playerId = sessionId || connId;
+
+        // Track which conn maps to which player (for onClose cleanup)
+        this.connToPlayer.set(connId, playerId);
+
+        // Don't add if already exists (e.g. reconnect race)
+        if (this.state.room.players.some((p) => p.id === playerId)) {
             return;
         }
 
         const player: Player = {
-            id,
+            id: playerId,
             name,
-            isHost: id === this.state.room.hostId,
+            isHost: playerId === this.state.room.hostId,
             joinedAt: Date.now(),
         };
 
@@ -162,9 +175,10 @@ export default class Server implements Party.Server {
         this.broadcastState();
     }
 
-    removePlayer(id: string) {
+    removePlayer(connId: string) {
+        const playerId = this.connToPlayer.get(connId) || connId;
         this.state.room.players = this.state.room.players.filter(
-            (p) => p.id !== id
+            (p) => p.id !== playerId
         );
         this.broadcastState();
     }

@@ -8,7 +8,9 @@ function JoinContent() {
         <RoomPlayer
             gameType="unknown"
             onGameStart={(roomState) => {
-                // Redirect to actual game player view
+                // Redirect to actual game player view.
+                // RoomPlayer saves the lobby socket ID to sessionStorage before this fires,
+                // so the game page can keep the same player identity.
                 window.location.href = `/games/${roomState.gameType}/player?room=${roomState.roomCode}`;
             }}
         >

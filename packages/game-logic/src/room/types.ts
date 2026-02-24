@@ -25,7 +25,7 @@ export interface RoomState {
  * Base room messages
  */
 export type RoomMessage =
-    | { type: 'join'; playerName: string; gameType?: string }
+    | { type: 'join'; playerName: string; gameType?: string; sessionId?: string }
     | { type: 'leave' }
     | { type: 'start' } // Host signals game start
     | { type: 'sync'; state: RoomState };

@@ -106,7 +106,7 @@ export default function TimelinePlayer({ state, myPlayerId = '' }: TimelinePlaye
                                 ⏳
                             </motion.div>
                             <p className="text-2xl font-bold mb-2 text-[#141413]">
-                                {game.activePlayerId || 'Another player'} is playing
+                                {room.players.find((p: any) => p.id === game.activePlayerId)?.name || 'Another player'} is playing
                             </p>
                             <p className="text-lg text-[#B0AEA5]">Watch the TV!</p>
 

@@ -10,7 +10,7 @@ const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
 
 interface RoomPlayerProps {
     gameType: string; // Can be 'unknown' if joining without selecting game
-    children: (state: { room: RoomState; game: any }) => ReactNode;
+    children: (state: { room: RoomState; game: any; myPlayerId: string }) => ReactNode;
     onGameStart?: (roomState: RoomState) => void;
 }
 
@@ -26,6 +26,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
     const [roomState, setRoomState] = useState<RoomState | null>(null);
     const [gameState, setGameState] = useState<any>(null);
     const [socket, setSocket] = useState<PartySocket | null>(null);
+    const [myPlayerId, setMyPlayerId] = useState('');
     const [connectionStatus, setConnectionStatus] = useState<string>('');
 
     // Connect to room when roomCode is set
@@ -40,6 +41,8 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
         conn.addEventListener('open', () => {
             console.log('Connected to room!');
             setConnectionStatus('connected');
+            // Capture our own socket ID — this is what the server uses as player.id
+            setMyPlayerId(conn.id);
 
             // Join as player
             conn.send(JSON.stringify({
@@ -78,9 +81,14 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
     // Detect game start and trigger callback
     useEffect(() => {
         if (roomState?.status === 'playing' && onGameStart) {
+            // Save our lobby socket ID to sessionStorage so the game page
+            // can use the same player identity after the redirect creates a new socket.
+            if (myPlayerId && roomState.roomCode) {
+                sessionStorage.setItem(`lobbyPlayerId_${roomState.roomCode}`, myPlayerId);
+            }
             onGameStart(roomState);
         }
-    }, [roomState?.status, onGameStart, roomState]);
+    }, [roomState?.status, onGameStart, roomState, myPlayerId]);
 
     const handleJoinManually = () => {
         if (validateRoomCode(inputCode) && playerName.trim()) {
@@ -94,7 +102,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
 
     // If game is playing, show game component
     if (roomState?.status === 'playing' && gameState) {
-        return <>{children({ room: roomState, game: gameState })}</>;
+        return <>{children({ room: roomState, game: gameState, myPlayerId })}</>;
     }
 
     // Input/Scan mode

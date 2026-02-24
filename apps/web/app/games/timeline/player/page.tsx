@@ -30,11 +30,19 @@ function TimelinePlayerContent() {
         });
 
         conn.addEventListener('open', () => {
-            // Save our own connection ID so we know which player we are
-            setMyPlayerId(conn.id);
+            // Restore the lobby socket ID saved by RoomPlayer before the redirect.
+            // This lets the server register us under the same canonical player ID
+            // that game.activePlayerId was set to during the lobby phase.
+            const sessionKey = `lobbyPlayerId_${roomCode!.toUpperCase()}`;
+            const sessionId = sessionStorage.getItem(sessionKey) ?? undefined;
+
+            // Use the sessionId as our local player identity
+            setMyPlayerId(sessionId || conn.id);
+
             conn.send(JSON.stringify({
                 type: 'join',
-                playerName: playerName
+                playerName: playerName,
+                sessionId,
             }));
         });
 
