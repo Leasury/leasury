@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TheLineGameState } from '@lesury/game-logic';
 import type { RoomState } from '@lesury/game-logic';
@@ -241,6 +242,23 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                     <span className="inline-block text-xs font-bold uppercase px-3 py-1 rounded-full bg-[#D97757]/10 text-[#D97757] mb-4">
                         {game.selectedCategory}
                     </span>
+
+                    {/* Event Image */}
+                    {game.activeEvent.imageUrl && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="mb-4"
+                        >
+                            <Image
+                                src={game.activeEvent.imageUrl}
+                                alt={game.activeEvent.title}
+                                width={120}
+                                height={120}
+                                className="object-contain mx-auto"
+                            />
+                        </motion.div>
+                    )}
 
                     {/* Event Title */}
                     <h2 className="text-3xl font-extrabold mb-4 text-[#141413]">

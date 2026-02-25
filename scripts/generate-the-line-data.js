@@ -3,6 +3,18 @@ const path = require('path');
 
 const csvPath = path.join(__dirname, '..', 'packages/game-logic/src/games/the-line/data/events.csv');
 const outPath = path.join(__dirname, '..', 'packages/game-logic/src/games/the-line/data.ts');
+const imagesDir = path.join(__dirname, '..', 'apps/web/public/games/the-line/cards');
+
+// Scan for existing card images
+const existingImages = new Set();
+if (fs.existsSync(imagesDir)) {
+    fs.readdirSync(imagesDir).forEach(file => {
+        if (file.endsWith('.png')) {
+            existingImages.add(file.replace('.png', ''));
+        }
+    });
+}
+console.log(`Found ${existingImages.size} card images: ${[...existingImages].join(', ')}`);
 
 const csv = fs.readFileSync(csvPath, 'utf8');
 const lines = csv.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
@@ -52,7 +64,10 @@ import type { TheLineEvent } from "./types";
 export const allEvents: TheLineEvent[] = [
 `;
 
+let imagesCount = 0;
 for (const e of events) {
+    const hasImage = existingImages.has(e.id);
+    if (hasImage) imagesCount++;
     ts += `    {\n`;
     ts += `        id: ${JSON.stringify(e.id)},\n`;
     ts += `        title: ${JSON.stringify(e.title)},\n`;
@@ -61,6 +76,9 @@ for (const e of events) {
     ts += `        display_value: ${JSON.stringify(e.display_value)},\n`;
     ts += `        unit: ${JSON.stringify(e.unit)},\n`;
     ts += `        sorting_value: ${e.sorting_value},\n`;
+    if (hasImage) {
+        ts += `        imageUrl: "/games/the-line/cards/${e.id}.png",\n`;
+    }
     ts += `    },\n`;
 }
 
@@ -82,4 +100,4 @@ export function getEventsByCategory(category: string): TheLineEvent[] {
 `;
 
 fs.writeFileSync(outPath, ts);
-console.log('Generated data.ts with ' + events.length + ' events');
+console.log(`Generated data.ts with ${events.length} events (${imagesCount} with images)`);

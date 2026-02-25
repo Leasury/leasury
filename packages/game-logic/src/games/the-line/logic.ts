@@ -12,7 +12,7 @@ import type {
     PlacedTheLineEvent,
     LastAction,
 } from './types';
-import { getEventsByCategory } from './data';
+import { getEventsByCategory, getEventsWithImages } from './data';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -55,7 +55,9 @@ export function createInitialTheLineState(
     roundLimit: number,
     playerIds: string[]
 ): TheLineGameState {
-    const categoryEvents = getEventsByCategory(category);
+    // Use only events with images; fall back to all category events if none have images
+    const eventsWithImages = getEventsWithImages(category);
+    const categoryEvents = eventsWithImages.length > 0 ? eventsWithImages : getEventsByCategory(category);
     const shuffled = shuffle(categoryEvents);
 
     // Seed the line with one card

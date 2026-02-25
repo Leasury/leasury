@@ -46,8 +46,8 @@ export default function Home() {
                                 /* PC: Show Browse Games */
                                 <Button href="/games">Explore Games</Button>
                             )}
-                            <Button href="/games/timeline" variant="secondary">
-                                Try Timeline Free
+                            <Button href="/games/the-line" variant="secondary">
+                                Try The Line Free
                             </Button>
                         </motion.div>
                     </motion.div>
@@ -106,12 +106,12 @@ export default function Home() {
             {/* Featured Game */}
             <section className="max-w-7xl mx-auto px-6 py-16">
                 <GameCard
-                    title="Timeline"
-                    description="Place historical events in chronological order. Test your knowledge of history with friends!"
-                    emoji="⏳"
+                    title="The Line"
+                    description="Sort events by weight, speed, population and more. Can you find the right spot on the line?"
+                    emoji="📏"
                     players="2-8"
                     duration="15-25 min"
-                    href="/games/timeline"
+                    href="/games/the-line"
                 />
             </section>
 

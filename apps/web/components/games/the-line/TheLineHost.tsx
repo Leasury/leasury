@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TheLineGameState, PlacedTheLineEvent } from '@lesury/game-logic';
 import { getCategories } from '@lesury/game-logic';
@@ -68,8 +69,8 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                                     key={cat}
                                     onClick={() => setSelectedCategory(cat)}
                                     className={`px-4 py-3 rounded-xl font-bold text-sm transition-all ${selectedCategory === cat
-                                            ? 'bg-[#D97757] text-white shadow-md'
-                                            : 'bg-white text-[#141413] hover:bg-[#E8E6DC]'
+                                        ? 'bg-[#D97757] text-white shadow-md'
+                                        : 'bg-white text-[#141413] hover:bg-[#E8E6DC]'
                                         }`}
                                 >
                                     {cat}
@@ -215,8 +216,8 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                             <div
                                 key={pid}
                                 className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${pid === game.activePlayerId
-                                        ? 'bg-[#D97757] text-white shadow-md scale-105'
-                                        : 'bg-[#3A3A3A] text-[#B0AEA5]'
+                                    ? 'bg-[#D97757] text-white shadow-md scale-105'
+                                    : 'bg-[#3A3A3A] text-[#B0AEA5]'
                                     }`}
                             >
                                 {playerName(pid)}: <span className="tabular-nums">{game.scores[pid] ?? 0}</span>
@@ -259,8 +260,11 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                                                     initial={{ width: 8, opacity: 0 }}
                                                     animate={{ width: 144, opacity: 1 }}
                                                     exit={{ width: 8, opacity: 0 }}
-                                                    className="h-48 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex items-center justify-center flex-shrink-0"
+                                                    className="h-48 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center justify-center flex-shrink-0 overflow-hidden"
                                                 >
+                                                    {game.activeEvent.imageUrl && (
+                                                        <Image src={game.activeEvent.imageUrl} alt={game.activeEvent.title} width={80} height={80} className="object-contain mb-1" />
+                                                    )}
                                                     <div className="text-center px-3">
                                                         <p className="text-white font-bold text-sm leading-tight">
                                                             {game.activeEvent.title}
@@ -278,16 +282,21 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                                             <motion.div
                                                 layout
                                                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                                className={`w-36 h-48 rounded-2xl p-3 flex flex-col justify-between flex-shrink-0 ${isRevealing && event.id === lastAction?.eventId
-                                                        ? event.wasCorrect
-                                                            ? 'bg-green-500/20 border-2 border-green-400'
-                                                            : 'bg-red-500/20 border-2 border-red-400'
-                                                        : 'bg-[#F0EFEA] border border-[#E8E6DC]'
+                                                className={`w-36 h-48 rounded-2xl p-3 flex flex-col justify-between flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
+                                                    ? event.wasCorrect
+                                                        ? 'bg-green-500/20 border-2 border-green-400'
+                                                        : 'bg-red-500/20 border-2 border-red-400'
+                                                    : 'bg-[#F0EFEA] border border-[#E8E6DC]'
                                                     }`}
                                             >
                                                 <p className="text-[#141413] font-bold text-xs leading-tight">
                                                     {event.title}
                                                 </p>
+                                                {event.imageUrl && (
+                                                    <div className="flex justify-center my-1">
+                                                        <Image src={event.imageUrl} alt={event.title} width={64} height={64} className="object-contain" />
+                                                    </div>
+                                                )}
                                                 <div className="text-center">
                                                     <p className="text-[#D97757] font-bold text-lg tabular-nums">
                                                         {event.display_value}
@@ -314,8 +323,11 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                                                 initial={{ width: 8, opacity: 0 }}
                                                 animate={{ width: 144, opacity: 1 }}
                                                 exit={{ width: 8, opacity: 0 }}
-                                                className="h-48 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex items-center justify-center flex-shrink-0"
+                                                className="h-48 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center justify-center flex-shrink-0 overflow-hidden"
                                             >
+                                                {game.activeEvent.imageUrl && (
+                                                    <Image src={game.activeEvent.imageUrl} alt={game.activeEvent.title} width={80} height={80} className="object-contain mb-1" />
+                                                )}
                                                 <div className="text-center px-3">
                                                     <p className="text-white font-bold text-sm leading-tight">
                                                         {game.activeEvent.title}
@@ -378,9 +390,14 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                     <div className="flex items-center gap-4">
                         {game.activeEvent && game.status === 'playing' && (
                             <>
-                                <div className="bg-[#D97757]/20 rounded-xl px-4 py-3">
-                                    <p className="text-[#D97757] text-xs font-bold uppercase">Active Card</p>
-                                    <p className="text-white font-bold text-lg">{game.activeEvent.title}</p>
+                                <div className="bg-[#D97757]/20 rounded-xl px-4 py-3 flex items-center gap-3">
+                                    {game.activeEvent.imageUrl && (
+                                        <Image src={game.activeEvent.imageUrl} alt={game.activeEvent.title} width={40} height={40} className="object-contain" />
+                                    )}
+                                    <div>
+                                        <p className="text-[#D97757] text-xs font-bold uppercase">Active Card</p>
+                                        <p className="text-white font-bold text-lg">{game.activeEvent.title}</p>
+                                    </div>
                                 </div>
                             </>
                         )}

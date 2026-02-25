@@ -15,6 +15,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "1.00E+00",
         unit: "yoctogram",
         sorting_value: 9.1e-31,
+        imageUrl: "/games/the-line/cards/W01.png",
     },
     {
         id: "W02",
@@ -24,6 +25,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "1.00E+00",
         unit: "femtogram",
         sorting_value: 1e-19,
+        imageUrl: "/games/the-line/cards/W02.png",
     },
     {
         id: "W03",
@@ -33,6 +35,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "6.00E+00",
         unit: "nanograms",
         sorting_value: 6e-12,
+        imageUrl: "/games/the-line/cards/W03.png",
     },
     {
         id: "W04",
@@ -42,6 +45,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "50",
         unit: "micrograms",
         sorting_value: 0.00005,
+        imageUrl: "/games/the-line/cards/W04.png",
     },
     {
         id: "W05",
@@ -51,6 +55,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "200",
         unit: "milligrams",
         sorting_value: 0.0002,
+        imageUrl: "/games/the-line/cards/W05.png",
     },
     {
         id: "W06",
@@ -60,6 +65,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "3",
         unit: "milligrams",
         sorting_value: 0.0000025,
+        imageUrl: "/games/the-line/cards/W06.png",
     },
     {
         id: "W07",
@@ -69,6 +75,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "3",
         unit: "grams",
         sorting_value: 0.0025,
+        imageUrl: "/games/the-line/cards/W07.png",
     },
     {
         id: "W08",
@@ -78,6 +85,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "2",
         unit: "grams",
         sorting_value: 0.002,
+        imageUrl: "/games/the-line/cards/W08.png",
     },
     {
         id: "W09",
@@ -87,6 +95,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "23",
         unit: "grams",
         sorting_value: 0.023,
+        imageUrl: "/games/the-line/cards/W09.png",
     },
     {
         id: "W10",
@@ -96,6 +105,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "58",
         unit: "grams",
         sorting_value: 0.058,
+        imageUrl: "/games/the-line/cards/W10.png",
     },
     {
         id: "W11",
@@ -105,6 +115,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "200",
         unit: "grams",
         sorting_value: 0.2,
+        imageUrl: "/games/the-line/cards/W11.png",
     },
     {
         id: "W12",
@@ -114,6 +125,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "300",
         unit: "grams",
         sorting_value: 0.3,
+        imageUrl: "/games/the-line/cards/W12.png",
     },
     {
         id: "W13",
@@ -123,6 +135,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "620",
         unit: "grams",
         sorting_value: 0.62,
+        imageUrl: "/games/the-line/cards/W13.png",
     },
     {
         id: "W14",
@@ -132,6 +145,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "1.4",
         unit: "kg",
         sorting_value: 1.4,
+        imageUrl: "/games/the-line/cards/W14.png",
     },
     {
         id: "W15",
@@ -141,6 +155,7 @@ export const allEvents: TheLineEvent[] = [
         display_value: "2",
         unit: "kg",
         sorting_value: 2,
+        imageUrl: "/games/the-line/cards/W15.png",
     },
     {
         id: "W16",
@@ -4521,4 +4536,11 @@ export function getCategories(): string[] {
  */
 export function getEventsByCategory(category: string): TheLineEvent[] {
     return allEvents.filter((e) => e.sorting_category === category);
+}
+
+/**
+ * Get events that have an associated image, optionally filtered by category
+ */
+export function getEventsWithImages(category?: string): TheLineEvent[] {
+    return allEvents.filter((e) => e.imageUrl && (!category || e.sorting_category === category));
 }

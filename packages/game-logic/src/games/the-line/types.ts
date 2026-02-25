@@ -14,6 +14,7 @@ export interface TheLineEvent {
     display_value: string;   // Human-readable value e.g. "1.00E+00", "120"
     unit: string;            // Unit label e.g. "yoctogram", "km/h"
     sorting_value: number;   // Numeric value used for ordering
+    imageUrl?: string;       // Optional path to card image (e.g. "/games/the-line/cards/W01.png")
 }
 
 /**
