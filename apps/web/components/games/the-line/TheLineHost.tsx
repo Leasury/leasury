@@ -15,20 +15,29 @@ interface TheLineHostProps {
 }
 
 export default function TheLineHost({ state }: TheLineHostProps) {
-    const { room, game } = state;
+    const { room, game: rawGame } = state;
     const timelineRef = useRef<HTMLDivElement>(null);
     const [selectedCategory, setSelectedCategory] = useState('Weight');
     const [selectedRounds, setSelectedRounds] = useState(5);
     const categories = getCategories();
 
-    // Guard: if game state hasn't loaded properly yet, show loading
-    if (!game || !Array.isArray(game.line) || !Array.isArray(game.playQueue)) {
+    // If game state hasn't arrived at all, show loading
+    if (!rawGame) {
         return (
             <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
                 <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-white rounded-full" />
             </div>
         );
     }
+
+    // Normalize: ensure all TheLineGameState properties exist with safe defaults
+    const game = {
+        ...rawGame,
+        line: Array.isArray(rawGame.line) ? rawGame.line : [],
+        playQueue: Array.isArray(rawGame.playQueue) ? rawGame.playQueue : [],
+        scores: rawGame.scores || {},
+        status: rawGame.status || 'setup',
+    } as TheLineGameState;
 
     const playerName = (id: string) =>
         room.players.find((p: { id: string; name: string }) => p.id === id)?.name ?? id;

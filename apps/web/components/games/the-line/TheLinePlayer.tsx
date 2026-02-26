@@ -15,18 +15,26 @@ interface TheLinePlayerProps {
 }
 
 export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerProps) {
-    const { room, game } = state;
+    const { room, game: rawGame } = state;
     const [showResult, setShowResult] = useState(false);
     const [lastResult, setLastResult] = useState<'success' | 'fail'>('success');
 
-    // Guard: if game state hasn't loaded properly yet, show loading
-    if (!game || !Array.isArray(game.line)) {
+    // If game state hasn't arrived at all, show loading
+    if (!rawGame) {
         return (
             <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
                 <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full" />
             </div>
         );
     }
+
+    // Normalize: ensure all TheLineGameState properties exist with safe defaults
+    const game = {
+        ...rawGame,
+        line: Array.isArray(rawGame.line) ? rawGame.line : [],
+        scores: rawGame.scores || {},
+        status: rawGame.status || 'setup',
+    } as TheLineGameState;
 
     // Derive playerId: prefer the explicitly passed myPlayerId, fall back to first non-host
     const playerId = myPlayerId || room.players.find((p: any) => !p.isHost)?.id || '';
