@@ -57,12 +57,8 @@ export function usePartyRoom<TGame>(
             setConnectionStatus('connected');
 
             if (asHost) {
-                // Send join as host with gameType so server knows which game to initialize
-                conn.send(JSON.stringify({
-                    type: 'join',
-                    playerName: 'Host',
-                    ...(gameType ? { gameType } : {}),
-                }));
+                // Host just listens — the RoomHost lobby already sent the join.
+                // This connection is used to send game commands (start_game, etc.)
                 setMyPlayerId(conn.id);
             } else {
                 // Resolve identity: prefer saved sessionId from lobby redirect
