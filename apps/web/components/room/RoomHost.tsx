@@ -228,7 +228,7 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
                                         key={player.id}
                                         className="flex items-center gap-2 bg-white rounded-lg px-3 py-2"
                                     >
-                                        <span className="text-xl">👤</span>
+                                        <span className="text-xl">{player.avatar || '👤'}</span>
                                         <span className="font-medium">{player.name}</span>
                                     </li>
                                 ))}

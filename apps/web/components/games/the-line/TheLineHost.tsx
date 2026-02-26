@@ -33,6 +33,9 @@ export default function TheLineHost({ state }: TheLineHostProps) {
     const playerName = (id: string) =>
         room.players.find((p: { id: string; name: string }) => p.id === id)?.name ?? id;
 
+    const playerAvatar = (id: string) =>
+        room.players.find((p: any) => p.id === id)?.avatar || '👤';
+
     const socket = typeof window !== 'undefined' ? (window as any).__partySocket : null;
 
     // Auto-scroll to keep active slot centered
@@ -116,9 +119,9 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                             {nonHostPlayers.map((p: any) => (
                                 <span
                                     key={p.id}
-                                    className="bg-white px-3 py-1 rounded-full text-sm font-bold text-[#141413]"
+                                    className="bg-white px-3 py-1 rounded-full text-sm font-bold text-[#141413] flex items-center gap-1"
                                 >
-                                    {p.name}
+                                    <span>{p.avatar || '👤'}</span> {p.name}
                                 </span>
                             ))}
                             {nonHostPlayers.length === 0 && (
@@ -229,7 +232,7 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                                     : 'bg-[#3A3A3A] text-[#B0AEA5]'
                                     }`}
                             >
-                                {playerName(pid)}: <span className="tabular-nums">{game.scores[pid] ?? 0}</span>
+                                {playerAvatar(pid)} {playerName(pid)}: <span className="tabular-nums">{game.scores[pid] ?? 0}</span>
                             </div>
                         ))}
                     </div>

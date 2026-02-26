@@ -12,6 +12,7 @@ function TheLineHostContent() {
 
     const { roomState, gameState } = usePartyRoom<TheLineGameState>(roomCode, {
         asHost: true,
+        gameType: 'the-line',
     });
 
     if (!roomCode) {

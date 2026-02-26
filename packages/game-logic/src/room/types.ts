@@ -8,6 +8,7 @@ export interface Player {
     name: string;
     isHost: boolean;
     joinedAt: number;
+    avatar: string; // Emoji avatar for visual identification
 }
 
 /**

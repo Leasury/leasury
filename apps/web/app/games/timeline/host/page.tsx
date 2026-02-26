@@ -12,6 +12,7 @@ function TimelineHostContent() {
 
     const { roomState, gameState } = usePartyRoom<TimelineGameState>(roomCode, {
         asHost: true,
+        gameType: 'timeline',
     });
 
     if (!roomCode) {

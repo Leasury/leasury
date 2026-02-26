@@ -9,6 +9,8 @@ const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || 'localhost:1999';
 export interface UsePartyRoomOptions {
     /** If true, joins as a host (no playerName sent, no sessionId). */
     asHost?: boolean;
+    /** Game type to send with the host join message. */
+    gameType?: string;
     /** Player name sent with the join message (required for players). */
     playerName?: string;
     /**
@@ -35,7 +37,7 @@ export function usePartyRoom<TGame>(
     roomCode: string | null,
     options: UsePartyRoomOptions = {}
 ): UsePartyRoomResult<TGame> {
-    const { asHost = false, playerName, sessionKeyPrefix } = options;
+    const { asHost = false, gameType, playerName, sessionKeyPrefix } = options;
 
     const [roomState, setRoomState] = useState<RoomState | null>(null);
     const [gameState, setGameState] = useState<TGame | null>(null);
@@ -55,7 +57,12 @@ export function usePartyRoom<TGame>(
             setConnectionStatus('connected');
 
             if (asHost) {
-                // Host just listens; the RoomHost component sends join separately
+                // Send join as host with gameType so server knows which game to initialize
+                conn.send(JSON.stringify({
+                    type: 'join',
+                    playerName: 'Host',
+                    ...(gameType ? { gameType } : {}),
+                }));
                 setMyPlayerId(conn.id);
             } else {
                 // Resolve identity: prefer saved sessionId from lobby redirect

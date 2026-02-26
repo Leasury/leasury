@@ -121,8 +121,9 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
     // ─── Waiting for turn ─────────────────────────────────────────────────────
 
     if (!isMyTurn) {
-        const activePlayerName =
-            room.players.find((p: any) => p.id === game.activePlayerId)?.name || 'Another player';
+        const activePlayer = room.players.find((p: any) => p.id === game.activePlayerId);
+        const activePlayerName = activePlayer?.name || 'Another player';
+        const activePlayerAvatar = activePlayer?.avatar || '⏳';
 
         return (
             <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
@@ -137,7 +138,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                             transition={{ duration: 2, repeat: Infinity }}
                             className="text-6xl mb-6"
                         >
-                            ⏳
+                            {activePlayerAvatar}
                         </motion.div>
                         <p className="text-2xl font-bold mb-2 text-[#141413]">
                             {activePlayerName} is playing

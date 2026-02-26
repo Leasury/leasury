@@ -15,6 +15,12 @@ import {
     type TheLineMessage,
 } from '@lesury/game-logic';
 
+// Pool of distinct emoji avatars for players
+const AVATAR_POOL = [
+    '🦊', '🐸', '🦉', '🐙', '🦋', '🐺', '🦁', '🐧',
+    '🐼', '🦄', '🐝', '🐳', '🦜', '🐨', '🦚', '🐯',
+];
+
 /**
  * Combined state for room + game
  */
@@ -166,11 +172,16 @@ export default class Server implements Party.Server {
             return;
         }
 
+        // Pick an avatar not yet taken
+        const usedAvatars = new Set(this.state.room.players.map(p => p.avatar));
+        const avatar = AVATAR_POOL.find(a => !usedAvatars.has(a)) || '👤';
+
         const player: Player = {
             id: playerId,
             name,
             isHost: playerId === this.state.room.hostId,
             joinedAt: Date.now(),
+            avatar,
         };
 
         this.state.room.players.push(player);
