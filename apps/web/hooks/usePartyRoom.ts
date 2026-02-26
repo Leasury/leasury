@@ -57,8 +57,15 @@ export function usePartyRoom<TGame>(
             setConnectionStatus('connected');
 
             if (asHost) {
-                // Host just listens — the RoomHost lobby already sent the join.
-                // This connection is used to send game commands (start_game, etc.)
+                // The host page must send a join with gameType.
+                // When all connections drop during lobby→game redirect,
+                // the PartyKit room resets to gameType='demo'. Without this,
+                // start_game messages are silently dropped.
+                conn.send(JSON.stringify({
+                    type: 'join',
+                    playerName: 'Host',
+                    ...(gameType ? { gameType } : {}),
+                }));
                 setMyPlayerId(conn.id);
             } else {
                 // Resolve identity: prefer saved sessionId from lobby redirect
