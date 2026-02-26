@@ -22,22 +22,14 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
     const [selectedRounds, setSelectedRounds] = useState(5);
     const categories = getCategories();
 
-    // If game state hasn't arrived at all, show loading
-    if (!rawGame) {
-        return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-white rounded-full" />
-            </div>
-        );
-    }
-
     // Normalize: ensure all TheLineGameState properties exist with safe defaults
+    // (rawGame may be null on first render, or a partial DemoGameState before join is processed)
     const game = {
-        ...rawGame,
-        line: Array.isArray(rawGame.line) ? rawGame.line : [],
-        playQueue: Array.isArray(rawGame.playQueue) ? rawGame.playQueue : [],
-        scores: rawGame.scores || {},
-        status: rawGame.status || 'setup',
+        ...(rawGame || {}),
+        line: Array.isArray((rawGame as any)?.line) ? (rawGame as any).line : [],
+        playQueue: Array.isArray((rawGame as any)?.playQueue) ? (rawGame as any).playQueue : [],
+        scores: (rawGame as any)?.scores || {},
+        status: (rawGame as any)?.status || 'setup',
     } as TheLineGameState;
 
     const playerName = (id: string) =>
@@ -46,8 +38,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
     const playerAvatar = (id: string) =>
         room.players.find((p: any) => p.id === id)?.avatar || '👤';
 
-    const socket = propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null);
-
+    // ALL hooks must be declared before any conditional returns (Rules of Hooks)
     // Auto-scroll to keep active slot centered
     useEffect(() => {
         if (game.status === 'playing' && timelineRef.current) {
@@ -65,10 +56,15 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
         }
     }, [game.cursorIndex, game.status]);
 
+    // Helper: get the live socket at call time to avoid stale closures
+    const getSocket = () =>
+        propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null);
+
     // ─── Setup Screen ─────────────────────────────────────────────────────────
 
     if (game.status === 'setup') {
-        const nonHostPlayers = room.players.filter((p: any) => !p.isHost);
+        // filter out any player named 'Host' or flagged isHost
+        const nonHostPlayers = room.players.filter((p: any) => !p.isHost && p.name !== 'Host');
 
         return (
             <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
@@ -151,16 +147,15 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                     {/* Start Button */}
                     <button
                         onClick={() => {
-                            if (!socket || nonHostPlayers.length === 0) return;
-                            socket.send(JSON.stringify({
+                            const s = getSocket();
+                            if (!s) return;
+                            s.send(JSON.stringify({
                                 type: 'start_game',
                                 category: selectedCategory,
                                 roundLimit: selectedRounds,
-                                playerIds: nonHostPlayers.map((p: any) => p.id),
                             }));
                         }}
-                        disabled={nonHostPlayers.length === 0}
-                        className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors"
                     >
                         Start Game
                     </button>

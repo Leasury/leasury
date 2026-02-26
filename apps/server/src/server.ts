@@ -114,17 +114,15 @@ export default class Server implements Party.Server {
     handleRoomMessage(msg: RoomMessage, sender: Party.Connection) {
         switch (msg.type) {
             case 'join':
-                // If this is the first join (host) and game provided, initialize
                 if (msg.gameType && !this.gameInitialized) {
+                    // First host join: initialize the game type and state
                     this.state.room.gameType = msg.gameType;
+                    this.state.room.hostId = sender.id;
                     this.gameInitialized = true;
 
                     console.log(`Initializing game type: ${msg.gameType}`);
 
-                    // Initialize appropriate game state
                     if (msg.gameType === 'the-line') {
-                        // The Line starts in 'setup' on the host — actual game
-                        // state is created when the host sends start_game.
                         this.state.game = {
                             selectedCategory: '',
                             roundLimit: 5,
@@ -142,6 +140,11 @@ export default class Server implements Party.Server {
                     } else {
                         this.state.game = createInitialDemoState();
                     }
+                } else if (msg.gameType && msg.playerName === 'Host') {
+                    // Host reconnecting (e.g. after redirect) — update hostId to new connection
+                    // so start_game and other host actions work correctly
+                    this.state.room.hostId = sender.id;
+                    console.log(`Host reconnected, updated hostId to ${sender.id}`);
                 }
 
                 // Use sessionId if provided (player rejoining after redirect keeps same canonical ID)

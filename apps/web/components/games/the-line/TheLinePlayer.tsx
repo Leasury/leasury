@@ -19,26 +19,19 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
     const [showResult, setShowResult] = useState(false);
     const [lastResult, setLastResult] = useState<'success' | 'fail'>('success');
 
-    // If game state hasn't arrived at all, show loading
-    if (!rawGame) {
-        return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full" />
-            </div>
-        );
-    }
-
     // Normalize: ensure all TheLineGameState properties exist with safe defaults
+    // (rawGame may be null/partial before join is processed)
     const game = {
-        ...rawGame,
-        line: Array.isArray(rawGame.line) ? rawGame.line : [],
-        scores: rawGame.scores || {},
-        status: rawGame.status || 'setup',
+        ...(rawGame || {}),
+        line: Array.isArray((rawGame as any)?.line) ? (rawGame as any).line : [],
+        scores: (rawGame as any)?.scores || {},
+        status: (rawGame as any)?.status || 'setup',
     } as TheLineGameState;
 
     // Derive playerId: prefer the explicitly passed myPlayerId, fall back to first non-host
     const playerId = myPlayerId || room.players.find((p: any) => !p.isHost)?.id || '';
 
+    // ALL hooks must be before any conditional returns (Rules of Hooks)
     // Show result overlay when revealing
     useEffect(() => {
         if (game.status === 'revealing' && game.last_action) {
@@ -50,21 +43,24 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
     }, [game.status, game.last_action]);
 
     const isMyTurn = game.activePlayerId === playerId;
-    const socket = typeof window !== 'undefined' ? (window as any).__partySocket : null;
+    const getSocket = () => typeof window !== 'undefined' ? (window as any).__partySocket : null;
 
     const handleMove = (direction: 'left' | 'right') => {
-        if (!socket || !isMyTurn) return;
-        socket.send(JSON.stringify({ type: 'move_cursor', direction }));
+        const s = getSocket();
+        if (!s || !isMyTurn) return;
+        s.send(JSON.stringify({ type: 'move_cursor', direction }));
     };
 
     const handlePlace = () => {
-        if (!socket || !isMyTurn) return;
-        socket.send(JSON.stringify({ type: 'place_card' }));
+        const s = getSocket();
+        if (!s || !isMyTurn) return;
+        s.send(JSON.stringify({ type: 'place_card' }));
     };
 
     const handleNextTurn = () => {
-        if (!socket) return;
-        socket.send(JSON.stringify({ type: 'next_turn' }));
+        const s = getSocket();
+        if (!s) return;
+        s.send(JSON.stringify({ type: 'next_turn' }));
     };
 
     // ─── Setup / Waiting ──────────────────────────────────────────────────────
