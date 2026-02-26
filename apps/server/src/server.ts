@@ -11,7 +11,6 @@ import {
     // The Line
     createInitialTheLineState,
     applyTheLineMessage,
-    getNextPlayerId,
     type TheLineGameState,
     type TheLineMessage,
 } from '@lesury/game-logic';

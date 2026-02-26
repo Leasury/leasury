@@ -212,7 +212,7 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     {/* Player scores */}
                     <div className="flex gap-2">
-                        {game.playQueue.map((pid) => (
+                        {(game.playQueue || []).map((pid) => (
                             <div
                                 key={pid}
                                 className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${pid === game.activePlayerId
