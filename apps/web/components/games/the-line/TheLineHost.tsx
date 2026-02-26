@@ -397,6 +397,11 @@ export default function TheLineHost({ state }: TheLineHostProps) {
                                     <div>
                                         <p className="text-[#D97757] text-xs font-bold uppercase">Active Card</p>
                                         <p className="text-white font-bold text-lg">{game.activeEvent.title}</p>
+                                        {game.activeEvent.funfact && (
+                                            <p className="text-[#B0AEA5] text-xs italic mt-1 max-w-sm leading-relaxed">
+                                                {game.activeEvent.funfact}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </>

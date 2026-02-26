@@ -11,3 +11,6 @@ export * from './games/demo';
 
 // The Line Game
 export * from './games/the-line';
+
+// Timeline Game
+export * from './games/timeline';

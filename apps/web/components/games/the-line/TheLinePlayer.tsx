@@ -261,9 +261,16 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                     )}
 
                     {/* Event Title */}
-                    <h2 className="text-3xl font-extrabold mb-4 text-[#141413]">
+                    <h2 className="text-3xl font-extrabold mb-2 text-[#141413]">
                         {game.activeEvent.title}
                     </h2>
+
+                    {/* Fun Fact */}
+                    {game.activeEvent.funfact && (
+                        <p className="text-sm text-[#B0AEA5] italic mb-4 leading-relaxed max-w-xs mx-auto">
+                            {game.activeEvent.funfact}
+                        </p>
+                    )}
 
                     {/* Instructions */}
                     <p className="text-lg text-[#B0AEA5]">

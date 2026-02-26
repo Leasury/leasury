@@ -34,7 +34,7 @@ function shuffle<T>(arr: T[]): T[] {
 /**
  * Get the ID of the next player in turn order.
  */
-export function getNextPlayerId(playerIds: string[], currentPlayerId: string): string {
+export function getTheLineNextPlayerId(playerIds: string[], currentPlayerId: string): string {
     if (playerIds.length === 0) return currentPlayerId;
     const currentIndex = playerIds.indexOf(currentPlayerId);
     const nextIndex = (currentIndex + 1) % playerIds.length;
@@ -106,7 +106,7 @@ export function createInitialTheLineState(
  * cursorIndex represents a gap: 0 = before line[0], 1 = between line[0] and
  * line[1], ..., N = after line[N-1].
  */
-export function isPlacementCorrect(
+export function isTheLinePlacementCorrect(
     card: TheLineEvent,
     cursorIndex: number,
     line: PlacedTheLineEvent[]
@@ -124,7 +124,7 @@ export function isPlacementCorrect(
 /**
  * Find the correct index to insert a card into the sorted line.
  */
-export function findCorrectPosition(
+export function findTheLineCorrectPosition(
     card: TheLineEvent,
     line: PlacedTheLineEvent[]
 ): number {
@@ -160,15 +160,15 @@ export function moveCursor(
 // Place card
 // ---------------------------------------------------------------------------
 
-export function placeCard(state: TheLineGameState): TheLineGameState {
+export function placeTheLineCard(state: TheLineGameState): TheLineGameState {
     if (state.status !== 'playing' || !state.activeEvent) return state;
 
     const card = state.activeEvent;
-    const correct = isPlacementCorrect(card, state.cursorIndex, state.line);
+    const correct = isTheLinePlacementCorrect(card, state.cursorIndex, state.line);
 
     const insertIndex = correct
         ? state.cursorIndex
-        : findCorrectPosition(card, state.line);
+        : findTheLineCorrectPosition(card, state.line);
 
     const placedEvent: PlacedTheLineEvent = {
         ...card,
@@ -215,7 +215,7 @@ export function placeCard(state: TheLineGameState): TheLineGameState {
 export function nextTurn(state: TheLineGameState): TheLineGameState {
     if (state.status !== 'revealing') return state;
 
-    const nextPlayer = getNextPlayerId(state.playQueue, state.activePlayerId);
+    const nextPlayer = getTheLineNextPlayerId(state.playQueue, state.activePlayerId);
 
     // Determine if we've gone back to the first player (= round complete)
     const currentIdx = state.playQueue.indexOf(state.activePlayerId);
@@ -279,7 +279,7 @@ export function applyTheLineMessage(
             return moveCursor(state, message.direction);
 
         case 'place_card':
-            return placeCard(state);
+            return placeTheLineCard(state);
 
         case 'next_turn':
             return nextTurn(state);

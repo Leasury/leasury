@@ -13,7 +13,7 @@ const CSV_PATH = path.resolve(__dirname, '../packages/game-logic/src/games/the-l
 const OUTPUT_DIR = path.resolve(__dirname, '../apps/web/public/games/the-line/cards');
 
 async function generateImage(title: string, id: string, hf: HfInference) {
-    const prompt = `Minimalistic hand-drawn line art of a ${title}, single continuous black line feeling. The background behind the line art features a few loose, abstract pastel color blob shadings (soft pink, light blue, mint green) that do not strictly stay within the lines, similar to a watercolor or digital brush wash behind the drawing. Clean white background overall. Monoline vector style icon.`;
+    const prompt = `Clean hand-drawn vector line art of a ${title}. Crisp black outlines with simple descriptive inner details. The background behind the line art features 2-3 loose, abstract, non-geometric freeform pastel wash shapes (fluid swooshes, organic watercolor blobs; mixed colors) that bleed slightly outside the lines. Minimalist flat design on a pure white background.`;
 
     try {
         const blob = await hf.textToImage({

@@ -27,6 +27,7 @@
     },
     "packageManager": "npm@10.2.0",
     "dependencies": {
-        "@huggingface/inference": "^4.13.13"
+        "@huggingface/inference": "^4.13.13",
+        "sharp": "^0.34.5"
     }
 }

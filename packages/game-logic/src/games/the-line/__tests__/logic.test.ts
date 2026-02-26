@@ -5,11 +5,11 @@ import {
     createInitialTheLineState,
     applyTheLineMessage,
     moveCursor,
-    placeCard,
+    placeTheLineCard,
     nextTurn,
-    isPlacementCorrect,
-    findCorrectPosition,
-    getNextPlayerId,
+    isTheLinePlacementCorrect,
+    findTheLineCorrectPosition,
+    getTheLineNextPlayerId,
 } from '../logic';
 import type { TheLineGameState, PlacedTheLineEvent } from '../types';
 
@@ -117,60 +117,60 @@ describe('moveCursor', () => {
     });
 });
 
-// ─── isPlacementCorrect ──────────────────────────────────────────────────────
+// ─── isTheLinePlacementCorrect ──────────────────────────────────────────────────────
 
-describe('isPlacementCorrect', () => {
+describe('isTheLinePlacementCorrect', () => {
     const line = makePlacedEvents([10, 50, 100]);
 
     it('accepts correct placement between events', () => {
         const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '30', unit: 'kg', sorting_value: 30 };
-        approve('placement_correct_between', { result: isPlacementCorrect(event, 1, line) });
+        approve('placement_correct_between', { result: isTheLinePlacementCorrect(event, 1, line) });
     });
 
     it('rejects incorrect placement', () => {
         const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '30', unit: 'kg', sorting_value: 30 };
-        approve('placement_incorrect', { result: isPlacementCorrect(event, 0, line) });
+        approve('placement_incorrect', { result: isTheLinePlacementCorrect(event, 0, line) });
     });
 
     it('accepts placement at start for smallest value', () => {
         const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '5', unit: 'kg', sorting_value: 5 };
-        approve('placement_correct_start', { result: isPlacementCorrect(event, 0, line) });
+        approve('placement_correct_start', { result: isTheLinePlacementCorrect(event, 0, line) });
     });
 
     it('accepts placement at end for largest value', () => {
         const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '200', unit: 'kg', sorting_value: 200 };
-        approve('placement_correct_end', { result: isPlacementCorrect(event, line.length, line) });
+        approve('placement_correct_end', { result: isTheLinePlacementCorrect(event, line.length, line) });
     });
 });
 
-// ─── findCorrectPosition ────────────────────────────────────────────────────
+// ─── findTheLineCorrectPosition ────────────────────────────────────────────────────
 
-describe('findCorrectPosition', () => {
+describe('findTheLineCorrectPosition', () => {
     const line = makePlacedEvents([10, 50, 100]);
 
     it('finds position at start', () => {
         const event = { id: 'T', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '5', unit: 'kg', sorting_value: 5 };
-        approve('find_position_start', { position: findCorrectPosition(event, line) });
+        approve('find_position_start', { position: findTheLineCorrectPosition(event, line) });
     });
 
     it('finds position in middle', () => {
         const event = { id: 'T', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '30', unit: 'kg', sorting_value: 30 };
-        approve('find_position_middle', { position: findCorrectPosition(event, line) });
+        approve('find_position_middle', { position: findTheLineCorrectPosition(event, line) });
     });
 
     it('finds position at end', () => {
         const event = { id: 'T', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '200', unit: 'kg', sorting_value: 200 };
-        approve('find_position_end', { position: findCorrectPosition(event, line) });
+        approve('find_position_end', { position: findTheLineCorrectPosition(event, line) });
     });
 });
 
-// ─── placeCard ───────────────────────────────────────────────────────────────
+// ─── placeTheLineCard ───────────────────────────────────────────────────────────────
 
-describe('placeCard', () => {
+describe('placeTheLineCard', () => {
     it('correct placement — awards point, sets revealing', () => {
         // sorting_value 30 between 10 and 50 at index 1 = correct
         const state = stateWith({ cursorIndex: 1 });
-        const next = placeCard(state);
+        const next = placeTheLineCard(state);
         approve('place_card_correct', {
             status: next.status,
             score: next.scores['player1'],
@@ -183,7 +183,7 @@ describe('placeCard', () => {
     it('incorrect placement — no point, card at correct position', () => {
         // sorting_value 30 at index 0 (before 10) = wrong
         const state = stateWith({ cursorIndex: 0 });
-        const next = placeCard(state);
+        const next = placeTheLineCard(state);
         const insertedIdx = next.line.findIndex(e => e.id === 'A1');
         approve('place_card_incorrect', {
             status: next.status,
@@ -197,7 +197,7 @@ describe('placeCard', () => {
 
     it('does nothing when not in playing status', () => {
         const state = stateWith({ status: 'revealing' });
-        const next = placeCard(state);
+        const next = placeTheLineCard(state);
         approve('place_card_wrong_status', { status: next.status, lineLength: next.line.length });
     });
 });
@@ -245,23 +245,23 @@ describe('nextTurn', () => {
     });
 });
 
-// ─── getNextPlayerId ─────────────────────────────────────────────────────────
+// ─── getTheLineNextPlayerId ─────────────────────────────────────────────────────────
 
-describe('getNextPlayerId', () => {
+describe('getTheLineNextPlayerId', () => {
     it('returns next player in sequence', () => {
-        approve('next_player_mid', { next: getNextPlayerId(PLAYERS, 'player1') });
+        approve('next_player_mid', { next: getTheLineNextPlayerId(PLAYERS, 'player1') });
     });
 
     it('wraps around to first after last', () => {
-        approve('next_player_wrap', { next: getNextPlayerId(PLAYERS, 'player3') });
+        approve('next_player_wrap', { next: getTheLineNextPlayerId(PLAYERS, 'player3') });
     });
 
     it('handles single player', () => {
-        approve('next_player_single', { next: getNextPlayerId(['only'], 'only') });
+        approve('next_player_single', { next: getTheLineNextPlayerId(['only'], 'only') });
     });
 
     it('handles unknown player (returns index 0)', () => {
-        approve('next_player_unknown', { next: getNextPlayerId(PLAYERS, 'nobody') });
+        approve('next_player_unknown', { next: getTheLineNextPlayerId(PLAYERS, 'nobody') });
     });
 });
 
