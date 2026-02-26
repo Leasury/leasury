@@ -146,16 +146,26 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
 
                     {/* Start Button */}
                     <button
+                        type="button"
                         onClick={() => {
+                            console.log('[TheLineHost] Start Game clicked!');
                             const s = getSocket();
-                            if (!s) return;
-                            s.send(JSON.stringify({
+                            console.log('[TheLineHost] Socket:', s);
+                            if (!s) {
+                                console.error('[TheLineHost] No socket available!');
+                                alert('No socket connection available');
+                                return;
+                            }
+                            const msg = {
                                 type: 'start_game',
                                 category: selectedCategory,
                                 roundLimit: selectedRounds,
-                            }));
+                            };
+                            console.log('[TheLineHost] Sending:', msg);
+                            s.send(JSON.stringify(msg));
                         }}
-                        className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors"
+                        className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors cursor-pointer"
+                        style={{ position: 'relative', zIndex: 50 }}
                     >
                         Start Game
                     </button>
