@@ -19,6 +19,15 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
     const [showResult, setShowResult] = useState(false);
     const [lastResult, setLastResult] = useState<'success' | 'fail'>('success');
 
+    // Guard: if game state hasn't loaded properly yet, show loading
+    if (!game || !Array.isArray(game.line)) {
+        return (
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full" />
+            </div>
+        );
+    }
+
     // Derive playerId: prefer the explicitly passed myPlayerId, fall back to first non-host
     const playerId = myPlayerId || room.players.find((p: any) => !p.isHost)?.id || '';
 

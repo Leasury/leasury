@@ -21,6 +21,15 @@ export default function TheLineHost({ state }: TheLineHostProps) {
     const [selectedRounds, setSelectedRounds] = useState(5);
     const categories = getCategories();
 
+    // Guard: if game state hasn't loaded properly yet, show loading
+    if (!game || !Array.isArray(game.line) || !Array.isArray(game.playQueue)) {
+        return (
+            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-white rounded-full" />
+            </div>
+        );
+    }
+
     const playerName = (id: string) =>
         room.players.find((p: { id: string; name: string }) => p.id === id)?.name ?? id;
 
