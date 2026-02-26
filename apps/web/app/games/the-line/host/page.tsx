@@ -10,7 +10,7 @@ function TheLineHostContent() {
     const searchParams = useSearchParams();
     const roomCode = searchParams.get('room');
 
-    const { roomState, gameState } = usePartyRoom<TheLineGameState>(roomCode, {
+    const { roomState, gameState, socket } = usePartyRoom<TheLineGameState>(roomCode, {
         asHost: true,
         gameType: 'the-line',
     });
@@ -28,7 +28,7 @@ function TheLineHostContent() {
         );
     }
 
-    return <TheLineHost state={{ room: roomState, game: gameState }} />;
+    return <TheLineHost state={{ room: roomState, game: gameState }} socket={socket} />;
 }
 
 export default function TheLineHostPage() {

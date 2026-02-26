@@ -12,9 +12,10 @@ interface TheLineHostProps {
         room: RoomState;
         game: TheLineGameState;
     };
+    socket?: any;
 }
 
-export default function TheLineHost({ state }: TheLineHostProps) {
+export default function TheLineHost({ state, socket: propSocket }: TheLineHostProps) {
     const { room, game: rawGame } = state;
     const timelineRef = useRef<HTMLDivElement>(null);
     const [selectedCategory, setSelectedCategory] = useState('Weight');
@@ -45,7 +46,7 @@ export default function TheLineHost({ state }: TheLineHostProps) {
     const playerAvatar = (id: string) =>
         room.players.find((p: any) => p.id === id)?.avatar || '👤';
 
-    const socket = typeof window !== 'undefined' ? (window as any).__partySocket : null;
+    const socket = propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null);
 
     // Auto-scroll to keep active slot centered
     useEffect(() => {
