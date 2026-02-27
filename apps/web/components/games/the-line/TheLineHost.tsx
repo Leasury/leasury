@@ -149,27 +149,12 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         type="button"
                         onClick={() => {
                             const s = propSocket || (typeof window !== 'undefined' ? (window as any).__partySocket : null);
-
-                            if (!s) {
-                                alert('DEBUG: Socket is NULL. propSocket=' + !!propSocket + ', window.__partySocket=' + !!(typeof window !== 'undefined' && (window as any).__partySocket));
-                                return;
-                            }
-
-                            if (s.readyState !== 1) {
-                                alert('DEBUG: Socket not open. readyState=' + s.readyState + ' (0=connecting, 1=open, 2=closing, 3=closed)');
-                                return;
-                            }
-
-                            try {
-                                s.send(JSON.stringify({
-                                    type: 'start_game',
-                                    category: selectedCategory,
-                                    roundLimit: selectedRounds,
-                                }));
-                                alert('DEBUG: Message sent successfully! category=' + selectedCategory + ', rounds=' + selectedRounds);
-                            } catch (err: any) {
-                                alert('DEBUG: Send failed: ' + err.message);
-                            }
+                            if (!s) return;
+                            s.send(JSON.stringify({
+                                type: 'start_game',
+                                category: selectedCategory,
+                                roundLimit: selectedRounds,
+                            }));
                         }}
                         className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors cursor-pointer"
                     >
