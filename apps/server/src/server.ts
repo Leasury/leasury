@@ -91,6 +91,8 @@ export default class Server implements Party.Server {
                 return;
             }
 
+            console.log(`[onMessage] gameType=${this.state.room.gameType}, msg.type=${msg.type}, gameInitialized=${this.gameInitialized}`);
+
             // Handle game-specific messages based on game type
             if (this.state.room.gameType === 'demo' && this.isDemoMessage(msg)) {
                 this.handleDemoMessage(msg);
@@ -98,11 +100,14 @@ export default class Server implements Party.Server {
             }
 
             if (this.state.room.gameType === 'the-line' && this.isTheLineMessage(msg)) {
+                console.log(`[onMessage] Routing to handleTheLineMessage`);
                 this.handleTheLineMessage(msg, sender);
                 return;
             }
+
+            console.log(`[onMessage] Message NOT handled! gameType=${this.state.room.gameType}, msg.type=${msg.type}`);
         } catch (e) {
-            console.error('Failed to parse message:', e);
+            console.error('Failed to process message:', e);
         }
     }
 
@@ -217,28 +222,33 @@ export default class Server implements Party.Server {
     }
 
     handleTheLineMessage(msg: TheLineMessage, sender: Party.Connection) {
-        let gameState = this.state.game as TheLineGameState;
+        try {
+            let gameState = this.state.game as TheLineGameState;
 
-        if (msg.type === 'start_game') {
-            // Create initial state with all non-host player IDs
-            const playerIds = this.state.room.players
-                .filter(p => !p.isHost)
-                .map(p => p.id);
-            gameState = createInitialTheLineState(
-                msg.category,
-                msg.roundLimit,
-                playerIds
-            );
-            this.state.room.status = 'playing';
-        } else if (msg.type === 'next_turn') {
-            // next_turn needs server-side handling for player rotation
-            gameState = applyTheLineMessage(gameState, msg);
-        } else {
-            gameState = applyTheLineMessage(gameState, msg);
+            if (msg.type === 'start_game') {
+                // Create initial state with all non-host player IDs
+                const playerIds = this.state.room.players
+                    .filter(p => !p.isHost)
+                    .map(p => p.id);
+                console.log(`[start_game] players=${JSON.stringify(this.state.room.players.map(p => ({ id: p.id, name: p.name, isHost: p.isHost })))}, playerIds=${JSON.stringify(playerIds)}, category=${msg.category}, roundLimit=${msg.roundLimit}`);
+                gameState = createInitialTheLineState(
+                    msg.category,
+                    msg.roundLimit,
+                    playerIds
+                );
+                this.state.room.status = 'playing';
+                console.log(`[start_game] Game started! status=${gameState.status}, line=${gameState.line.length}, deck=${gameState.deck.length}`);
+            } else if (msg.type === 'next_turn') {
+                gameState = applyTheLineMessage(gameState, msg);
+            } else {
+                gameState = applyTheLineMessage(gameState, msg);
+            }
+
+            this.state.game = gameState;
+            this.broadcastState();
+        } catch (e) {
+            console.error('[handleTheLineMessage] ERROR:', e);
         }
-
-        this.state.game = gameState;
-        this.broadcastState();
     }
 
     // State sync
