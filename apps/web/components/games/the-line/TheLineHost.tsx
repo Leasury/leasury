@@ -331,19 +331,25 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             initial={{ width: 8, opacity: 0 }}
             animate={{ width: 208, opacity: 1 }}
             exit={{ width: 8, opacity: 0 }}
-            className="h-[28rem] bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col flex-shrink-0 overflow-hidden p-3"
+            className="h-[28rem] bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center justify-center flex-shrink-0 overflow-hidden p-3"
         >
+            {/* Fixed 2-row title area */}
+            <div className="min-h-[68px] flex items-center justify-center text-center px-1">
+                <p className="text-white font-bold text-[28px] leading-tight line-clamp-2">
+                    {activeEvent.title}
+                </p>
+            </div>
             {activeEvent.imageUrl && (
-                <div className="relative w-full aspect-square overflow-hidden rounded-lg mb-2 flex-shrink-0">
+                <div className="relative w-full aspect-square overflow-hidden rounded-lg my-2 flex-shrink-0">
                     <Image src={activeEvent.imageUrl} alt={activeEvent.title} fill className="object-contain" />
                 </div>
             )}
-            <div className="text-center px-1 flex-1 flex flex-col justify-center">
-                <p className="text-white font-bold text-base leading-tight line-clamp-2">
-                    {activeEvent.title}
+            <p className="text-[#D97757] font-bold text-3xl mt-2">???</p>
+            {activeEvent.funfact && (
+                <p className="text-[#B0AEA5] text-xs leading-tight mt-2 text-center line-clamp-2 px-1">
+                    {activeEvent.funfact}
                 </p>
-                <p className="text-[#D97757] font-bold text-2xl mt-2">???</p>
-            </div>
+            )}
         </motion.div>
     );
 
@@ -421,22 +427,25 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                             <motion.div
                                                 layout
                                                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                                className={`w-52 h-[28rem] rounded-2xl p-3 flex flex-col flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
+                                                className={`w-52 h-[28rem] rounded-2xl p-3 flex flex-col items-center justify-center flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
                                                     ? event.wasCorrect
                                                         ? 'bg-green-500/20 border-2 border-green-400'
                                                         : 'bg-red-500/20 border-2 border-red-400'
                                                     : 'bg-[#F0EFEA] border border-[#E8E6DC]'
                                                 }`}
                                             >
-                                                <p className="text-[#141413] font-bold text-base leading-tight mb-2 line-clamp-2">
-                                                    {event.title}
-                                                </p>
+                                                {/* Fixed 2-row title area */}
+                                                <div className="min-h-[68px] flex items-center justify-center text-center px-1">
+                                                    <p className="text-[#141413] font-bold text-[28px] leading-tight line-clamp-2">
+                                                        {event.title}
+                                                    </p>
+                                                </div>
                                                 {event.imageUrl && (
-                                                    <div className="relative w-full aspect-square overflow-hidden rounded-lg flex-shrink-0">
+                                                    <div className="relative w-full aspect-square overflow-hidden rounded-lg my-2 flex-shrink-0">
                                                         <Image src={event.imageUrl} alt={event.title} fill className="object-contain" />
                                                     </div>
                                                 )}
-                                                <div className="text-center mt-auto pt-2">
+                                                <div className="text-center pt-2">
                                                     <p className="text-[#D97757] font-bold text-3xl tabular-nums leading-none">
                                                         {formatDisplayValue(event.display_value)}
                                                     </p>
@@ -444,6 +453,11 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                                         {event.unit}
                                                     </p>
                                                 </div>
+                                                {event.funfact && (
+                                                    <p className="text-[#B0AEA5] text-xs leading-tight mt-2 text-center line-clamp-2 px-1">
+                                                        {event.funfact}
+                                                    </p>
+                                                )}
                                             </motion.div>
                                         </div>
                                     );
