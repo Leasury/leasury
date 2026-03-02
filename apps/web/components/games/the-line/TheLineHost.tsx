@@ -56,9 +56,8 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
     useEffect(() => {
         if ((game.status === 'playing' || game.status === 'revealing') && timelineRef.current) {
             const container = timelineRef.current;
-            const cardWidth = 208;
-            const gap = 12;
-            const markerWidth = 32;
+            const cardWidth = 208; // w-52
+            const gap = 16; // gap-4
 
             let targetIndex = game.cursorIndex;
             if (game.status === 'revealing' && game.last_action) {
@@ -66,7 +65,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                 if (placedIdx >= 0) targetIndex = placedIdx;
             }
 
-            const scrollPosition = targetIndex * (cardWidth + gap + markerWidth);
+            const scrollPosition = targetIndex * (cardWidth + gap);
             const containerCenter = container.offsetWidth / 2;
             const scrollTo = scrollPosition - containerCenter + cardWidth / 2;
 
@@ -332,21 +331,18 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             initial={{ width: 8, opacity: 0 }}
             animate={{ width: 208, opacity: 1 }}
             exit={{ width: 8, opacity: 0 }}
-            className="h-72 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center justify-center flex-shrink-0 overflow-hidden p-3"
+            className="h-[28rem] bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col flex-shrink-0 overflow-hidden p-3"
         >
             {activeEvent.imageUrl && (
-                <Image src={activeEvent.imageUrl} alt={activeEvent.title} width={80} height={80} className="object-contain mb-1" />
+                <div className="relative w-full aspect-square overflow-hidden rounded-lg mb-2 flex-shrink-0">
+                    <Image src={activeEvent.imageUrl} alt={activeEvent.title} fill className="object-contain" />
+                </div>
             )}
-            <div className="text-center px-2">
-                <p className="text-white font-bold text-sm leading-tight">
+            <div className="text-center px-1 flex-1 flex flex-col justify-center">
+                <p className="text-white font-bold text-base leading-tight line-clamp-2">
                     {activeEvent.title}
                 </p>
-                <p className="text-[#D97757] font-bold text-lg mt-1">???</p>
-                {activeEvent.funfact && (
-                    <p className="text-[#B0AEA5] text-[9px] leading-tight mt-1 line-clamp-2">
-                        {activeEvent.funfact}
-                    </p>
-                )}
+                <p className="text-[#D97757] font-bold text-2xl mt-2">???</p>
             </div>
         </motion.div>
     );
@@ -406,7 +402,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#3A3A3A] -translate-y-1/2" />
 
                         {/* Cards and slots */}
-                        <div className="relative z-10 flex items-center gap-3">
+                        <div className="relative z-10 flex items-center gap-4">
                             <AnimatePresence mode="popLayout">
                                 {game.line.map((event, index) => {
                                     const showSlotHere =
@@ -415,53 +411,39 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                         game.cursorIndex === index;
 
                                     return (
-                                        <div key={`slot-${event.id}`} className="flex items-center gap-3">
+                                        <div key={`slot-${event.id}`} className="flex items-center gap-4">
                                             {/* Cursor slot before this card */}
                                             {showSlotHere && game.activeEvent && (
                                                 <ActiveCardSlot activeEvent={game.activeEvent} />
-                                            )}
-
-                                            {/* Insertion marker */}
-                                            {!showSlotHere && (
-                                                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-                                                    <div className="w-6 h-6 rounded-full bg-[#3A3A3A]/40 flex items-center justify-center text-[#5A5A5A] text-xs font-bold">
-                                                        +
-                                                    </div>
-                                                </div>
                                             )}
 
                                             {/* Placed card */}
                                             <motion.div
                                                 layout
                                                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                                className={`w-52 h-72 rounded-2xl p-4 flex flex-col flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
+                                                className={`w-52 h-[28rem] rounded-2xl p-3 flex flex-col flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
                                                     ? event.wasCorrect
                                                         ? 'bg-green-500/20 border-2 border-green-400'
                                                         : 'bg-red-500/20 border-2 border-red-400'
                                                     : 'bg-[#F0EFEA] border border-[#E8E6DC]'
                                                 }`}
                                             >
-                                                <p className="text-[#141413] font-bold text-sm leading-tight mb-1">
+                                                <p className="text-[#141413] font-bold text-base leading-tight mb-2 line-clamp-2">
                                                     {event.title}
                                                 </p>
                                                 {event.imageUrl && (
-                                                    <div className="flex justify-center my-1 flex-shrink-0">
-                                                        <Image src={event.imageUrl} alt={event.title} width={96} height={96} className="object-contain" />
+                                                    <div className="relative w-full aspect-square overflow-hidden rounded-lg flex-shrink-0">
+                                                        <Image src={event.imageUrl} alt={event.title} fill className="object-contain" />
                                                     </div>
                                                 )}
-                                                <div className="text-center mt-auto">
-                                                    <p className="text-[#D97757] font-bold text-xl tabular-nums">
+                                                <div className="text-center mt-auto pt-2">
+                                                    <p className="text-[#D97757] font-bold text-3xl tabular-nums leading-none">
                                                         {formatDisplayValue(event.display_value)}
                                                     </p>
-                                                    <p className="text-[#141413] text-sm font-bold uppercase tracking-wide">
+                                                    <p className="text-[#141413] text-base font-bold uppercase tracking-wide mt-1">
                                                         {event.unit}
                                                     </p>
                                                 </div>
-                                                {event.funfact && (
-                                                    <p className="text-[#B0AEA5] text-[9px] leading-tight line-clamp-2 mt-1">
-                                                        {event.funfact}
-                                                    </p>
-                                                )}
                                             </motion.div>
                                         </div>
                                     );
@@ -471,14 +453,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                 {game.status === 'playing' &&
                                     game.activeEvent &&
                                     game.cursorIndex === game.line.length && (
-                                        <>
-                                            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-                                                <div className="w-6 h-6 rounded-full bg-[#3A3A3A]/40 flex items-center justify-center text-[#5A5A5A] text-xs font-bold">
-                                                    +
-                                                </div>
-                                            </div>
-                                            <ActiveCardSlot activeEvent={game.activeEvent} />
-                                        </>
+                                        <ActiveCardSlot activeEvent={game.activeEvent} />
                                     )}
                             </AnimatePresence>
                         </div>
