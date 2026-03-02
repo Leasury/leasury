@@ -72,7 +72,7 @@ export default function TheLineLandingPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-[#B0AEA5] text-lg"
+                        className="text-[#141413] text-lg"
                     >
                         Place events in order by weight, speed, population, and more. Can you find the right spot on the line?
                     </motion.p>

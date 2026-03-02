@@ -350,10 +350,10 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             <div className="h-[56px] flex flex-col items-center justify-center flex-shrink-0 mt-2">
                 <p className="text-[#D97757] font-bold text-3xl leading-none">???</p>
             </div>
-            {/* Fixed funfact area — 18px gap from unit */}
-            <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden mt-[18px]">
+            {/* Funfact area — 18px gap from unit, full text always visible */}
+            <div className="min-h-[52px] flex items-start justify-center flex-shrink-0 mt-[18px]">
                 {activeEvent.funfact && (
-                    <p className="text-[#B0AEA5] text-[18px] leading-snug text-center line-clamp-2 px-1">
+                    <p className="text-[#E8E6DC] text-[18px] leading-snug text-center px-1">
                         {activeEvent.funfact}
                     </p>
                 )}
@@ -476,10 +476,10 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                                         {event.unit}
                                                     </p>
                                                 </div>
-                                                {/* Fixed funfact area — 18px gap from unit */}
-                                                <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden mt-[18px]">
+                                                {/* Funfact area — 18px gap from unit, full text always visible */}
+                                                <div className="min-h-[52px] flex items-start justify-center flex-shrink-0 mt-[18px]">
                                                     {event.funfact && (
-                                                        <p className="text-[#B0AEA5] text-[18px] leading-snug text-center line-clamp-2 px-1">
+                                                        <p className="text-[#141413] text-[18px] leading-snug text-center px-1">
                                                             {event.funfact}
                                                         </p>
                                                     )}
@@ -532,7 +532,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                     <p className="text-white font-bold text-2xl tabular-nums">
                                         {formatDisplayValue(lastAction.display_value)} {lastAction.unit}
                                     </p>
-                                    <p className="text-[#B0AEA5] text-sm mt-2 leading-relaxed">
+                                    <p className="text-[#E8E6DC] text-sm mt-2 leading-relaxed">
                                         {lastAction.funfact}
                                     </p>
                                 </motion.div>
