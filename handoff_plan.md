@@ -4,9 +4,9 @@
 - Images generated and pushed to GitHub:
   - Weight category (`W01` - `W50`)
   - Speed category (`S01` - `S50`)
-  - Population category (`P01` - `P17`)
+  - Population category (`P01` - `P26`)
 - Next category to process: **Population**
-- Next image to generate: **P18 (Woodstock 1969)**
+- Next image to generate: **P27 (Sweden)**
 
 ## Image Generation Prompt
 To continue, you should use the following prompt format:
