@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TheLineGameState, PlacedTheLineEvent } from '@lesury/game-logic';
 import { getCategories, formatDisplayValue, AUTO_ADVANCE_DELAY_MS } from '@lesury/game-logic';
@@ -349,8 +350,8 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             <div className="h-[56px] flex flex-col items-center justify-center flex-shrink-0 mt-2">
                 <p className="text-[#D97757] font-bold text-3xl leading-none">???</p>
             </div>
-            {/* Fixed funfact area */}
-            <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden">
+            {/* Fixed funfact area — 18px gap from unit */}
+            <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden mt-[18px]">
                 {activeEvent.funfact && (
                     <p className="text-[#B0AEA5] text-[18px] leading-snug text-center line-clamp-2 px-1">
                         {activeEvent.funfact}
@@ -365,8 +366,14 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             {/* Top Bar — Scores & Round */}
             <div className="bg-[#1E1E1E] border-b border-[#3A3A3A] py-3 px-6">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity mr-6 flex-shrink-0">
+                        <Image src="/logo.png" alt="Lesury" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
+                        <span className="text-lg font-extrabold text-[#E8E6DC]">lesury</span>
+                    </Link>
+
                     {/* Player scores */}
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 flex-1">
                         {(game.playQueue || []).map((pid) => (
                             <div
                                 key={pid}
@@ -469,8 +476,8 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                                         {event.unit}
                                                     </p>
                                                 </div>
-                                                {/* Fixed funfact area */}
-                                                <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden">
+                                                {/* Fixed funfact area — 18px gap from unit */}
+                                                <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden mt-[18px]">
                                                     {event.funfact && (
                                                         <p className="text-[#B0AEA5] text-[18px] leading-snug text-center line-clamp-2 px-1">
                                                             {event.funfact}
