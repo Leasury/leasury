@@ -29,4 +29,5 @@ export type RoomMessage =
     | { type: 'join'; playerName: string; gameType?: string; sessionId?: string }
     | { type: 'leave' }
     | { type: 'start' } // Host signals game start
-    | { type: 'sync'; state: RoomState };
+    | { type: 'sync'; state: RoomState }
+    | { type: 'kick'; playerId: string }; // Host kicks a player from the lobby

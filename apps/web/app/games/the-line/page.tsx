@@ -31,7 +31,7 @@ export default function TheLineLandingPage() {
                         <p className="text-[#B0AEA5] mb-6">
                             Start The Line and display the game on the big screen.
                         </p>
-                        <Button href="/host?game=the-line" className="w-full max-w-md mx-auto">
+                        <Button href="/games/the-line/host" className="w-full max-w-md mx-auto">
                             Host The Line
                         </Button>
                     </div>

@@ -1,24 +1,30 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePartyRoom } from '@/hooks/usePartyRoom';
 import TheLineHost from '@/components/games/the-line/TheLineHost';
 import type { TheLineGameState } from '@lesury/game-logic';
+import { generateRoomCode } from '@lesury/game-logic';
 
 function TheLineHostContent() {
     const searchParams = useSearchParams();
-    const roomCode = searchParams.get('room');
+    const roomParam = searchParams.get('room');
+
+    // Self-create a room if no ?room param (direct navigation from landing page)
+    const [roomCode] = useState(() => roomParam || generateRoomCode());
+
+    // Update URL to include room code for sharing/refreshing
+    useEffect(() => {
+        if (!roomParam && roomCode) {
+            window.history.replaceState({}, '', `/games/the-line/host?room=${roomCode}`);
+        }
+    }, [roomParam, roomCode]);
 
     const { roomState, gameState, socket } = usePartyRoom<TheLineGameState>(roomCode, {
         asHost: true,
         gameType: 'the-line',
     });
-
-    if (!roomCode) {
-        if (typeof window !== 'undefined') window.location.href = '/games/the-line';
-        return null;
-    }
 
     if (!roomState || !gameState) {
         return (

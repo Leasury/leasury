@@ -63,6 +63,9 @@ export interface TheLineGameState {
     // Scoring
     scores: Record<string, number>;
 
+    // Card pool — no-repeat draw within a session
+    usedCardIds: string[];
+
     // Game flow
     status: 'setup' | 'playing' | 'revealing' | 'finished';
     last_action: LastAction | null;
@@ -75,4 +78,8 @@ export type TheLineMessage =
     | { type: 'start_game'; category: string; roundLimit: number; playerIds: string[] }
     | { type: 'move_cursor'; direction: 'left' | 'right' }
     | { type: 'place_card' }
-    | { type: 'next_turn' };
+    | { type: 'next_turn' }
+    | { type: 'play_again' };
+
+/** Auto-advance delay in milliseconds after card placement result */
+export const AUTO_ADVANCE_DELAY_MS = 3000;

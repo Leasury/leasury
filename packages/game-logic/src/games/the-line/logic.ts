@@ -53,12 +53,24 @@ export function getTheLineNextPlayerId(playerIds: string[], currentPlayerId: str
 export function createInitialTheLineState(
     category: string,
     roundLimit: number,
-    playerIds: string[]
+    playerIds: string[],
+    previouslyUsedCardIds: string[] = []
 ): TheLineGameState {
     // Use only events with images; fall back to all category events if none have images
     const eventsWithImages = getEventsWithImages(category);
     const categoryEvents = eventsWithImages.length > 0 ? eventsWithImages : getEventsByCategory(category);
-    const shuffled = shuffle(categoryEvents);
+
+    // Filter out previously used cards (no-repeat within session)
+    let availableEvents = categoryEvents.filter(e => !previouslyUsedCardIds.includes(e.id));
+    let carriedUsedIds = previouslyUsedCardIds;
+
+    // If pool exhausted (fewer than 2 cards left), reshuffle full pool
+    if (availableEvents.length < 2) {
+        availableEvents = categoryEvents;
+        carriedUsedIds = [];
+    }
+
+    const shuffled = shuffle(availableEvents);
 
     // Seed the line with one card
     const seedCard = shuffled[0];
@@ -80,6 +92,9 @@ export function createInitialTheLineState(
         scores[pid] = 0;
     }
 
+    // Track all dealt card IDs for no-repeat
+    const usedCardIds = [...carriedUsedIds, ...shuffled.map(e => e.id)];
+
     return {
         selectedCategory: category,
         roundLimit,
@@ -91,6 +106,7 @@ export function createInitialTheLineState(
         activeEvent,
         cursorIndex: 0,
         scores,
+        usedCardIds,
         status: 'playing',
         last_action: null,
     };
@@ -283,6 +299,23 @@ export function applyTheLineMessage(
 
         case 'next_turn':
             return nextTurn(state);
+
+        case 'play_again':
+            return {
+                selectedCategory: state.selectedCategory,
+                roundLimit: state.roundLimit,
+                roundIndex: 0,
+                line: [],
+                deck: [],
+                playQueue: state.playQueue,
+                activePlayerId: '',
+                activeEvent: null,
+                cursorIndex: 0,
+                scores: {},
+                usedCardIds: state.usedCardIds,
+                status: 'setup',
+                last_action: null,
+            };
 
         default:
             return state;

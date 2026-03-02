@@ -113,7 +113,7 @@ export default class Server implements Party.Server {
 
     // Room message handling
     isRoomMessage(msg: any): msg is RoomMessage {
-        return ['join', 'leave', 'start', 'sync'].includes(msg.type);
+        return ['join', 'leave', 'start', 'sync', 'kick'].includes(msg.type);
     }
 
     handleRoomMessage(msg: RoomMessage, sender: Party.Connection) {
@@ -139,6 +139,7 @@ export default class Server implements Party.Server {
                             activeEvent: null,
                             cursorIndex: 0,
                             scores: {},
+                            usedCardIds: [],
                             status: 'setup',
                             last_action: null,
                         } satisfies TheLineGameState;
@@ -162,6 +163,24 @@ export default class Server implements Party.Server {
                 if (sender.id === this.state.room.hostId) {
                     this.state.room.status = 'playing';
 
+                    this.broadcastState();
+                }
+                break;
+            case 'kick':
+                if (sender.id === this.state.room.hostId && msg.playerId) {
+                    // Send kicked message to the player's connection before removing
+                    for (const [connId, pid] of this.connToPlayer.entries()) {
+                        if (pid === msg.playerId) {
+                            const conn = [...this.room.getConnections()].find(c => c.id === connId);
+                            if (conn) {
+                                conn.send(JSON.stringify({ type: 'kicked' }));
+                            }
+                        }
+                    }
+                    // Remove player from list
+                    this.state.room.players = this.state.room.players.filter(
+                        (p) => p.id !== msg.playerId
+                    );
                     this.broadcastState();
                 }
                 break;
@@ -218,7 +237,7 @@ export default class Server implements Party.Server {
 
     // The Line game message handling
     isTheLineMessage(msg: any): msg is TheLineMessage {
-        return ['start_game', 'move_cursor', 'place_card', 'next_turn'].includes(msg.type);
+        return ['start_game', 'move_cursor', 'place_card', 'next_turn', 'play_again'].includes(msg.type);
     }
 
     handleTheLineMessage(msg: TheLineMessage, sender: Party.Connection) {
@@ -231,15 +250,20 @@ export default class Server implements Party.Server {
                     .filter(p => !p.isHost)
                     .map(p => p.id);
                 console.log(`[start_game] players=${JSON.stringify(this.state.room.players.map(p => ({ id: p.id, name: p.name, isHost: p.isHost })))}, playerIds=${JSON.stringify(playerIds)}, category=${msg.category}, roundLimit=${msg.roundLimit}`);
+                // Pass session's used card IDs for no-repeat draw
+                const previouslyUsedCardIds = gameState.usedCardIds || [];
                 gameState = createInitialTheLineState(
                     msg.category,
                     msg.roundLimit,
-                    playerIds
+                    playerIds,
+                    previouslyUsedCardIds
                 );
                 this.state.room.status = 'playing';
                 console.log(`[start_game] Game started! status=${gameState.status}, line=${gameState.line.length}, deck=${gameState.deck.length}`);
-            } else if (msg.type === 'next_turn') {
+            } else if (msg.type === 'play_again') {
                 gameState = applyTheLineMessage(gameState, msg);
+                // Return to lobby/setup state
+                this.state.room.status = 'playing';
             } else {
                 gameState = applyTheLineMessage(gameState, msg);
             }

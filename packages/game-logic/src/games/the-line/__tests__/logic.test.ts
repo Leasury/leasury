@@ -57,6 +57,7 @@ function stateWith(overrides: Partial<TheLineGameState> = {}): TheLineGameState 
         activeEvent: { id: 'A1', title: 'Active', sorting_category: 'Weight', funfact: 'active fact', display_value: '30', unit: 'kg', sorting_value: 30 },
         cursorIndex: 1,
         scores: { player1: 0, player2: 0, player3: 0 },
+        usedCardIds: [],
         status: 'playing',
         last_action: null,
         ...overrides,
@@ -284,5 +285,43 @@ describe('applyTheLineMessage', () => {
         const state = stateWith({ status: 'playing' });
         const next = applyTheLineMessage(state, { type: 'next_turn' });
         approve('apply_next_turn_noop', { status: next.status });
+    });
+
+    it('play_again resets to setup but keeps usedCardIds and playQueue', () => {
+        const state = stateWith({
+            status: 'finished',
+            usedCardIds: ['W01', 'W02', 'W03'],
+            scores: { player1: 3, player2: 1, player3: 2 },
+        });
+        const next = applyTheLineMessage(state, { type: 'play_again' });
+        approve('apply_play_again', {
+            status: next.status,
+            lineLength: next.line.length,
+            deckLength: next.deck.length,
+            scores: next.scores,
+            usedCardIds: next.usedCardIds,
+            playQueue: next.playQueue,
+            selectedCategory: next.selectedCategory,
+            roundLimit: next.roundLimit,
+        });
+    });
+});
+
+// ─── createInitialTheLineState — no-repeat ────────────────────────────────────
+
+describe('createInitialTheLineState — no-repeat', () => {
+    it('excludes previously used cards from new pool', () => {
+        const first = createInitialTheLineState('Weight', 3, PLAYERS);
+        // Use only the first 5 IDs (leaves 45 available, well above the 2-card threshold)
+        const usedIds = first.usedCardIds.slice(0, 5);
+        const second = createInitialTheLineState('Weight', 3, PLAYERS, usedIds);
+        // None of the 5 marked-used IDs should appear in the second game's dealt pool
+        const secondDealtIds = [
+            second.line[0]?.id,
+            second.activeEvent?.id,
+            ...second.deck.map(e => e.id),
+        ].filter(Boolean) as string[];
+        const overlap = secondDealtIds.filter(id => usedIds.includes(id));
+        approve('no_repeat_cards', { overlapCount: overlap.length });
     });
 });

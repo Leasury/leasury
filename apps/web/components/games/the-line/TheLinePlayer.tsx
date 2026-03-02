@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TheLineGameState } from '@lesury/game-logic';
 import type { RoomState } from '@lesury/game-logic';
+import { formatDisplayValue, AUTO_ADVANCE_DELAY_MS } from '@lesury/game-logic';
 
 interface TheLinePlayerProps {
     state: {
@@ -18,9 +19,11 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
     const { room, game: rawGame } = state;
     const [showResult, setShowResult] = useState(false);
     const [lastResult, setLastResult] = useState<'success' | 'fail'>('success');
+    const [kicked, setKicked] = useState(false);
+    const [countdownProgress, setCountdownProgress] = useState(100);
+    const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Normalize: ensure all TheLineGameState properties exist with safe defaults
-    // (rawGame may be null/partial before join is processed)
     const game = {
         ...(rawGame || {}),
         line: Array.isArray((rawGame as any)?.line) ? (rawGame as any).line : [],
@@ -28,11 +31,27 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         status: (rawGame as any)?.status || 'setup',
     } as TheLineGameState;
 
-    // Derive playerId: prefer the explicitly passed myPlayerId, fall back to first non-host
     const playerId = myPlayerId || room.players.find((p: any) => !p.isHost)?.id || '';
 
-    // ALL hooks must be before any conditional returns (Rules of Hooks)
-    // Show result overlay when revealing
+    const getSocket = () => typeof window !== 'undefined' ? (window as any).__partySocket : null;
+
+    // Listen for kicked message
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+        const handleMessage = (evt: MessageEvent) => {
+            try {
+                const data = JSON.parse(evt.data as string);
+                if (data.type === 'kicked') setKicked(true);
+            } catch {}
+        };
+
+        socket.addEventListener('message', handleMessage);
+        return () => socket.removeEventListener('message', handleMessage);
+    }, []);
+
+    // Show result overlay for spectators
     useEffect(() => {
         if (game.status === 'revealing' && game.last_action) {
             setLastResult(game.last_action.result);
@@ -42,8 +61,36 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         }
     }, [game.status, game.last_action]);
 
+    // Countdown progress bar for active player's revealing screen
+    useEffect(() => {
+        if (game.status === 'revealing' && game.activePlayerId === playerId) {
+            setCountdownProgress(100);
+            const startTime = Date.now();
+            countdownIntervalRef.current = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, 100 - (elapsed / AUTO_ADVANCE_DELAY_MS) * 100);
+                setCountdownProgress(remaining);
+                if (remaining === 0 && countdownIntervalRef.current) {
+                    clearInterval(countdownIntervalRef.current);
+                    countdownIntervalRef.current = null;
+                }
+            }, 50);
+        } else {
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current);
+                countdownIntervalRef.current = null;
+            }
+        }
+
+        return () => {
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current);
+                countdownIntervalRef.current = null;
+            }
+        };
+    }, [game.status, game.activePlayerId, playerId]);
+
     const isMyTurn = game.activePlayerId === playerId;
-    const getSocket = () => typeof window !== 'undefined' ? (window as any).__partySocket : null;
 
     const handleMove = (direction: 'left' | 'right') => {
         const s = getSocket();
@@ -57,11 +104,29 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         s.send(JSON.stringify({ type: 'place_card' }));
     };
 
-    const handleNextTurn = () => {
-        const s = getSocket();
-        if (!s) return;
-        s.send(JSON.stringify({ type: 'next_turn' }));
-    };
+    // ─── Kicked ───────────────────────────────────────────────────────────────
+
+    if (kicked) {
+        return (
+            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center max-w-sm"
+                >
+                    <div className="text-6xl mb-4">👋</div>
+                    <h2 className="text-2xl font-bold text-[#141413] mb-2">Removed from Game</h2>
+                    <p className="text-[#B0AEA5] mb-8">The host removed you from this game.</p>
+                    <button
+                        onClick={() => (window.location.href = '/')}
+                        className="w-full bg-[#141413] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#2A2A2A] transition-colors"
+                    >
+                        Home
+                    </button>
+                </motion.div>
+            </div>
+        );
+    }
 
     // ─── Setup / Waiting ──────────────────────────────────────────────────────
 
@@ -99,7 +164,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-[#F0EFEA] rounded-3xl p-8 text-center max-w-md shadow-xl"
+                    className="bg-[#F0EFEA] rounded-3xl p-8 text-center max-w-md shadow-xl w-full"
                 >
                     <div className="text-6xl mb-4">
                         {myRank === 1 ? '🏆' : myRank === 2 ? '🥈' : myRank === 3 ? '🥉' : '🎮'}
@@ -111,11 +176,12 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                         <p className="text-sm text-[#B0AEA5]">Your Score</p>
                         <p className="text-4xl font-bold text-[#D97757] tabular-nums">{myScore}</p>
                     </div>
+                    <p className="text-[#B0AEA5] text-sm mb-4">Waiting for host to start a new game...</p>
                     <button
-                        onClick={() => (window.location.href = '/games/the-line')}
-                        className="bg-[#D97757] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#CC785C] transition-colors"
+                        onClick={() => (window.location.href = '/')}
+                        className="w-full bg-[#141413] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2A2A2A] transition-colors"
                     >
-                        New Game
+                        Home
                     </button>
                 </motion.div>
             </div>
@@ -182,7 +248,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         );
     }
 
-    // ─── Active turn ──────────────────────────────────────────────────────────
+    // ─── Active turn — Loading ─────────────────────────────────────────────────
 
     if (!game.activeEvent) {
         return (
@@ -192,7 +258,8 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         );
     }
 
-    // When revealing after our placement
+    // ─── Active turn — Revealing ───────────────────────────────────────────────
+
     if (game.status === 'revealing') {
         return (
             <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
@@ -218,7 +285,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                                 transition={{ delay: 0.3 }}
                             >
                                 <p className="text-2xl font-bold text-[#141413] tabular-nums">
-                                    {game.last_action.display_value} {game.last_action.unit}
+                                    {formatDisplayValue(game.last_action.display_value)} {game.last_action.unit}
                                 </p>
                                 <p className="text-[#B0AEA5] text-sm mt-2 max-w-xs mx-auto">
                                     {game.last_action.funfact}
@@ -228,20 +295,21 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                     </motion.div>
                 </div>
 
-                {/* Continue button */}
+                {/* Passive countdown */}
                 <div className="p-6">
-                    <button
-                        onClick={handleNextTurn}
-                        className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors"
-                    >
-                        Next Turn →
-                    </button>
+                    <p className="text-center text-[#B0AEA5] text-sm mb-3">Next turn starting...</p>
+                    <div className="w-full bg-[#E8E6DC] rounded-full h-2 overflow-hidden">
+                        <motion.div
+                            className="h-full bg-[#D97757] rounded-full"
+                            style={{ width: `${countdownProgress}%` }}
+                        />
+                    </div>
                 </div>
             </div>
         );
     }
 
-    // ─── Placing mode ─────────────────────────────────────────────────────────
+    // ─── Active turn — Placing ─────────────────────────────────────────────────
 
     return (
         <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
