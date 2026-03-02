@@ -333,7 +333,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             exit={{ width: 8, opacity: 0 }}
             className="h-[34rem] bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center flex-shrink-0 overflow-hidden p-3"
         >
-            {/* Fixed 2-row title area — exact height so image never shifts */}
+            {/* Fixed 2-row title area */}
             <div className="h-[72px] flex items-center justify-center text-center px-1 flex-shrink-0 overflow-hidden">
                 <p className="text-white font-bold text-[28px] leading-[1.25] line-clamp-2">
                     {activeEvent.title}
@@ -345,11 +345,14 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                     <Image src={activeEvent.imageUrl} alt={activeEvent.title} fill className="object-contain" />
                 </div>
             )}
-            {/* Bottom section — fills remaining space, centered */}
-            <div className="flex-1 flex flex-col items-center justify-center">
-                <p className="text-[#D97757] font-bold text-3xl">???</p>
+            {/* Fixed value+unit area */}
+            <div className="h-[56px] flex flex-col items-center justify-center flex-shrink-0 mt-2">
+                <p className="text-[#D97757] font-bold text-3xl leading-none">???</p>
+            </div>
+            {/* Fixed funfact area */}
+            <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden">
                 {activeEvent.funfact && (
-                    <p className="text-[#B0AEA5] text-sm leading-snug mt-2 text-center line-clamp-2 px-1">
+                    <p className="text-[#B0AEA5] text-[18px] leading-snug text-center line-clamp-2 px-1">
                         {activeEvent.funfact}
                     </p>
                 )}
@@ -401,10 +404,17 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             </div>
 
             {/* Center — The Line */}
-            <div className="flex-1 flex items-center relative overflow-hidden">
+            <div className="flex-1 flex flex-col relative overflow-hidden">
+                {/* Main instruction title */}
+                <div className="text-center pt-4 pb-2 flex-shrink-0">
+                    <p className="text-xl font-medium">
+                        <span className="text-[#E8E6DC]">Order cards based on the </span>
+                        <span className="text-[#D97757] font-bold">{game.selectedCategory}</span>
+                    </p>
+                </div>
                 <div
                     ref={timelineRef}
-                    className="w-full overflow-x-auto px-12 py-8"
+                    className="flex-1 flex items-center overflow-x-auto px-12"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     <div className="relative min-w-max">
@@ -438,7 +448,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                                     : 'bg-[#F0EFEA] border border-[#E8E6DC]'
                                                 }`}
                                             >
-                                                {/* Fixed 2-row title area — exact height so image never shifts */}
+                                                {/* Fixed 2-row title area */}
                                                 <div className="h-[72px] flex items-center justify-center text-center px-1 flex-shrink-0 overflow-hidden">
                                                     <p className="text-[#141413] font-bold text-[28px] leading-[1.25] line-clamp-2">
                                                         {event.title}
@@ -450,16 +460,19 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                                         <Image src={event.imageUrl} alt={event.title} fill className="object-contain" />
                                                     </div>
                                                 )}
-                                                {/* Bottom section — fills remaining space, centered */}
-                                                <div className="flex-1 flex flex-col items-center justify-center text-center">
+                                                {/* Fixed value+unit area */}
+                                                <div className="h-[56px] flex flex-col items-center justify-center flex-shrink-0 mt-2">
                                                     <p className="text-[#D97757] font-bold text-3xl tabular-nums leading-none">
                                                         {formatDisplayValue(event.display_value)}
                                                     </p>
                                                     <p className="text-[#141413] text-base font-bold uppercase tracking-wide mt-1">
                                                         {event.unit}
                                                     </p>
+                                                </div>
+                                                {/* Fixed funfact area */}
+                                                <div className="h-[52px] flex items-start justify-center flex-shrink-0 overflow-hidden">
                                                     {event.funfact && (
-                                                        <p className="text-[#B0AEA5] text-sm leading-snug mt-2 text-center line-clamp-2 px-1">
+                                                        <p className="text-[#B0AEA5] text-[18px] leading-snug text-center line-clamp-2 px-1">
                                                             {event.funfact}
                                                         </p>
                                                     )}
@@ -528,49 +541,6 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-
-            {/* Bottom Bar — Active Card & Turn */}
-            <div className="bg-[#1E1E1E] border-t border-[#3A3A3A] py-4 px-6">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    {/* Active card preview */}
-                    <div className="flex items-center gap-4">
-                        {game.activeEvent && game.status === 'playing' && (
-                            <div className="bg-[#D97757]/20 rounded-xl px-4 py-3 flex items-center gap-3">
-                                {game.activeEvent.imageUrl && (
-                                    <Image src={game.activeEvent.imageUrl} alt={game.activeEvent.title} width={40} height={40} className="object-contain" />
-                                )}
-                                <div>
-                                    <p className="text-[#D97757] text-xs font-bold uppercase">Active Card</p>
-                                    <p className="text-white font-bold text-lg">{game.activeEvent.title}</p>
-                                    {game.activeEvent.funfact && (
-                                        <p className="text-[#B0AEA5] text-xs italic mt-1 max-w-sm leading-relaxed">
-                                            {game.activeEvent.funfact}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                        {isRevealing && lastAction && (
-                            <div className="bg-[#3A3A3A] rounded-xl px-4 py-3">
-                                <p className="text-[#B0AEA5] text-xs font-bold uppercase">
-                                    {lastAction.result === 'success' ? '✅ Correct!' : '❌ Wrong!'}
-                                </p>
-                                <p className="text-white font-bold tabular-nums">
-                                    {formatDisplayValue(lastAction.display_value)} {lastAction.unit}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Current turn */}
-                    <div className="text-right">
-                        <p className="text-xs text-[#B0AEA5]">Current Turn</p>
-                        <p className="font-bold text-[#D97757] text-lg">
-                            {game.activePlayerId ? `${playerAvatar(game.activePlayerId)} ${playerName(game.activePlayerId)}` : 'Waiting...'}
-                        </p>
-                    </div>
-                </div>
             </div>
 
             <style jsx global>{`
