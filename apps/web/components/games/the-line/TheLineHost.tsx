@@ -331,25 +331,29 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             initial={{ width: 8, opacity: 0 }}
             animate={{ width: 208, opacity: 1 }}
             exit={{ width: 8, opacity: 0 }}
-            className="h-[28rem] bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center justify-center flex-shrink-0 overflow-hidden p-3"
+            className="h-[34rem] bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex flex-col items-center flex-shrink-0 overflow-hidden p-3"
         >
-            {/* Fixed 2-row title area */}
-            <div className="min-h-[68px] flex items-center justify-center text-center px-1">
-                <p className="text-white font-bold text-[28px] leading-tight line-clamp-2">
+            {/* Fixed 2-row title area — exact height so image never shifts */}
+            <div className="h-[72px] flex items-center justify-center text-center px-1 flex-shrink-0 overflow-hidden">
+                <p className="text-white font-bold text-[28px] leading-[1.25] line-clamp-2">
                     {activeEvent.title}
                 </p>
             </div>
+            {/* Image — always at the same Y position */}
             {activeEvent.imageUrl && (
-                <div className="relative w-full aspect-square overflow-hidden rounded-lg my-2 flex-shrink-0">
+                <div className="relative w-full aspect-square overflow-hidden rounded-lg mt-2 flex-shrink-0">
                     <Image src={activeEvent.imageUrl} alt={activeEvent.title} fill className="object-contain" />
                 </div>
             )}
-            <p className="text-[#D97757] font-bold text-3xl mt-2">???</p>
-            {activeEvent.funfact && (
-                <p className="text-[#B0AEA5] text-xs leading-tight mt-2 text-center line-clamp-2 px-1">
-                    {activeEvent.funfact}
-                </p>
-            )}
+            {/* Bottom section — fills remaining space, centered */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+                <p className="text-[#D97757] font-bold text-3xl">???</p>
+                {activeEvent.funfact && (
+                    <p className="text-[#B0AEA5] text-sm leading-snug mt-2 text-center line-clamp-2 px-1">
+                        {activeEvent.funfact}
+                    </p>
+                )}
+            </div>
         </motion.div>
     );
 
@@ -427,37 +431,39 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                             <motion.div
                                                 layout
                                                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                                className={`w-52 h-[28rem] rounded-2xl p-3 flex flex-col items-center justify-center flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
+                                                className={`w-52 h-[34rem] rounded-2xl p-3 flex flex-col items-center flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
                                                     ? event.wasCorrect
                                                         ? 'bg-green-500/20 border-2 border-green-400'
                                                         : 'bg-red-500/20 border-2 border-red-400'
                                                     : 'bg-[#F0EFEA] border border-[#E8E6DC]'
                                                 }`}
                                             >
-                                                {/* Fixed 2-row title area */}
-                                                <div className="min-h-[68px] flex items-center justify-center text-center px-1">
-                                                    <p className="text-[#141413] font-bold text-[28px] leading-tight line-clamp-2">
+                                                {/* Fixed 2-row title area — exact height so image never shifts */}
+                                                <div className="h-[72px] flex items-center justify-center text-center px-1 flex-shrink-0 overflow-hidden">
+                                                    <p className="text-[#141413] font-bold text-[28px] leading-[1.25] line-clamp-2">
                                                         {event.title}
                                                     </p>
                                                 </div>
+                                                {/* Image — always at the same Y position */}
                                                 {event.imageUrl && (
-                                                    <div className="relative w-full aspect-square overflow-hidden rounded-lg my-2 flex-shrink-0">
+                                                    <div className="relative w-full aspect-square overflow-hidden rounded-lg mt-2 flex-shrink-0">
                                                         <Image src={event.imageUrl} alt={event.title} fill className="object-contain" />
                                                     </div>
                                                 )}
-                                                <div className="text-center pt-2">
+                                                {/* Bottom section — fills remaining space, centered */}
+                                                <div className="flex-1 flex flex-col items-center justify-center text-center">
                                                     <p className="text-[#D97757] font-bold text-3xl tabular-nums leading-none">
                                                         {formatDisplayValue(event.display_value)}
                                                     </p>
                                                     <p className="text-[#141413] text-base font-bold uppercase tracking-wide mt-1">
                                                         {event.unit}
                                                     </p>
+                                                    {event.funfact && (
+                                                        <p className="text-[#B0AEA5] text-sm leading-snug mt-2 text-center line-clamp-2 px-1">
+                                                            {event.funfact}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                                {event.funfact && (
-                                                    <p className="text-[#B0AEA5] text-xs leading-tight mt-2 text-center line-clamp-2 px-1">
-                                                        {event.funfact}
-                                                    </p>
-                                                )}
                                             </motion.div>
                                         </div>
                                     );
