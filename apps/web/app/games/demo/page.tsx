@@ -15,9 +15,7 @@ export default function DemoLandingPage() {
                 {/* Game Header */}
                 <div className="text-center mb-12">
                     <div className="text-7xl mb-4">🎮</div>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        Demo Game
-                    </h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Demo Game</h1>
                     <p className="text-[#B0AEA5] text-lg max-w-2xl mx-auto">
                         A simple counter sync demo to test real-time connections across devices.
                     </p>
@@ -28,9 +26,7 @@ export default function DemoLandingPage() {
                     /* PC: Show Host Button */
                     <div className="bg-white rounded-2xl p-8 shadow-md mb-8 text-center">
                         <div className="text-5xl mb-4">🖥️</div>
-                        <h2 className="text-2xl font-bold mb-3">
-                            Host on PC/TV
-                        </h2>
+                        <h2 className="text-2xl font-bold mb-3">Host on PC/TV</h2>
                         <p className="text-[#B0AEA5] mb-6">
                             Start a game session and show a QR code for others to join.
                         </p>
@@ -42,9 +38,7 @@ export default function DemoLandingPage() {
                     /* Mobile: Show Join Button */
                     <div className="bg-white rounded-2xl p-8 shadow-md mb-8 text-center">
                         <div className="text-5xl mb-4">📱</div>
-                        <h2 className="text-2xl font-bold mb-3">
-                            Join on Mobile
-                        </h2>
+                        <h2 className="text-2xl font-bold mb-3">Join on Mobile</h2>
                         <p className="text-[#B0AEA5] mb-6">
                             Scan a QR code or enter a room code to join the game.
                         </p>

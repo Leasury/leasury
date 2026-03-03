@@ -58,10 +58,11 @@ export function createInitialTheLineState(
 ): TheLineGameState {
     // Use only events with images; fall back to all category events if none have images
     const eventsWithImages = getEventsWithImages(category);
-    const categoryEvents = eventsWithImages.length > 0 ? eventsWithImages : getEventsByCategory(category);
+    const categoryEvents =
+        eventsWithImages.length > 0 ? eventsWithImages : getEventsByCategory(category);
 
     // Filter out previously used cards (no-repeat within session)
-    let availableEvents = categoryEvents.filter(e => !previouslyUsedCardIds.includes(e.id));
+    let availableEvents = categoryEvents.filter((e) => !previouslyUsedCardIds.includes(e.id));
     let carriedUsedIds = previouslyUsedCardIds;
 
     // If pool exhausted (fewer than 2 cards left), reshuffle full pool
@@ -93,7 +94,7 @@ export function createInitialTheLineState(
     }
 
     // Track all dealt card IDs for no-repeat
-    const usedCardIds = [...carriedUsedIds, ...shuffled.map(e => e.id)];
+    const usedCardIds = [...carriedUsedIds, ...shuffled.map((e) => e.id)];
 
     return {
         selectedCategory: category,
@@ -127,12 +128,8 @@ export function isTheLinePlacementCorrect(
     cursorIndex: number,
     line: PlacedTheLineEvent[]
 ): boolean {
-    const prevValue = cursorIndex > 0
-        ? line[cursorIndex - 1].sorting_value
-        : -Infinity;
-    const nextValue = cursorIndex < line.length
-        ? line[cursorIndex].sorting_value
-        : Infinity;
+    const prevValue = cursorIndex > 0 ? line[cursorIndex - 1].sorting_value : -Infinity;
+    const nextValue = cursorIndex < line.length ? line[cursorIndex].sorting_value : Infinity;
 
     return prevValue <= card.sorting_value && card.sorting_value <= nextValue;
 }
@@ -140,10 +137,7 @@ export function isTheLinePlacementCorrect(
 /**
  * Find the correct index to insert a card into the sorted line.
  */
-export function findTheLineCorrectPosition(
-    card: TheLineEvent,
-    line: PlacedTheLineEvent[]
-): number {
+export function findTheLineCorrectPosition(card: TheLineEvent, line: PlacedTheLineEvent[]): number {
     for (let i = 0; i < line.length; i++) {
         if (card.sorting_value <= line[i].sorting_value) {
             return i;
@@ -156,18 +150,16 @@ export function findTheLineCorrectPosition(
 // Move cursor
 // ---------------------------------------------------------------------------
 
-export function moveCursor(
-    state: TheLineGameState,
-    direction: 'left' | 'right'
-): TheLineGameState {
+export function moveCursor(state: TheLineGameState, direction: 'left' | 'right'): TheLineGameState {
     if (state.status !== 'playing') return state;
 
     // Max cursor = line.length (after the last card)
     const maxIndex = state.line.length;
 
-    const newIndex = direction === 'left'
-        ? Math.max(0, state.cursorIndex - 1)
-        : Math.min(maxIndex, state.cursorIndex + 1);
+    const newIndex =
+        direction === 'left'
+            ? Math.max(0, state.cursorIndex - 1)
+            : Math.min(maxIndex, state.cursorIndex + 1);
 
     return { ...state, cursorIndex: newIndex };
 }
@@ -182,9 +174,7 @@ export function placeTheLineCard(state: TheLineGameState): TheLineGameState {
     const card = state.activeEvent;
     const correct = isTheLinePlacementCorrect(card, state.cursorIndex, state.line);
 
-    const insertIndex = correct
-        ? state.cursorIndex
-        : findTheLineCorrectPosition(card, state.line);
+    const insertIndex = correct ? state.cursorIndex : findTheLineCorrectPosition(card, state.line);
 
     const placedEvent: PlacedTheLineEvent = {
         ...card,

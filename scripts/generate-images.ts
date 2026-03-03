@@ -2,14 +2,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'csv-parse/sync';
 import { fileURLToPath } from 'url';
-import { HfInference } from "@huggingface/inference";
+import { HfInference } from '@huggingface/inference';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Get free token from https://huggingface.co/settings/tokens
 const HF_ACCESS_TOKEN = process.env.HF_ACCESS_TOKEN;
-const CSV_PATH = path.resolve(__dirname, '../packages/game-logic/src/games/the-line/data/events.csv');
+const CSV_PATH = path.resolve(
+    __dirname,
+    '../packages/game-logic/src/games/the-line/data/events.csv'
+);
 const OUTPUT_DIR = path.resolve(__dirname, '../apps/web/public/games/the-line/cards');
 
 async function generateImage(title: string, id: string, hf: HfInference) {
@@ -17,11 +20,11 @@ async function generateImage(title: string, id: string, hf: HfInference) {
 
     try {
         const blob = await hf.textToImage({
-            model: "stabilityai/stable-diffusion-xl-base-1.0",
+            model: 'stabilityai/stable-diffusion-xl-base-1.0',
             inputs: prompt,
             parameters: {
                 guidance_scale: 7.5,
-            }
+            },
         });
 
         const buffer = Buffer.from(await blob.arrayBuffer());
@@ -39,7 +42,9 @@ async function main() {
     }
 
     if (!HF_ACCESS_TOKEN) {
-        console.error("❌ Please set your HF_ACCESS_TOKEN environment variable. You can get one for free at Hugging Face.");
+        console.error(
+            '❌ Please set your HF_ACCESS_TOKEN environment variable. You can get one for free at Hugging Face.'
+        );
         return;
     }
 
@@ -47,10 +52,12 @@ async function main() {
     const csvContent = fs.readFileSync(CSV_PATH, 'utf-8');
     const records = parse(csvContent, { columns: true, skip_empty_lines: true });
 
-    console.log(`Loaded ${records.length} cards from CSV. Starting generation with Stable Diffusion XL...`);
+    console.log(
+        `Loaded ${records.length} cards from CSV. Starting generation with Stable Diffusion XL...`
+    );
 
     for (const record of records) {
-        const { id, title } = record as { id: string, title: string };
+        const { id, title } = record as { id: string; title: string };
         const filepath = path.join(OUTPUT_DIR, `${id}.png`);
 
         if (fs.existsSync(filepath)) {
@@ -66,10 +73,10 @@ async function main() {
         }
 
         // Delay to respect API rate limits
-        await new Promise(resolve => setTimeout(resolve, 8000));
+        await new Promise((resolve) => setTimeout(resolve, 8000));
     }
 
-    console.log("Image generation complete!");
+    console.log('Image generation complete!');
 }
 
 main().catch(console.error);

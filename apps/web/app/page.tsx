@@ -29,9 +29,8 @@ export default function Home() {
                             <span className="text-[#D97757]">game night</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-[#B0AEA5] mb-8">
-                            Play board games together using your phones as
-                            controllers. No apps to install, just scan and
-                            play.
+                            Play board games together using your phones as controllers. No apps to
+                            install, just scan and play.
                         </p>
                         <motion.div
                             className="flex flex-wrap gap-4"
@@ -73,28 +72,21 @@ export default function Home() {
                     <div className="grid md:grid-cols-3 gap-8">
                         <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transition-shadow">
                             <div className="text-5xl mb-4">📺</div>
-                            <h3 className="text-xl font-bold mb-3">
-                                Open on TV
-                            </h3>
+                            <h3 className="text-xl font-bold mb-3">Open on TV</h3>
                             <p className="text-[#B0AEA5]">
                                 Launch any game on your big screen or computer.
                             </p>
                         </div>
                         <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transition-shadow">
                             <div className="text-5xl mb-4">📱</div>
-                            <h3 className="text-xl font-bold mb-3">
-                                Scan QR Code
-                            </h3>
+                            <h3 className="text-xl font-bold mb-3">Scan QR Code</h3>
                             <p className="text-[#B0AEA5]">
-                                Players scan with their phones to join
-                                instantly.
+                                Players scan with their phones to join instantly.
                             </p>
                         </div>
                         <div className="bg-white p-8 rounded-2xl text-center shadow-md hover:shadow-xl transition-shadow">
                             <div className="text-5xl mb-4">🎉</div>
-                            <h3 className="text-xl font-bold mb-3">
-                                Play Together
-                            </h3>
+                            <h3 className="text-xl font-bold mb-3">Play Together</h3>
                             <p className="text-[#B0AEA5]">
                                 Use your phone as a personal controller.
                             </p>
@@ -119,7 +111,10 @@ export default function Home() {
             <footer className="border-t border-[#E8E6DC] py-8">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex items-center justify-between">
-                        <Link href="/" className="flex items-center gap-2 text-[#B0AEA5] hover:opacity-80 transition-opacity">
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2 text-[#B0AEA5] hover:opacity-80 transition-opacity"
+                        >
                             <Image
                                 src="/logo.png"
                                 alt="Lesury"

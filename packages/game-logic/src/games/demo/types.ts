@@ -10,6 +10,4 @@ export interface DemoGameState {
 /**
  * Demo game messages
  */
-export type DemoGameMessage =
-    | { type: 'increment' }
-    | { type: 'decrement' };
+export type DemoGameMessage = { type: 'increment' } | { type: 'decrement' };

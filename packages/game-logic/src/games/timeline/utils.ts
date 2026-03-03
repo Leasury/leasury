@@ -8,12 +8,12 @@ import type { TimelineEvent, PlacedEvent, EventCategory } from './types';
  * Category visual styling (icons and colors)
  */
 export const CATEGORY_STYLES = {
-    Science: { icon: '🔬', color: '#6A9BCC' },  // mutedBlue
-    Tragedy: { icon: '💔', color: '#CC785C' },  // antiqueBrass
-    War: { icon: '⚔️', color: '#CC785C' },     // antiqueBrass
-    Economy: { icon: '📈', color: '#788C5D' },  // sage
-    Tech: { icon: '💻', color: '#6A9BCC' },     // mutedBlue
-    Space: { icon: '🚀', color: '#D97757' },    // terracotta
+    Science: { icon: '🔬', color: '#6A9BCC' }, // mutedBlue
+    Tragedy: { icon: '💔', color: '#CC785C' }, // antiqueBrass
+    War: { icon: '⚔️', color: '#CC785C' }, // antiqueBrass
+    Economy: { icon: '📈', color: '#788C5D' }, // sage
+    Tech: { icon: '💻', color: '#6A9BCC' }, // mutedBlue
+    Space: { icon: '🚀', color: '#D97757' }, // terracotta
     Politics: { icon: '🏛️', color: '#788C5D' }, // sage
 } as const;
 

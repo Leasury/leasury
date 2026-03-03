@@ -6,7 +6,10 @@ export default function Header() {
         <header className="w-full py-4 px-6">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <Link
+                    href="/"
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
                     <Image
                         src="/logo.png"
                         alt="Lesury"
@@ -14,9 +17,7 @@ export default function Header() {
                         height={40}
                         className="w-10 h-10 rounded-full object-cover"
                     />
-                    <span className="text-2xl font-extrabold text-[#141413]">
-                        lesury
-                    </span>
+                    <span className="text-2xl font-extrabold text-[#141413]">lesury</span>
                 </Link>
 
                 {/* Navigation */}

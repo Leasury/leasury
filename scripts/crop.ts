@@ -4,8 +4,10 @@ import path from 'path';
 import { parse } from 'csv-parse/sync';
 
 const IMAGES_DIR = '/Users/vojtechhrdina/Documents/Projects/Lesury/Images';
-const OUTPUT_DIR = '/Users/vojtechhrdina/Documents/Projects/Lesury/Development/GitRepository/apps/web/public/games/the-line/cards';
-const CSV_PATH = '/Users/vojtechhrdina/Documents/Projects/Lesury/Development/GitRepository/packages/game-logic/src/games/the-line/data/events.csv';
+const OUTPUT_DIR =
+    '/Users/vojtechhrdina/Documents/Projects/Lesury/Development/GitRepository/apps/web/public/games/the-line/cards';
+const CSV_PATH =
+    '/Users/vojtechhrdina/Documents/Projects/Lesury/Development/GitRepository/packages/game-logic/src/games/the-line/data/events.csv';
 
 // Build sequential number → CSV ID mapping from the CSV
 function buildIdMapping(): Map<number, string> {
@@ -22,8 +24,8 @@ function buildIdMapping(): Map<number, string> {
 // Based on visual inspection of all 20 images
 interface GridConfig {
     filename: string;
-    startNum: number;  // first card number in this grid
-    endNum: number;    // last card number in this grid
+    startNum: number; // first card number in this grid
+    endNum: number; // last card number in this grid
     cols: number;
     rows: number;
 }
@@ -69,7 +71,9 @@ async function cropGrid(config: GridConfig, idMapping: Map<number, string>) {
     const totalItems = config.endNum - config.startNum + 1;
 
     console.log(`\n📁 Processing: ${config.filename}`);
-    console.log(`   Image: ${imgWidth}x${imgHeight}, Grid: ${config.cols}x${config.rows}, Cell: ${cellWidth}x${cellHeight}, Items: ${totalItems}`);
+    console.log(
+        `   Image: ${imgWidth}x${imgHeight}, Grid: ${config.cols}x${config.rows}, Cell: ${cellWidth}x${cellHeight}, Items: ${totalItems}`
+    );
 
     let itemIndex = 0;
     for (let row = 0; row < config.rows; row++) {
@@ -126,7 +130,7 @@ async function main() {
     }
 
     // Check how many files we generated
-    const generatedFiles = fs.readdirSync(OUTPUT_DIR).filter(f => f.endsWith('.png'));
+    const generatedFiles = fs.readdirSync(OUTPUT_DIR).filter((f) => f.endsWith('.png'));
     console.log(`\n🎉 Done! Generated ${generatedFiles.length} individual card images.`);
 }
 

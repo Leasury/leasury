@@ -23,7 +23,13 @@ function HostPageContent() {
 
 export default function HostPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">Loading...</div>}>
+        <Suspense
+            fallback={
+                <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
+                    Loading...
+                </div>
+            }
+        >
             <HostPageContent />
         </Suspense>
     );

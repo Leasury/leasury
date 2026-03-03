@@ -42,7 +42,9 @@ export function usePartyRoom<TGame>(
     const [roomState, setRoomState] = useState<RoomState | null>(null);
     const [gameState, setGameState] = useState<TGame | null>(null);
     const [myPlayerId, setMyPlayerId] = useState('');
-    const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+    const [connectionStatus, setConnectionStatus] = useState<
+        'connecting' | 'connected' | 'disconnected'
+    >('connecting');
     const [socket, setSocket] = useState<PartySocket | null>(null);
 
     useEffect(() => {
@@ -61,29 +63,36 @@ export function usePartyRoom<TGame>(
                 // When all connections drop during lobby→game redirect,
                 // the PartyKit room resets to gameType='demo'. Without this,
                 // start_game messages are silently dropped.
-                conn.send(JSON.stringify({
-                    type: 'join',
-                    playerName: 'Host',
-                    ...(gameType ? { gameType } : {}),
-                }));
+                conn.send(
+                    JSON.stringify({
+                        type: 'join',
+                        playerName: 'Host',
+                        ...(gameType ? { gameType } : {}),
+                    })
+                );
                 setMyPlayerId(conn.id);
             } else {
                 // Resolve identity: prefer saved sessionId from lobby redirect
                 const roomKey = roomCode.toUpperCase();
                 const sessionId = sessionKeyPrefix
-                    ? sessionStorage.getItem(`${sessionKeyPrefix}PlayerId_${roomKey}`) ?? undefined
+                    ? (sessionStorage.getItem(`${sessionKeyPrefix}PlayerId_${roomKey}`) ??
+                      undefined)
                     : undefined;
                 const resolvedName = sessionKeyPrefix
-                    ? sessionStorage.getItem(`${sessionKeyPrefix}PlayerName_${roomKey}`) || playerName || 'Player'
+                    ? sessionStorage.getItem(`${sessionKeyPrefix}PlayerName_${roomKey}`) ||
+                      playerName ||
+                      'Player'
                     : playerName || 'Player';
 
                 setMyPlayerId(sessionId || conn.id);
 
-                conn.send(JSON.stringify({
-                    type: 'join',
-                    playerName: resolvedName,
-                    ...(sessionId ? { sessionId } : {}),
-                }));
+                conn.send(
+                    JSON.stringify({
+                        type: 'join',
+                        playerName: resolvedName,
+                        ...(sessionId ? { sessionId } : {}),
+                    })
+                );
             }
         });
 

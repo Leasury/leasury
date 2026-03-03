@@ -275,22 +275,24 @@ Coldest Shower
 Coffee (Serving)
 Steak (Medium Rare)
 Chicken (Cooked Safe)
-Sous Vide Egg`.split('\n').filter(Boolean);
+Sous Vide Egg`
+    .split('\n')
+    .filter(Boolean);
 
 const colorPalettes = [
-    "soft blue, mint green, light grey",
-    "pastel pink, soft yellow, light grey",
-    "pastel green, soft brown, light yellow",
-    "light blue, soft red, pastel grey",
-    "mint green, soft blue, pastel white",
-    "pastel purple, light grey, soft blue",
-    "soft red, light white, pastel blue",
-    "light brown, pastel orange, soft grey",
-    "soft grey, light red, pastel blue",
-    "pastel orange, soft pink, light blue"
+    'soft blue, mint green, light grey',
+    'pastel pink, soft yellow, light grey',
+    'pastel green, soft brown, light yellow',
+    'light blue, soft red, pastel grey',
+    'mint green, soft blue, pastel white',
+    'pastel purple, light grey, soft blue',
+    'soft red, light white, pastel blue',
+    'light brown, pastel orange, soft grey',
+    'soft grey, light red, pastel blue',
+    'pastel orange, soft pink, light blue',
 ];
 
-let markdownOutput = "# Generated Prompts\\n\\n";
+let markdownOutput = '# Generated Prompts\\n\\n';
 let startId = 226;
 
 items.forEach((item, index) => {

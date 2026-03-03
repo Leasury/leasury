@@ -45,10 +45,12 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
             setMyPlayerId(conn.id);
 
             // Join as player
-            conn.send(JSON.stringify({
-                type: 'join',
-                playerName: playerName || 'Player'
-            }));
+            conn.send(
+                JSON.stringify({
+                    type: 'join',
+                    playerName: playerName || 'Player',
+                })
+            );
         });
 
         conn.addEventListener('message', (evt) => {
@@ -111,9 +113,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
         return (
             <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-4">
                 <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
-                    <h1 className="text-3xl font-bold text-center mb-6">
-                        Join Game
-                    </h1>
+                    <h1 className="text-3xl font-bold text-center mb-6">Join Game</h1>
 
                     {/* Player Name */}
                     <div className="mb-4">
@@ -141,10 +141,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
                         />
                     </div>
 
-                    <Button
-                        onClick={handleJoinManually}
-                        className="w-full"
-                    >
+                    <Button onClick={handleJoinManually} className="w-full">
                         Join Room
                     </Button>
                 </div>
@@ -158,9 +155,7 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
             <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
                 {roomState ? (
                     <>
-                        <h1 className="text-3xl font-bold text-center mb-4">
-                            Connected!
-                        </h1>
+                        <h1 className="text-3xl font-bold text-center mb-4">Connected!</h1>
                         <p className="text-center text-[#B0AEA5] mb-6">
                             Room: <span className="font-bold text-[#141413]">{roomCode}</span>
                         </p>
@@ -169,7 +164,9 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
                             <div className="text-5xl mb-3">⏳</div>
                             <p className="font-semibold">Waiting for host to start...</p>
                             <p className="text-sm text-[#B0AEA5] mt-2">
-                                {roomState.players.filter(p => !p.isHost).length} player{roomState.players.filter(p => !p.isHost).length !== 1 ? 's' : ''} connected
+                                {roomState.players.filter((p) => !p.isHost).length} player
+                                {roomState.players.filter((p) => !p.isHost).length !== 1 ? 's' : ''}{' '}
+                                connected
                             </p>
                         </div>
 

@@ -43,8 +43,8 @@ This will output your PartyKit URL, e.g., `lesury-username.partykit.dev`
 4. **Framework Preset:** Next.js
 5. **Build Command:** `cd ../.. && npx turbo run test --filter=@lesury/game-logic && npx turbo run build --filter=@lesury/web`
 6. Add environment variable:
-   - **Name:** `NEXT_PUBLIC_PARTYKIT_HOST`
-   - **Value:** `lesury-username.partykit.dev` (from step 1)
+    - **Name:** `NEXT_PUBLIC_PARTYKIT_HOST`
+    - **Value:** `lesury-username.partykit.dev` (from step 1)
 7. Click "Deploy"
 
 #### Option B: Vercel CLI
@@ -81,28 +81,29 @@ Create `.github/workflows/deploy-partykit.yml`:
 name: Deploy PartyKit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/server/**'
-      - 'packages/game-logic/**'
+    push:
+        branches: [main]
+        paths:
+            - 'apps/server/**'
+            - 'packages/game-logic/**'
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: npm run test
-      - run: npm run deploy
-        env:
-          PARTYKIT_TOKEN: \${{ secrets.PARTYKIT_TOKEN }}
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+            - run: npm install
+            - run: npm run test
+            - run: npm run deploy
+              env:
+                  PARTYKIT_TOKEN: \${{ secrets.PARTYKIT_TOKEN }}
 ```
 
 **Setup:**
+
 1. Get PartyKit token: `npx partykit token`
 2. Add to GitHub Secrets: `PARTYKIT_TOKEN`
 
@@ -112,8 +113,8 @@ jobs:
 
 ### Production
 
-| Variable | Where | Value |
-|----------|-------|-------|
+| Variable                    | Where  | Value                                                    |
+| --------------------------- | ------ | -------------------------------------------------------- |
 | `NEXT_PUBLIC_PARTYKIT_HOST` | Vercel | Your PartyKit URL (e.g., `lesury-username.partykit.dev`) |
 
 ### Local Development
@@ -137,6 +138,7 @@ No environment variables needed - defaults to `localhost:1999`.
 **Problem:** Demo page shows "connecting" forever
 
 **Solution:**
+
 - Check PartyKit deployment: `npx partykit list`
 - Verify `NEXT_PUBLIC_PARTYKIT_HOST` in Vercel settings
 - Check browser console for WebSocket errors

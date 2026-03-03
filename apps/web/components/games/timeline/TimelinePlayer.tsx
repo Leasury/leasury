@@ -68,8 +68,8 @@ export default function TimelinePlayer({ state, myPlayerId = '' }: TimelinePlaye
                         {game.winner === 'team'
                             ? 'Team Victory!'
                             : game.winner === playerId
-                                ? 'You Win!'
-                                : 'Game Over'}
+                              ? 'You Win!'
+                              : 'Game Over'}
                     </h2>
                     {game.mode === 'competitive' && (
                         <p className="text-xl text-[#B0AEA5] mb-4">
@@ -106,7 +106,9 @@ export default function TimelinePlayer({ state, myPlayerId = '' }: TimelinePlaye
                                 ⏳
                             </motion.div>
                             <p className="text-2xl font-bold mb-2 text-[#141413]">
-                                {room.players.find((p: any) => p.id === game.activePlayerId)?.name || 'Another player'} is playing
+                                {room.players.find((p: any) => p.id === game.activePlayerId)
+                                    ?.name || 'Another player'}{' '}
+                                is playing
                             </p>
                             <p className="text-lg text-[#B0AEA5]">Watch the TV!</p>
 
@@ -154,7 +156,9 @@ export default function TimelinePlayer({ state, myPlayerId = '' }: TimelinePlaye
                 >
                     {/* Category Badge */}
                     <div className="flex items-center justify-center gap-2 mb-4">
-                        <span className="text-4xl">{getCategoryIcon(game.activeEvent.category)}</span>
+                        <span className="text-4xl">
+                            {getCategoryIcon(game.activeEvent.category)}
+                        </span>
                         <span
                             className="text-xs font-bold uppercase px-3 py-1 rounded-full"
                             style={{

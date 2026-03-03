@@ -45,11 +45,12 @@ export default function TimelineHost({ state }: TimelineHostProps) {
 
     // Game Over Screen
     if (game.status === 'gameOver') {
-        const winner = game.winner === 'team'
-            ? 'Team Victory!'
-            : game.winner
-                ? `${game.winner} Wins!`
-                : 'Game Over';
+        const winner =
+            game.winner === 'team'
+                ? 'Team Victory!'
+                : game.winner
+                  ? `${game.winner} Wins!`
+                  : 'Game Over';
 
         return (
             <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
@@ -124,10 +125,11 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                 Object.entries(game.playerScores).map(([playerId, score]) => (
                                     <div
                                         key={playerId}
-                                        className={`px-4 py-2 rounded-full font-bold transition-all ${playerId === game.activePlayerId
-                                            ? 'bg-[#D97757] text-white shadow-md'
-                                            : 'bg-white text-[#141413]'
-                                            }`}
+                                        className={`px-4 py-2 rounded-full font-bold transition-all ${
+                                            playerId === game.activePlayerId
+                                                ? 'bg-[#D97757] text-white shadow-md'
+                                                : 'bg-white text-[#141413]'
+                                        }`}
                                     >
                                         {playerName(playerId)}: {score}
                                     </div>
@@ -162,7 +164,10 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                             game.proposedPosition === index;
 
                                         return (
-                                            <div key={`slot-${index}`} className="flex items-center gap-3">
+                                            <div
+                                                key={`slot-${index}`}
+                                                className="flex items-center gap-3"
+                                            >
                                                 {/* Placement slot before this card */}
                                                 {showActiveHere && game.activeEvent && (
                                                     <motion.div
@@ -190,12 +195,20 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                                 )}
 
                                                 {/* Placed card */}
-                                                <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 25 }}>
+                                                <motion.div
+                                                    layout
+                                                    transition={{
+                                                        type: 'spring',
+                                                        stiffness: 300,
+                                                        damping: 25,
+                                                    }}
+                                                >
                                                     <EventCard
                                                         event={event}
                                                         showYear={true}
                                                         result={
-                                                            game.status === 'revealing' && event.id === game.activeEvent?.id
+                                                            game.status === 'revealing' &&
+                                                            event.id === game.activeEvent?.id
                                                                 ? event.wasCorrect
                                                                     ? 'correct'
                                                                     : 'incorrect'
@@ -250,10 +263,14 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                         <div className="flex items-center gap-4">
                             {game.activeEvent && (
                                 <>
-                                    <div className="text-3xl">{getCategoryIcon(game.activeEvent.category)}</div>
+                                    <div className="text-3xl">
+                                        {getCategoryIcon(game.activeEvent.category)}
+                                    </div>
                                     <div>
                                         <p className="text-sm text-[#B0AEA5]">Current Card</p>
-                                        <p className="font-bold text-[#141413]">{game.activeEvent.title}</p>
+                                        <p className="font-bold text-[#141413]">
+                                            {game.activeEvent.title}
+                                        </p>
                                     </div>
                                 </>
                             )}
@@ -263,7 +280,9 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                         <div className="text-right">
                             <p className="text-sm text-[#B0AEA5]">Current Turn</p>
                             <p className="font-bold text-[#D97757] text-lg">
-                                {game.activePlayerId ? playerName(game.activePlayerId) : 'Waiting...'}
+                                {game.activePlayerId
+                                    ? playerName(game.activePlayerId)
+                                    : 'Waiting...'}
                             </p>
                         </div>
                     </div>

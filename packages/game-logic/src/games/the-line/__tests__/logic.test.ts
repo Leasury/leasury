@@ -49,12 +49,36 @@ function stateWith(overrides: Partial<TheLineGameState> = {}): TheLineGameState 
         roundIndex: 1,
         line: makePlacedEvents([10, 50, 100]),
         deck: [
-            { id: 'D1', title: 'Deck1', sorting_category: 'Weight', funfact: 'f1', display_value: '25', unit: 'kg', sorting_value: 25 },
-            { id: 'D2', title: 'Deck2', sorting_category: 'Weight', funfact: 'f2', display_value: '75', unit: 'kg', sorting_value: 75 },
+            {
+                id: 'D1',
+                title: 'Deck1',
+                sorting_category: 'Weight',
+                funfact: 'f1',
+                display_value: '25',
+                unit: 'kg',
+                sorting_value: 25,
+            },
+            {
+                id: 'D2',
+                title: 'Deck2',
+                sorting_category: 'Weight',
+                funfact: 'f2',
+                display_value: '75',
+                unit: 'kg',
+                sorting_value: 75,
+            },
         ],
         playQueue: PLAYERS,
         activePlayerId: 'player1',
-        activeEvent: { id: 'A1', title: 'Active', sorting_category: 'Weight', funfact: 'active fact', display_value: '30', unit: 'kg', sorting_value: 30 },
+        activeEvent: {
+            id: 'A1',
+            title: 'Active',
+            sorting_category: 'Weight',
+            funfact: 'active fact',
+            display_value: '30',
+            unit: 'kg',
+            sorting_value: 30,
+        },
         cursorIndex: 1,
         scores: { player1: 0, player2: 0, player3: 0 },
         usedCardIds: [],
@@ -124,23 +148,57 @@ describe('isTheLinePlacementCorrect', () => {
     const line = makePlacedEvents([10, 50, 100]);
 
     it('accepts correct placement between events', () => {
-        const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '30', unit: 'kg', sorting_value: 30 };
+        const event = {
+            id: 'T1',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '30',
+            unit: 'kg',
+            sorting_value: 30,
+        };
         approve('placement_correct_between', { result: isTheLinePlacementCorrect(event, 1, line) });
     });
 
     it('rejects incorrect placement', () => {
-        const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '30', unit: 'kg', sorting_value: 30 };
+        const event = {
+            id: 'T1',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '30',
+            unit: 'kg',
+            sorting_value: 30,
+        };
         approve('placement_incorrect', { result: isTheLinePlacementCorrect(event, 0, line) });
     });
 
     it('accepts placement at start for smallest value', () => {
-        const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '5', unit: 'kg', sorting_value: 5 };
+        const event = {
+            id: 'T1',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '5',
+            unit: 'kg',
+            sorting_value: 5,
+        };
         approve('placement_correct_start', { result: isTheLinePlacementCorrect(event, 0, line) });
     });
 
     it('accepts placement at end for largest value', () => {
-        const event = { id: 'T1', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '200', unit: 'kg', sorting_value: 200 };
-        approve('placement_correct_end', { result: isTheLinePlacementCorrect(event, line.length, line) });
+        const event = {
+            id: 'T1',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '200',
+            unit: 'kg',
+            sorting_value: 200,
+        };
+        approve('placement_correct_end', {
+            result: isTheLinePlacementCorrect(event, line.length, line),
+        });
     });
 });
 
@@ -150,17 +208,41 @@ describe('findTheLineCorrectPosition', () => {
     const line = makePlacedEvents([10, 50, 100]);
 
     it('finds position at start', () => {
-        const event = { id: 'T', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '5', unit: 'kg', sorting_value: 5 };
+        const event = {
+            id: 'T',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '5',
+            unit: 'kg',
+            sorting_value: 5,
+        };
         approve('find_position_start', { position: findTheLineCorrectPosition(event, line) });
     });
 
     it('finds position in middle', () => {
-        const event = { id: 'T', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '30', unit: 'kg', sorting_value: 30 };
+        const event = {
+            id: 'T',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '30',
+            unit: 'kg',
+            sorting_value: 30,
+        };
         approve('find_position_middle', { position: findTheLineCorrectPosition(event, line) });
     });
 
     it('finds position at end', () => {
-        const event = { id: 'T', title: 'T', sorting_category: 'Weight', funfact: '', display_value: '200', unit: 'kg', sorting_value: 200 };
+        const event = {
+            id: 'T',
+            title: 'T',
+            sorting_category: 'Weight',
+            funfact: '',
+            display_value: '200',
+            unit: 'kg',
+            sorting_value: 200,
+        };
         approve('find_position_end', { position: findTheLineCorrectPosition(event, line) });
     });
 });
@@ -177,7 +259,7 @@ describe('placeTheLineCard', () => {
             score: next.scores['player1'],
             lineLength: next.line.length,
             lastAction: next.last_action?.result,
-            placedCorrect: next.line.find(e => e.id === 'A1')?.wasCorrect,
+            placedCorrect: next.line.find((e) => e.id === 'A1')?.wasCorrect,
         });
     });
 
@@ -185,13 +267,13 @@ describe('placeTheLineCard', () => {
         // sorting_value 30 at index 0 (before 10) = wrong
         const state = stateWith({ cursorIndex: 0 });
         const next = placeTheLineCard(state);
-        const insertedIdx = next.line.findIndex(e => e.id === 'A1');
+        const insertedIdx = next.line.findIndex((e) => e.id === 'A1');
         approve('place_card_incorrect', {
             status: next.status,
             score: next.scores['player1'],
             lineLength: next.line.length,
             lastAction: next.last_action?.result,
-            placedCorrect: next.line.find(e => e.id === 'A1')?.wasCorrect,
+            placedCorrect: next.line.find((e) => e.id === 'A1')?.wasCorrect,
             insertedAtIndex: insertedIdx,
         });
     });
@@ -228,7 +310,12 @@ describe('nextTurn', () => {
     });
 
     it('triggers finished when round limit exceeded', () => {
-        const state = stateWith({ status: 'revealing', activePlayerId: 'player3', roundIndex: 5, roundLimit: 5 });
+        const state = stateWith({
+            status: 'revealing',
+            activePlayerId: 'player3',
+            roundIndex: 5,
+            roundLimit: 5,
+        });
         const next = nextTurn(state);
         approve('next_turn_game_over', { status: next.status });
     });
@@ -319,9 +406,9 @@ describe('createInitialTheLineState — no-repeat', () => {
         const secondDealtIds = [
             second.line[0]?.id,
             second.activeEvent?.id,
-            ...second.deck.map(e => e.id),
+            ...second.deck.map((e) => e.id),
         ].filter(Boolean) as string[];
-        const overlap = secondDealtIds.filter(id => usedIds.includes(id));
+        const overlap = secondDealtIds.filter((id) => usedIds.includes(id));
         approve('no_repeat_cards', { overlapCount: overlap.length });
     });
 });

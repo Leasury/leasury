@@ -30,8 +30,24 @@ function stateWith(overrides: Partial<TimelineGameState> = {}): TimelineGameStat
 }
 
 const TWO_PLACED: PlacedEvent[] = [
-    { id: 1, title: 'Early', year: 1900, category: 'Science', imageUrl: '', placedBy: 'system', wasCorrect: true },
-    { id: 2, title: 'Late', year: 2000, category: 'Science', imageUrl: '', placedBy: 'system', wasCorrect: true },
+    {
+        id: 1,
+        title: 'Early',
+        year: 1900,
+        category: 'Science',
+        imageUrl: '',
+        placedBy: 'system',
+        wasCorrect: true,
+    },
+    {
+        id: 2,
+        title: 'Late',
+        year: 2000,
+        category: 'Science',
+        imageUrl: '',
+        placedBy: 'system',
+        wasCorrect: true,
+    },
 ];
 
 // ─── createInitialTimelineState ──────────────────────────────────────────────
@@ -97,13 +113,18 @@ describe('moveCard', () => {
 
     it('clamps at left boundary', () => {
         const state = stateWith({ status: 'placing', proposedPosition: 0 });
-        approve('move_card_clamp_left', { proposedPosition: moveCard(state, 'left').proposedPosition });
+        approve('move_card_clamp_left', {
+            proposedPosition: moveCard(state, 'left').proposedPosition,
+        });
     });
 
     it('does nothing when not in placing status', () => {
         const state = stateWith({ status: 'revealing', proposedPosition: 0 });
         const next = moveCard(state, 'right');
-        approve('move_card_wrong_status', { proposedPosition: next.proposedPosition, status: next.status });
+        approve('move_card_wrong_status', {
+            proposedPosition: next.proposedPosition,
+            status: next.status,
+        });
     });
 });
 
@@ -111,9 +132,33 @@ describe('moveCard', () => {
 
 describe('isPlacementCorrect', () => {
     const placed: PlacedEvent[] = [
-        { id: 1, title: 'A', year: 1900, category: 'Science', imageUrl: '', placedBy: 'system', wasCorrect: true },
-        { id: 2, title: 'B', year: 1950, category: 'Science', imageUrl: '', placedBy: 'system', wasCorrect: true },
-        { id: 3, title: 'C', year: 2000, category: 'Science', imageUrl: '', placedBy: 'system', wasCorrect: true },
+        {
+            id: 1,
+            title: 'A',
+            year: 1900,
+            category: 'Science',
+            imageUrl: '',
+            placedBy: 'system',
+            wasCorrect: true,
+        },
+        {
+            id: 2,
+            title: 'B',
+            year: 1950,
+            category: 'Science',
+            imageUrl: '',
+            placedBy: 'system',
+            wasCorrect: true,
+        },
+        {
+            id: 3,
+            title: 'C',
+            year: 2000,
+            category: 'Science',
+            imageUrl: '',
+            placedBy: 'system',
+            wasCorrect: true,
+        },
     ];
 
     it('accepts correct placement between events', () => {
@@ -133,7 +178,9 @@ describe('isPlacementCorrect', () => {
 
     it('accepts placement at end for latest event', () => {
         const event = { id: 4, title: 'E', year: 2020, category: 'Science' as const, imageUrl: '' };
-        approve('placement_correct_end', { result: isPlacementCorrect(event, placed.length, placed) });
+        approve('placement_correct_end', {
+            result: isPlacementCorrect(event, placed.length, placed),
+        });
     });
 });
 
@@ -154,7 +201,7 @@ describe('placeCard', () => {
             status: next.status,
             lives: next.lives,
             cardsPlaced: next.cardsPlaced,
-            lastCorrect: next.placedEvents.find(e => e.id === 10)?.wasCorrect,
+            lastCorrect: next.placedEvents.find((e) => e.id === 10)?.wasCorrect,
         });
     });
 
@@ -172,8 +219,8 @@ describe('placeCard', () => {
         approve('place_card_incorrect', {
             status: next.status,
             lives: next.lives,
-            lastCorrect: next.placedEvents.find(e => e.id === 10)?.wasCorrect,
-            correctPosition: next.placedEvents.findIndex(e => e.id === 10),
+            lastCorrect: next.placedEvents.find((e) => e.id === 10)?.wasCorrect,
+            correctPosition: next.placedEvents.findIndex((e) => e.id === 10),
         });
     });
 
@@ -188,7 +235,11 @@ describe('placeCard', () => {
             lives: 1,
         };
         const next = placeCard(state);
-        approve('place_card_game_over_lives', { status: next.status, lives: next.lives, winner: next.winner });
+        approve('place_card_game_over_lives', {
+            status: next.status,
+            lives: next.lives,
+            winner: next.winner,
+        });
     });
 
     it('triggers team win when cardsGoal reached', () => {
@@ -239,6 +290,9 @@ describe('applyTimelineMessage', () => {
     it('nextTurn is a server-side no-op on the client', () => {
         const state = stateWith({ status: 'placing', proposedPosition: 1 });
         const next = applyTimelineMessage(state, { type: 'nextTurn' });
-        approve('apply_next_turn_noop', { status: next.status, proposedPosition: next.proposedPosition });
+        approve('apply_next_turn_noop', {
+            status: next.status,
+            proposedPosition: next.proposedPosition,
+        });
     });
 });

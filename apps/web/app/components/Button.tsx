@@ -20,8 +20,10 @@ export default function Button({
 
     const variantStyles = {
         primary: 'bg-[#141413] text-[#FAF9F5] shadow-lg hover:shadow-xl hover:bg-opacity-90',
-        secondary: 'bg-[#F0EFEA] text-[#141413] border-2 border-[#E8E6DC] hover:border-[#141413] shadow-md hover:shadow-lg',
-        outline: 'border-2 border-[#141413] text-[#141413] hover:bg-[#F0EFEA] shadow-md hover:shadow-lg',
+        secondary:
+            'bg-[#F0EFEA] text-[#141413] border-2 border-[#E8E6DC] hover:border-[#141413] shadow-md hover:shadow-lg',
+        outline:
+            'border-2 border-[#141413] text-[#141413] hover:bg-[#F0EFEA] shadow-md hover:shadow-lg',
     };
 
     const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${className}`;

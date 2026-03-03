@@ -14,10 +14,7 @@ export function createInitialDemoState(): DemoGameState {
 /**
  * Apply a message to the demo game state
  */
-export function applyDemoMessage(
-    state: DemoGameState,
-    message: DemoGameMessage
-): DemoGameState {
+export function applyDemoMessage(state: DemoGameState, message: DemoGameMessage): DemoGameState {
     switch (message.type) {
         case 'increment':
             return { ...state, counter: state.counter + 1 };

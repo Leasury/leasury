@@ -1,7 +1,13 @@
 'use client';
 
 import { TimelineEvent, PlacedEvent } from '@lesury/game-logic';
-import { CATEGORY_STYLES, formatYear, getCategoryIcon, getCategoryColor, getCategoryLabel } from '@lesury/game-logic';
+import {
+    CATEGORY_STYLES,
+    formatYear,
+    getCategoryIcon,
+    getCategoryColor,
+    getCategoryLabel,
+} from '@lesury/game-logic';
 
 interface EventCardProps {
     event: TimelineEvent | PlacedEvent;
@@ -51,7 +57,9 @@ export default function EventCard({
             `}
         >
             {/* Event Image */}
-            <div className={`${imageHeightClasses[size]} bg-[#E8E6DC]/50 relative flex items-center justify-center`}>
+            <div
+                className={`${imageHeightClasses[size]} bg-[#E8E6DC]/50 relative flex items-center justify-center`}
+            >
                 {event.imageUrl && event.imageUrl !== 'placeholder' ? (
                     <img
                         src={event.imageUrl}
@@ -93,9 +101,7 @@ export default function EventCard({
                             {formatYear(event)}
                         </span>
                     )}
-                    {!showYear && (
-                        <span className="text-sm font-bold text-[#B0AEA5]">???</span>
-                    )}
+                    {!showYear && <span className="text-sm font-bold text-[#B0AEA5]">???</span>}
                 </div>
             </div>
         </div>

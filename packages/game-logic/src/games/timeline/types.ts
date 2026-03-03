@@ -19,16 +19,16 @@ export type EventCategory =
  * Timeline event with year-based ordering
  */
 export interface TimelineEvent {
-    id: number;           // 1-20
-    title: string;        // "Moon Landing (Apollo 11)"
-    year: number;         // 1969
+    id: number; // 1-20
+    title: string; // "Moon Landing (Apollo 11)"
+    year: number; // 1969
     category: EventCategory;
-    imageUrl: string;     // Path to event image
+    imageUrl: string; // Path to event image
 }
 
 export interface PlacedEvent extends TimelineEvent {
-    placedBy: string;     // Player ID
-    wasCorrect: boolean;  // Was placement correct?
+    placedBy: string; // Player ID
+    wasCorrect: boolean; // Was placement correct?
 }
 
 export type GameMode = 'coop' | 'competitive';
@@ -42,12 +42,12 @@ export interface TimelineGameState {
     // Current turn
     activePlayerId: string;
     activeEvent: TimelineEvent | null;
-    proposedPosition: number;  // Index where player wants to place (0 = leftmost)
+    proposedPosition: number; // Index where player wants to place (0 = leftmost)
 
     // Co-op scoring
-    lives: number;             // Hearts remaining
-    cardsPlaced: number;       // Successfully placed
-    cardsGoal: number;         // Win condition
+    lives: number; // Hearts remaining
+    cardsPlaced: number; // Successfully placed
+    cardsGoal: number; // Win condition
 
     // Competitive scoring
     playerScores: Record<string, number>;
@@ -58,7 +58,7 @@ export interface TimelineGameState {
 
     // Event deck
     remainingEvents: TimelineEvent[];
-    usedEventIds: number[];    // Changed from string[] to number[]
+    usedEventIds: number[]; // Changed from string[] to number[]
 }
 
 export type TimelineMessage =
@@ -68,4 +68,3 @@ export type TimelineMessage =
     | { type: 'placeCard' }
     | { type: 'nextTurn' }
     | { type: 'sync'; state: TimelineGameState };
-

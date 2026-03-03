@@ -2,18 +2,18 @@
 
 :root {
     /* Off-white backgrounds */
-    --background: #FAF9F5;
-    --background-secondary: #F0EFEA;
-    --background-tertiary: #E8E6DC;
+    --background: #faf9f5;
+    --background-secondary: #f0efea;
+    --background-tertiary: #e8e6dc;
 
     /* Text colors */
     --foreground: #141413;
-    --foreground-secondary: #B0AEA5;
+    --foreground-secondary: #b0aea5;
 
     /* Accent colors */
-    --accent: #D97757;
-    --accent-blue: #6A9BCC;
-    --accent-green: #788C5D;
+    --accent: #d97757;
+    --accent-blue: #6a9bcc;
+    --accent-green: #788c5d;
 }
 
 @theme inline {
@@ -25,7 +25,11 @@
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    font-family:
+        var(--font-sans),
+        system-ui,
+        -apple-system,
+        sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -37,13 +41,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #F0EFEA;
+    background: #f0efea;
     /* cararra */
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #B0AEA5;
+    background: #b0aea5;
     /* midGray */
     border-radius: 4px;
 }

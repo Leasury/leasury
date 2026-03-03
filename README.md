@@ -6,12 +6,13 @@ A web-based multiplayer party game platform. Think Jackbox — one shared screen
 
 ## Games
 
-| Game | Players | Status |
-|---|---|---|
-| **Timeline** | 2–8 | ✅ Live |
-| **Demo** | Any | ✅ (dev reference) |
+| Game         | Players | Status             |
+| ------------ | ------- | ------------------ |
+| **Timeline** | 2–8     | ✅ Live            |
+| **Demo**     | Any     | ✅ (dev reference) |
 
 ### How to play
+
 1. Open the game on a TV/laptop — this is the **host screen**
 2. Players scan the QR code or enter the room code on their phones
 3. Phones act as controllers — the TV is the source of truth
@@ -20,13 +21,13 @@ A web-based multiplayer party game platform. Think Jackbox — one shared screen
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js (App Router) |
-| Realtime server | PartyKit (Cloudflare Workers) |
-| Game logic | Shared TypeScript package (`@lesury/game-logic`) |
-| Styling | Tailwind CSS + Framer Motion |
-| Monorepo | Turborepo |
+| Layer           | Technology                                       |
+| --------------- | ------------------------------------------------ |
+| Frontend        | Next.js (App Router)                             |
+| Realtime server | PartyKit (Cloudflare Workers)                    |
+| Game logic      | Shared TypeScript package (`@lesury/game-logic`) |
+| Styling         | Tailwind CSS + Framer Motion                     |
+| Monorepo        | Turborepo                                        |
 
 ---
 
@@ -60,6 +61,7 @@ Player pages open on `localhost:3000`, server on `localhost:1999`.
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full guide.
 
 **Short version:**
+
 - **Frontend (Vercel):** auto-deploys from `main` branch
 - **Server (PartyKit):** `npm run deploy`
 

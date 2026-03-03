@@ -12,13 +12,15 @@ export function useDeviceDetection(): DeviceType {
             if (typeof window === 'undefined') return 'unknown';
 
             const ua = navigator.userAgent;
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                ua
+            );
 
             // Also check for touch support and screen size
             const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
             const isSmallScreen = window.innerWidth < 768;
 
-            return (isMobile || (hasTouch && isSmallScreen)) ? 'mobile' : 'desktop';
+            return isMobile || (hasTouch && isSmallScreen) ? 'mobile' : 'desktop';
         };
 
         setDevice(detectDevice());

@@ -33,7 +33,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
 
     const playerId = myPlayerId || room.players.find((p: any) => !p.isHost)?.id || '';
 
-    const getSocket = () => typeof window !== 'undefined' ? (window as any).__partySocket : null;
+    const getSocket = () => (typeof window !== 'undefined' ? (window as any).__partySocket : null);
 
     // Listen for kicked message
     useEffect(() => {
@@ -176,7 +176,9 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                         <p className="text-sm text-[#B0AEA5]">Your Score</p>
                         <p className="text-4xl font-bold text-[#D97757] tabular-nums">{myScore}</p>
                     </div>
-                    <p className="text-[#B0AEA5] text-sm mb-4">Waiting for host to start a new game...</p>
+                    <p className="text-[#B0AEA5] text-sm mb-4">
+                        Waiting for host to start a new game...
+                    </p>
                     <button
                         onClick={() => (window.location.href = '/')}
                         className="w-full bg-[#141413] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2A2A2A] transition-colors"
@@ -231,8 +233,9 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className={`fixed inset-0 flex items-center justify-center z-50 ${lastResult === 'success' ? 'bg-green-500/20' : 'bg-red-500/20'
-                                }`}
+                            className={`fixed inset-0 flex items-center justify-center z-50 ${
+                                lastResult === 'success' ? 'bg-green-500/20' : 'bg-red-500/20'
+                            }`}
                         >
                             <motion.div
                                 initial={{ scale: 0 }}
@@ -285,7 +288,8 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                                 transition={{ delay: 0.3 }}
                             >
                                 <p className="text-2xl font-bold text-[#141413] tabular-nums">
-                                    {formatDisplayValue(game.last_action.display_value)} {game.last_action.unit}
+                                    {formatDisplayValue(game.last_action.display_value)}{' '}
+                                    {game.last_action.unit}
                                 </p>
                                 <p className="text-[#B0AEA5] text-sm mt-2 max-w-xs mx-auto">
                                     {game.last_action.funfact}
@@ -355,9 +359,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                     )}
 
                     {/* Instructions */}
-                    <p className="text-lg text-[#B0AEA5]">
-                        Where does this belong on the line?
-                    </p>
+                    <p className="text-lg text-[#B0AEA5]">Where does this belong on the line?</p>
 
                     {/* Position indicator */}
                     <motion.div

@@ -43,13 +43,13 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
     const playerName = (id: string) =>
         room.players.find((p: { id: string; name: string }) => p.id === id)?.name ?? id;
 
-    const playerAvatar = (id: string) =>
-        room.players.find((p: any) => p.id === id)?.avatar || '👤';
+    const playerAvatar = (id: string) => room.players.find((p: any) => p.id === id)?.avatar || '👤';
 
     // Helper: get the live socket at call time to avoid stale closures
-    const getSocket = useCallback(() =>
-        propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null),
-    [propSocket]);
+    const getSocket = useCallback(
+        () => propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null),
+        [propSocket]
+    );
 
     // ALL hooks must be declared before any conditional returns (Rules of Hooks)
 
@@ -62,7 +62,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
 
             let targetIndex = game.cursorIndex;
             if (game.status === 'revealing' && game.last_action) {
-                const placedIdx = game.line.findIndex(e => e.id === game.last_action?.eventId);
+                const placedIdx = game.line.findIndex((e) => e.id === game.last_action?.eventId);
                 if (placedIdx >= 0) targetIndex = placedIdx;
             }
 
@@ -105,11 +105,18 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
         if (game.status !== 'setup' || !canvasRef.current) return;
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
         const url = generateRoomUrl('the-line', room.roomCode, baseUrl);
-        QRCode.toCanvas(canvasRef.current, url, {
-            width: 250,
-            margin: 2,
-            color: { dark: '#141413', light: '#F0EFEA' },
-        }, (err) => { if (err) console.error('QR generation failed:', err); });
+        QRCode.toCanvas(
+            canvasRef.current,
+            url,
+            {
+                width: 250,
+                margin: 2,
+                color: { dark: '#141413', light: '#F0EFEA' },
+            },
+            (err) => {
+                if (err) console.error('QR generation failed:', err);
+            }
+        );
     }, [game.status, room.roomCode]);
 
     const skipAutoAdvance = () => {
@@ -133,9 +140,16 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         animate={{ opacity: 1, x: 0 }}
                         className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-[#B0AEA5] text-center text-sm mb-4">Scan to join on mobile</p>
+                        <p className="text-[#B0AEA5] text-center text-sm mb-4">
+                            Scan to join on mobile
+                        </p>
                         <div className="flex justify-center mb-6">
-                            <canvas ref={canvasRef} width={250} height={250} className="rounded-xl" />
+                            <canvas
+                                ref={canvasRef}
+                                width={250}
+                                height={250}
+                                className="rounded-xl"
+                            />
                         </div>
 
                         {/* Room Code */}
@@ -152,7 +166,9 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                 Players ({nonHostPlayers.length})
                             </p>
                             {nonHostPlayers.length === 0 ? (
-                                <p className="text-[#B0AEA5] text-sm">Waiting for players to join...</p>
+                                <p className="text-[#B0AEA5] text-sm">
+                                    Waiting for players to join...
+                                </p>
                             ) : (
                                 <div className="space-y-2">
                                     {nonHostPlayers.map((p: any) => (
@@ -164,9 +180,17 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                             <span className="flex-1">{p.name}</span>
                                             <button
                                                 onClick={() => {
-                                                    if (confirm(`Remove ${p.name} from the game?`)) {
+                                                    if (
+                                                        confirm(`Remove ${p.name} from the game?`)
+                                                    ) {
                                                         const s = getSocket();
-                                                        if (s) s.send(JSON.stringify({ type: 'kick', playerId: p.id }));
+                                                        if (s)
+                                                            s.send(
+                                                                JSON.stringify({
+                                                                    type: 'kick',
+                                                                    playerId: p.id,
+                                                                })
+                                                            );
                                                     }
                                                 }}
                                                 className="text-[#B0AEA5] hover:text-red-500 transition-colors text-lg px-1"
@@ -186,7 +210,9 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         animate={{ opacity: 1, x: 0 }}
                         className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
                     >
-                        <h1 className="text-3xl font-bold text-[#141413] mb-2 text-center">The Line</h1>
+                        <h1 className="text-3xl font-bold text-[#141413] mb-2 text-center">
+                            The Line
+                        </h1>
                         <p className="text-[#B0AEA5] text-center mb-8">Configure your game</p>
 
                         {/* Category Select */}
@@ -199,9 +225,10 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                     <button
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
-                                        className={`px-4 py-3 rounded-xl font-bold text-sm transition-all ${selectedCategory === cat
-                                            ? 'bg-[#D97757] text-white shadow-md'
-                                            : 'bg-white text-[#141413] hover:bg-[#E8E6DC]'
+                                        className={`px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+                                            selectedCategory === cat
+                                                ? 'bg-[#D97757] text-white shadow-md'
+                                                : 'bg-white text-[#141413] hover:bg-[#E8E6DC]'
                                         }`}
                                     >
                                         {cat}
@@ -213,7 +240,10 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         {/* Rounds Selector */}
                         <div className="mb-8">
                             <label className="block text-sm font-bold text-[#141413] mb-2">
-                                Rounds: <span className="text-[#D97757] tabular-nums">{selectedRounds}</span>
+                                Rounds:{' '}
+                                <span className="text-[#D97757] tabular-nums">
+                                    {selectedRounds}
+                                </span>
                             </label>
                             <input
                                 type="range"
@@ -237,11 +267,13 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                             onClick={() => {
                                 const s = getSocket();
                                 if (!s) return;
-                                s.send(JSON.stringify({
-                                    type: 'start_game',
-                                    category: selectedCategory,
-                                    roundLimit: selectedRounds,
-                                }));
+                                s.send(
+                                    JSON.stringify({
+                                        type: 'start_game',
+                                        category: selectedCategory,
+                                        roundLimit: selectedRounds,
+                                    })
+                                );
                             }}
                             className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors cursor-pointer"
                         >
@@ -267,9 +299,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                     className="bg-[#F0EFEA] rounded-3xl p-12 text-center max-w-2xl w-full shadow-2xl"
                 >
                     <div className="text-7xl mb-4">🏆</div>
-                    {winnerId && (
-                        <div className="text-5xl mb-2">{playerAvatar(winnerId)}</div>
-                    )}
+                    {winnerId && <div className="text-5xl mb-2">{playerAvatar(winnerId)}</div>}
                     <h1 className="text-4xl font-bold mb-2 text-[#141413]">
                         {winnerId ? `${playerName(winnerId)} Wins!` : 'Game Over'}
                     </h1>
@@ -284,16 +314,15 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
-                                className={`flex justify-between items-center p-4 rounded-xl ${idx === 0 ? 'bg-[#D97757] text-white' : 'bg-white'
+                                className={`flex justify-between items-center p-4 rounded-xl ${
+                                    idx === 0 ? 'bg-[#D97757] text-white' : 'bg-white'
                                 }`}
                             >
                                 <span className="font-bold flex items-center gap-2">
-                                    <span className="text-2xl">{playerAvatar(pid)}</span>
-                                    #{idx + 1} {playerName(pid)}
+                                    <span className="text-2xl">{playerAvatar(pid)}</span>#{idx + 1}{' '}
+                                    {playerName(pid)}
                                 </span>
-                                <span className="font-bold tabular-nums text-xl">
-                                    {score} pts
-                                </span>
+                                <span className="font-bold tabular-nums text-xl">{score} pts</span>
                             </motion.div>
                         ))}
                     </div>
@@ -324,10 +353,19 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
 
     const isRevealing = game.status === 'revealing';
     const lastAction = game.last_action;
-    const resultColor = lastAction?.result === 'success' ? 'bg-green-500/10' : lastAction?.result === 'fail' ? 'bg-red-500/10' : '';
+    const resultColor =
+        lastAction?.result === 'success'
+            ? 'bg-green-500/10'
+            : lastAction?.result === 'fail'
+              ? 'bg-red-500/10'
+              : '';
 
     // Reusable card slot component for the active card preview
-    const ActiveCardSlot = ({ activeEvent }: { activeEvent: NonNullable<TheLineGameState['activeEvent']> }) => (
+    const ActiveCardSlot = ({
+        activeEvent,
+    }: {
+        activeEvent: NonNullable<TheLineGameState['activeEvent']>;
+    }) => (
         <motion.div
             initial={{ width: 8, opacity: 0 }}
             animate={{ width: 208, opacity: 1 }}
@@ -343,7 +381,12 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             {/* Image — always at the same Y position */}
             {activeEvent.imageUrl && (
                 <div className="relative w-full aspect-square overflow-hidden rounded-lg mt-2 flex-shrink-0">
-                    <Image src={activeEvent.imageUrl} alt={activeEvent.title} fill className="object-contain" />
+                    <Image
+                        src={activeEvent.imageUrl}
+                        alt={activeEvent.title}
+                        fill
+                        className="object-contain"
+                    />
                 </div>
             )}
             {/* Fixed value+unit area */}
@@ -362,13 +405,24 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
     );
 
     return (
-        <div className={`min-h-screen bg-[#2A2A2A] flex flex-col transition-colors duration-500 ${isRevealing ? resultColor : ''}`}>
+        <div
+            className={`min-h-screen bg-[#2A2A2A] flex flex-col transition-colors duration-500 ${isRevealing ? resultColor : ''}`}
+        >
             {/* Top Bar — Scores & Round */}
             <div className="bg-[#1E1E1E] border-b border-[#3A3A3A] py-3 px-6">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity mr-6 flex-shrink-0">
-                        <Image src="/logo.png" alt="Lesury" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 hover:opacity-70 transition-opacity mr-6 flex-shrink-0"
+                    >
+                        <Image
+                            src="/logo.png"
+                            alt="Lesury"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-full object-cover"
+                        />
                         <span className="text-lg font-extrabold text-[#E8E6DC]">lesury</span>
                     </Link>
 
@@ -377,14 +431,17 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         {(game.playQueue || []).map((pid) => (
                             <div
                                 key={pid}
-                                className={`px-5 py-3 rounded-2xl font-bold text-base transition-all ${pid === game.activePlayerId
-                                    ? 'bg-[#D97757] text-white shadow-lg scale-110 ring-2 ring-[#D97757]/50'
-                                    : 'bg-[#3A3A3A] text-[#B0AEA5]'
+                                className={`px-5 py-3 rounded-2xl font-bold text-base transition-all ${
+                                    pid === game.activePlayerId
+                                        ? 'bg-[#D97757] text-white shadow-lg scale-110 ring-2 ring-[#D97757]/50'
+                                        : 'bg-[#3A3A3A] text-[#B0AEA5]'
                                 }`}
                             >
                                 <span className="text-lg">{playerAvatar(pid)}</span>{' '}
                                 <span className="text-lg">{playerName(pid)}</span>{' '}
-                                <span className="tabular-nums text-xl">{game.scores[pid] ?? 0}</span>
+                                <span className="tabular-nums text-xl">
+                                    {game.scores[pid] ?? 0}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -396,9 +453,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                 <div
                                     key={i}
                                     className={`w-3 h-3 rounded-full transition-colors ${
-                                        i < game.roundIndex
-                                            ? 'bg-[#D97757]'
-                                            : 'bg-[#3A3A3A]'
+                                        i < game.roundIndex ? 'bg-[#D97757]' : 'bg-[#3A3A3A]'
                                     }`}
                                 />
                             ))}
@@ -438,7 +493,10 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                         game.cursorIndex === index;
 
                                     return (
-                                        <div key={`slot-${event.id}`} className="flex items-center gap-4">
+                                        <div
+                                            key={`slot-${event.id}`}
+                                            className="flex items-center gap-4"
+                                        >
                                             {/* Cursor slot before this card */}
                                             {showSlotHere && game.activeEvent && (
                                                 <ActiveCardSlot activeEvent={game.activeEvent} />
@@ -447,12 +505,17 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                             {/* Placed card */}
                                             <motion.div
                                                 layout
-                                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                                className={`w-52 h-[34rem] rounded-2xl p-3 flex flex-col items-center flex-shrink-0 overflow-hidden ${isRevealing && event.id === lastAction?.eventId
-                                                    ? event.wasCorrect
-                                                        ? 'bg-green-500/20 border-2 border-green-400'
-                                                        : 'bg-red-500/20 border-2 border-red-400'
-                                                    : 'bg-[#F0EFEA] border border-[#E8E6DC]'
+                                                transition={{
+                                                    type: 'spring',
+                                                    stiffness: 300,
+                                                    damping: 25,
+                                                }}
+                                                className={`w-52 h-[34rem] rounded-2xl p-3 flex flex-col items-center flex-shrink-0 overflow-hidden ${
+                                                    isRevealing && event.id === lastAction?.eventId
+                                                        ? event.wasCorrect
+                                                            ? 'bg-green-500/20 border-2 border-green-400'
+                                                            : 'bg-red-500/20 border-2 border-red-400'
+                                                        : 'bg-[#F0EFEA] border border-[#E8E6DC]'
                                                 }`}
                                             >
                                                 {/* Fixed 2-row title area */}
@@ -464,7 +527,12 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                                 {/* Image — always at the same Y position */}
                                                 {event.imageUrl && (
                                                     <div className="relative w-full aspect-square overflow-hidden rounded-lg mt-2 flex-shrink-0">
-                                                        <Image src={event.imageUrl} alt={event.title} fill className="object-contain" />
+                                                        <Image
+                                                            src={event.imageUrl}
+                                                            alt={event.title}
+                                                            fill
+                                                            className="object-contain"
+                                                        />
                                                     </div>
                                                 )}
                                                 {/* Fixed value+unit area */}
@@ -530,7 +598,8 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                                     className="bg-[#1E1E1E]/90 rounded-2xl p-6 max-w-md mx-4"
                                 >
                                     <p className="text-white font-bold text-2xl tabular-nums">
-                                        {formatDisplayValue(lastAction.display_value)} {lastAction.unit}
+                                        {formatDisplayValue(lastAction.display_value)}{' '}
+                                        {lastAction.unit}
                                     </p>
                                     <p className="text-[#E8E6DC] text-sm mt-2 leading-relaxed">
                                         {lastAction.funfact}

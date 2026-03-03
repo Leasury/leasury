@@ -12,11 +12,11 @@ This file is read automatically at the start of every agent session. Follow all 
 
 Lesury is a **multiplayer party game platform** built as a monorepo:
 
-| Package | Purpose |
-|---|---|
-| `packages/game-logic` | All game logic, types, and utilities. Pure TypeScript, no framework dependencies. |
-| `apps/server` | PartyKit server. Handles connections, routing, state broadcasting. **No game logic here.** |
-| `apps/web` | Next.js frontend. Displays state, sends messages. **No game logic here.** |
+| Package               | Purpose                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `packages/game-logic` | All game logic, types, and utilities. Pure TypeScript, no framework dependencies.          |
+| `apps/server`         | PartyKit server. Handles connections, routing, state broadcasting. **No game logic here.** |
+| `apps/web`            | Next.js frontend. Displays state, sends messages. **No game logic here.**                  |
 
 ---
 
@@ -28,6 +28,7 @@ Lesury is a **multiplayer party game platform** built as a monorepo:
 - If you catch yourself computing game state in `server.ts` or a `.tsx` file, extract it to game-logic first.
 
 **Pattern for adding logic:**
+
 ```
 packages/game-logic/src/games/<gameName>/logic.ts   ← pure functions
 packages/game-logic/src/games/<gameName>/types.ts   ← types
@@ -63,6 +64,7 @@ npm run build
 All game logic in `packages/game-logic` must be covered by approval tests.
 
 **Run tests after every change to game-logic:**
+
 ```bash
 cd /home/clickout/Projekty/lesury
 npm run test
@@ -70,13 +72,14 @@ npm run test
 
 ### If tests fail:
 
-| Situation | Action |
-|---|---|
+| Situation                                                     | Action                                                                                           |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | You changed logic intentionally and the snapshot is now wrong | Promote received→approved: `cp *.received.txt *.approved.txt` for the affected test, then re-run |
-| The failure looks like a regression/bug | Fix the code, don't change the approved file |
-| Unsure if the behavior change is intentional | **Ask the developer before promoting snapshots** |
+| The failure looks like a regression/bug                       | Fix the code, don't change the approved file                                                     |
+| Unsure if the behavior change is intentional                  | **Ask the developer before promoting snapshots**                                                 |
 
 ### Adding tests for new logic:
+
 ```
 packages/game-logic/src/games/<gameName>/__tests__/logic.test.ts
 ```
@@ -84,6 +87,7 @@ packages/game-logic/src/games/<gameName>/__tests__/logic.test.ts
 Use the `approve(testName, data)` helper pattern (see existing tests). Use `nodediff` reporter.
 
 **Promoting all received files to approved (first run or bulk approval):**
+
 ```bash
 for f in packages/game-logic/src/**/__tests__/*.received.txt; do cp "$f" "${f/.received.txt/.approved.txt}"; done
 ```
@@ -116,6 +120,7 @@ for f in packages/game-logic/src/**/__tests__/*.received.txt; do cp "$f" "${f/.r
 **Typography:** System font stack. Font-bold for headings, tabular-nums for counters.
 
 **Component conventions:**
+
 - Rounded corners: `rounded-xl` (inputs), `rounded-2xl` (cards), `rounded-3xl` (modals)
 - Animations: use `framer-motion`. Prefer `motion.div` with `initial/animate` for entrances.
 - Buttons: use `bg-[#D97757] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#CC785C] transition-colors`
@@ -127,6 +132,20 @@ for f in packages/game-logic/src/**/__tests__/*.received.txt; do cp "$f" "${f/.r
 See `/home/clickout/Projekty/lesury/.agents/workflows/add-new-game.md` for the full step-by-step.
 
 ---
+
+## Rule 6: Utility and Generation Scripts
+
+- One-off scripts (e.g., data generation, API scrapers, image generators) must live in the `scripts/` folder at the monorepo root.
+- **NEVER** import from the `scripts/` folder inside `apps/` or `packages/`.
+- Prefer `.ts` over `.js`. Run them using `npx tsx scripts/<script-name>.ts`.
+- Every script must have a concise header comment explaining its purpose and the exact command to run it.
+
+---
+
+## Rule 7: AI Agent Handoffs and Scratchpads
+
+- If an ongoing task requires tracking state between sessions (like tracking generated images, rate limits, or a checklist), keep this context in `.agents/handoff_plan.md` (or similarly named files in `.agents/`).
+- Do not clutter the root directory with agent-only markdown scratchpads (other than standard project docs like `README.md` and `DEPLOYMENT.md`).
 
 ## File Structure Reference
 

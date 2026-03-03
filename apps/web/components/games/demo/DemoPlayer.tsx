@@ -27,11 +27,12 @@ export default function DemoPlayer({ state }: DemoPlayerProps) {
 
     return (
         <GameLayout backUrl="/games/demo" theme="light" backLabel="← Back">
-            <div className="flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
+            <div
+                className="flex items-center justify-center p-4"
+                style={{ minHeight: 'calc(100vh - 60px)' }}
+            >
                 <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-md w-full">
-                    <h1 className="text-2xl font-bold text-center mb-6">
-                        Demo Game - Player
-                    </h1>
+                    <h1 className="text-2xl font-bold text-center mb-6">Demo Game - Player</h1>
 
                     {/* Counter Display */}
                     <div className="bg-[#F0EFEA] rounded-2xl p-8 mb-6 text-center">
@@ -58,7 +59,8 @@ export default function DemoPlayer({ state }: DemoPlayerProps) {
                     </div>
 
                     <p className="text-xs text-[#B0AEA5] text-center mt-6">
-                        {state.room.players.length} player{state.room.players.length !== 1 ? 's' : ''} in room
+                        {state.room.players.length} player
+                        {state.room.players.length !== 1 ? 's' : ''} in room
                     </p>
                 </div>
             </div>

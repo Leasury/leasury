@@ -12,9 +12,7 @@ export default function GamesPage() {
 
             {/* Page Header */}
             <section className="max-w-7xl mx-auto px-6 py-12">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                    Games Library
-                </h1>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">Games Library</h1>
                 <p className="text-[#B0AEA5] text-lg">
                     Choose a game to play with friends. More games coming soon!
                 </p>
@@ -43,6 +41,17 @@ export default function GamesPage() {
                         duration="10-20 min"
                         href="/games/demo"
                         index={1}
+                    />
+
+                    {/* Guessio */}
+                    <GameCard
+                        title="Guessio"
+                        description="A team-based word guessing game inspired by Activity. Bet points on your skills!"
+                        emoji="🎭"
+                        players="4-12"
+                        duration="20-40 min"
+                        href="/games/guessio"
+                        index={2}
                     />
 
                     {/* Coming Soon Games */}
@@ -84,16 +93,12 @@ export default function GamesPage() {
             {/* Call to Action */}
             <section className="bg-[#F0EFEA] py-16">
                 <div className="max-w-3xl mx-auto px-6 text-center">
-                    <h2 className="text-3xl font-bold mb-4">
-                        Have a game idea?
-                    </h2>
+                    <h2 className="text-3xl font-bold mb-4">Have a game idea?</h2>
                     <p className="text-[#B0AEA5] mb-8">
-                        We're always looking to expand our library. Let us know
-                        what games you'd love to play!
+                        We're always looking to expand our library. Let us know what games you'd
+                        love to play!
                     </p>
-                    <Button href="mailto:hello@lesury.com">
-                        Suggest a Game
-                    </Button>
+                    <Button href="mailto:hello@lesury.com">Suggest a Game</Button>
                 </div>
             </section>
 

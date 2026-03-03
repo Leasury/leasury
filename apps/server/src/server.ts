@@ -13,12 +13,31 @@ import {
     applyTheLineMessage,
     type TheLineGameState,
     type TheLineMessage,
+    // Guessio
+    createInitialGuessioState,
+    applyGuessioMessage,
+    type GuessioGameState,
+    type GuessioMessage,
 } from '@lesury/game-logic';
 
 // Pool of distinct emoji avatars for players
 const AVATAR_POOL = [
-    '🦊', '🐸', '🦉', '🐙', '🦋', '🐺', '🦁', '🐧',
-    '🐼', '🦄', '🐝', '🐳', '🦜', '🐨', '🦚', '🐯',
+    '🦊',
+    '🐸',
+    '🦉',
+    '🐙',
+    '🦋',
+    '🐺',
+    '🦁',
+    '🐧',
+    '🐼',
+    '🦄',
+    '🐝',
+    '🐳',
+    '🦜',
+    '🐨',
+    '🦚',
+    '🐯',
 ];
 
 /**
@@ -26,7 +45,7 @@ const AVATAR_POOL = [
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TheLineGameState;
+    game: DemoGameState | TheLineGameState | GuessioGameState;
 }
 
 export default class Server implements Party.Server {
@@ -71,9 +90,7 @@ export default class Server implements Party.Server {
         this.connToPlayer.delete(conn.id);
 
         // Remove player from list
-        this.state.room.players = this.state.room.players.filter(
-            (p) => p.id !== playerId
-        );
+        this.state.room.players = this.state.room.players.filter((p) => p.id !== playerId);
 
         // Broadcast updated state
         this.broadcastState();
@@ -91,7 +108,9 @@ export default class Server implements Party.Server {
                 return;
             }
 
-            console.log(`[onMessage] gameType=${this.state.room.gameType}, msg.type=${msg.type}, gameInitialized=${this.gameInitialized}`);
+            console.log(
+                `[onMessage] gameType=${this.state.room.gameType}, msg.type=${msg.type}, gameInitialized=${this.gameInitialized}`
+            );
 
             // Handle game-specific messages based on game type
             if (this.state.room.gameType === 'demo' && this.isDemoMessage(msg)) {
@@ -105,7 +124,15 @@ export default class Server implements Party.Server {
                 return;
             }
 
-            console.log(`[onMessage] Message NOT handled! gameType=${this.state.room.gameType}, msg.type=${msg.type}`);
+            if (this.state.room.gameType === 'guessio' && this.isGuessioMessage(msg)) {
+                console.log(`[onMessage] Routing to handleGuessioMessage`);
+                this.handleGuessioMessage(msg, sender);
+                return;
+            }
+
+            console.log(
+                `[onMessage] Message NOT handled! gameType=${this.state.room.gameType}, msg.type=${msg.type}`
+            );
         } catch (e) {
             console.error('Failed to process message:', e);
         }
@@ -143,6 +170,8 @@ export default class Server implements Party.Server {
                             status: 'setup',
                             last_action: null,
                         } satisfies TheLineGameState;
+                    } else if (msg.gameType === 'guessio') {
+                        this.state.game = createInitialGuessioState([], []);
                     } else {
                         this.state.game = createInitialDemoState();
                     }
@@ -171,7 +200,9 @@ export default class Server implements Party.Server {
                     // Send kicked message to the player's connection before removing
                     for (const [connId, pid] of this.connToPlayer.entries()) {
                         if (pid === msg.playerId) {
-                            const conn = [...this.room.getConnections()].find(c => c.id === connId);
+                            const conn = [...this.room.getConnections()].find(
+                                (c) => c.id === connId
+                            );
                             if (conn) {
                                 conn.send(JSON.stringify({ type: 'kicked' }));
                             }
@@ -200,8 +231,8 @@ export default class Server implements Party.Server {
         }
 
         // Pick an avatar not yet taken
-        const usedAvatars = new Set(this.state.room.players.map(p => p.avatar));
-        const avatar = AVATAR_POOL.find(a => !usedAvatars.has(a)) || '👤';
+        const usedAvatars = new Set(this.state.room.players.map((p) => p.avatar));
+        const avatar = AVATAR_POOL.find((a) => !usedAvatars.has(a)) || '👤';
 
         const player: Player = {
             id: playerId,
@@ -217,9 +248,7 @@ export default class Server implements Party.Server {
 
     removePlayer(connId: string) {
         const playerId = this.connToPlayer.get(connId) || connId;
-        this.state.room.players = this.state.room.players.filter(
-            (p) => p.id !== playerId
-        );
+        this.state.room.players = this.state.room.players.filter((p) => p.id !== playerId);
         this.broadcastState();
     }
 
@@ -237,7 +266,9 @@ export default class Server implements Party.Server {
 
     // The Line game message handling
     isTheLineMessage(msg: any): msg is TheLineMessage {
-        return ['start_game', 'move_cursor', 'place_card', 'next_turn', 'play_again'].includes(msg.type);
+        return ['start_game', 'move_cursor', 'place_card', 'next_turn', 'play_again'].includes(
+            msg.type
+        );
     }
 
     handleTheLineMessage(msg: TheLineMessage, sender: Party.Connection) {
@@ -246,10 +277,10 @@ export default class Server implements Party.Server {
 
             if (msg.type === 'start_game') {
                 // Create initial state with all non-host player IDs
-                const playerIds = this.state.room.players
-                    .filter(p => !p.isHost)
-                    .map(p => p.id);
-                console.log(`[start_game] players=${JSON.stringify(this.state.room.players.map(p => ({ id: p.id, name: p.name, isHost: p.isHost })))}, playerIds=${JSON.stringify(playerIds)}, category=${msg.category}, roundLimit=${msg.roundLimit}`);
+                const playerIds = this.state.room.players.filter((p) => !p.isHost).map((p) => p.id);
+                console.log(
+                    `[start_game] players=${JSON.stringify(this.state.room.players.map((p) => ({ id: p.id, name: p.name, isHost: p.isHost })))}, playerIds=${JSON.stringify(playerIds)}, category=${msg.category}, roundLimit=${msg.roundLimit}`
+                );
                 // Pass session's used card IDs for no-repeat draw
                 const previouslyUsedCardIds = gameState.usedCardIds || [];
                 gameState = createInitialTheLineState(
@@ -259,7 +290,9 @@ export default class Server implements Party.Server {
                     previouslyUsedCardIds
                 );
                 this.state.room.status = 'playing';
-                console.log(`[start_game] Game started! status=${gameState.status}, line=${gameState.line.length}, deck=${gameState.deck.length}`);
+                console.log(
+                    `[start_game] Game started! status=${gameState.status}, line=${gameState.line.length}, deck=${gameState.deck.length}`
+                );
             } else if (msg.type === 'play_again') {
                 gameState = applyTheLineMessage(gameState, msg);
                 // Return to lobby/setup state
@@ -275,21 +308,48 @@ export default class Server implements Party.Server {
         }
     }
 
+    // Guessio game message handling
+    isGuessioMessage(msg: any): msg is GuessioMessage {
+        return ['join', 'start_game', 'select_word_and_bet', 'report_result', 'next_turn'].includes(
+            msg.type
+        );
+    }
+
+    handleGuessioMessage(msg: GuessioMessage, sender: Party.Connection) {
+        try {
+            let gameState = this.state.game as GuessioGameState;
+            gameState = applyGuessioMessage(gameState, msg);
+
+            if (msg.type === 'start_game') {
+                this.state.room.status = 'playing';
+            }
+
+            this.state.game = gameState;
+            this.broadcastState();
+        } catch (e) {
+            console.error('[handleGuessioMessage] ERROR:', e);
+        }
+    }
+
     // State sync
     syncToConnection(conn: Party.Connection) {
-        conn.send(JSON.stringify({
-            type: 'sync',
-            room: this.state.room,
-            game: this.state.game,
-        }));
+        conn.send(
+            JSON.stringify({
+                type: 'sync',
+                room: this.state.room,
+                game: this.state.game,
+            })
+        );
     }
 
     broadcastState() {
-        this.room.broadcast(JSON.stringify({
-            type: 'sync',
-            room: this.state.room,
-            game: this.state.game,
-        }));
+        this.room.broadcast(
+            JSON.stringify({
+                type: 'sync',
+                room: this.state.room,
+                game: this.state.game,
+            })
+        );
     }
 }
 

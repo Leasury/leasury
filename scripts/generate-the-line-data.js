@@ -1,14 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const csvPath = path.join(__dirname, '..', 'packages/game-logic/src/games/the-line/data/events.csv');
+const csvPath = path.join(
+    __dirname,
+    '..',
+    'packages/game-logic/src/games/the-line/data/events.csv'
+);
 const outPath = path.join(__dirname, '..', 'packages/game-logic/src/games/the-line/data.ts');
 const imagesDir = path.join(__dirname, '..', 'apps/web/public/games/the-line/cards');
 
 // Scan for existing card images
 const existingImages = new Set();
 if (fs.existsSync(imagesDir)) {
-    fs.readdirSync(imagesDir).forEach(file => {
+    fs.readdirSync(imagesDir).forEach((file) => {
         if (file.endsWith('.png')) {
             existingImages.add(file.replace('.png', ''));
         }
@@ -17,7 +21,11 @@ if (fs.existsSync(imagesDir)) {
 console.log(`Found ${existingImages.size} card images: ${[...existingImages].join(', ')}`);
 
 const csv = fs.readFileSync(csvPath, 'utf8');
-const lines = csv.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
+const lines = csv
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split('\n')
+    .filter((l) => l.trim());
 const dataLines = lines.slice(1);
 
 function parseLine(line) {
@@ -27,8 +35,12 @@ function parseLine(line) {
     for (let i = 0; i < line.length; i++) {
         const ch = line[i];
         if (ch === '"') {
-            if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
-            else { inQuotes = !inQuotes; }
+            if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
         } else if (ch === ',' && !inQuotes) {
             result.push(current.trim());
             current = '';
@@ -40,7 +52,7 @@ function parseLine(line) {
     return result;
 }
 
-const events = dataLines.map(line => {
+const events = dataLines.map((line) => {
     const cols = parseLine(line);
     return {
         id: cols[0],

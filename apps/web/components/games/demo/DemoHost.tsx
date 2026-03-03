@@ -30,11 +30,12 @@ export default function DemoHost({ state }: DemoHostProps) {
 
     return (
         <GameLayout backUrl="/games/demo" theme="light">
-            <div className="flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
+            <div
+                className="flex items-center justify-center p-4"
+                style={{ minHeight: 'calc(100vh - 60px)' }}
+            >
                 <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC] max-w-2xl w-full">
-                    <h1 className="text-3xl font-bold text-center mb-6">
-                        Demo Game - Host View
-                    </h1>
+                    <h1 className="text-3xl font-bold text-center mb-6">Demo Game - Host View</h1>
 
                     {/* Counter Display */}
                     <div className="bg-[#F0EFEA] rounded-2xl p-12 mb-6 text-center">

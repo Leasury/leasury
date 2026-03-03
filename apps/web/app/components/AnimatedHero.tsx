@@ -18,7 +18,7 @@ export default function AnimatedHero() {
             {/* Floating Phone 1 (Left) */}
             <motion.div
                 animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 className="absolute -bottom-4 -left-8 bg-[#141413] rounded-2xl p-2 shadow-xl"
             >
                 <div className="bg-[#FAF9F5] rounded-xl w-16 h-24 flex items-center justify-center">
@@ -29,7 +29,7 @@ export default function AnimatedHero() {
             {/* Floating Phone 2 (Right) */}
             <motion.div
                 animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2.3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                transition={{ duration: 2.3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                 className="absolute -bottom-2 -right-6 bg-[#141413] rounded-2xl p-2 shadow-xl"
             >
                 <div className="bg-[#FAF9F5] rounded-xl w-16 h-24 flex items-center justify-center">

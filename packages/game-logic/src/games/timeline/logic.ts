@@ -3,31 +3,42 @@
  * Core gameplay mechanics: placement, validation, scoring
  */
 
-import type { TimelineGameState, TimelineMessage, PlacedEvent, TimelineEvent, GameMode } from './types';
+import type {
+    TimelineGameState,
+    TimelineMessage,
+    PlacedEvent,
+    TimelineEvent,
+    GameMode,
+} from './types';
 import { getStartingEvent, getRandomEvent, timelineEvents } from './events';
 
 /**
  * Create initial game state
  */
-export function createInitialTimelineState(mode: GameMode = 'coop', cardsGoal: number = 20): TimelineGameState {
+export function createInitialTimelineState(
+    mode: GameMode = 'coop',
+    cardsGoal: number = 20
+): TimelineGameState {
     const startingEvent = getStartingEvent();
 
     return {
         mode,
-        placedEvents: [{
-            ...startingEvent,
-            placedBy: 'system',
-            wasCorrect: true,
-        }],
+        placedEvents: [
+            {
+                ...startingEvent,
+                placedBy: 'system',
+                wasCorrect: true,
+            },
+        ],
         activePlayerId: '',
         activeEvent: null,
         proposedPosition: 0,
         lives: 3,
-        cardsPlaced: 1,  // Starting event counts
+        cardsPlaced: 1, // Starting event counts
         cardsGoal,
         playerScores: {},
         status: 'waiting',
-        remainingEvents: timelineEvents.filter(e => e.id !== startingEvent.id),
+        remainingEvents: timelineEvents.filter((e) => e.id !== startingEvent.id),
         usedEventIds: [startingEvent.id],
     };
 }
@@ -63,9 +74,10 @@ export function dealNextEvent(state: TimelineGameState, playerId: string): Timel
 export function moveCard(state: TimelineGameState, direction: 'left' | 'right'): TimelineGameState {
     if (state.status !== 'placing') return state;
 
-    const newPosition = direction === 'left'
-        ? Math.max(0, state.proposedPosition - 1)
-        : Math.min(state.placedEvents.length, state.proposedPosition + 1);
+    const newPosition =
+        direction === 'left'
+            ? Math.max(0, state.proposedPosition - 1)
+            : Math.min(state.placedEvents.length, state.proposedPosition + 1);
 
     return {
         ...state,
@@ -84,7 +96,11 @@ export function isPlacementCorrect(
     // Edge cases
     if (placedEvents.length === 0) return true;
     if (position === 0 && event.year <= placedEvents[0].year) return true;
-    if (position === placedEvents.length && event.year >= placedEvents[placedEvents.length - 1].year) return true;
+    if (
+        position === placedEvents.length &&
+        event.year >= placedEvents[placedEvents.length - 1].year
+    )
+        return true;
 
     // Check if year fits between neighbors
     const leftNeighbor = placedEvents[position - 1];
@@ -157,7 +173,8 @@ export function placeCard(state: TimelineGameState): TimelineGameState {
     } else {
         // Competitive mode
         if (isCorrect) {
-            newPlayerScores[state.activePlayerId] = (newPlayerScores[state.activePlayerId] || 0) + 1;
+            newPlayerScores[state.activePlayerId] =
+                (newPlayerScores[state.activePlayerId] || 0) + 1;
         }
     }
 
@@ -179,7 +196,7 @@ export function placeCard(state: TimelineGameState): TimelineGameState {
             newStatus = 'gameOver';
             // Find winner
             const maxScore = Math.max(...Object.values(newPlayerScores));
-            winner = Object.keys(newPlayerScores).find(id => newPlayerScores[id] === maxScore);
+            winner = Object.keys(newPlayerScores).find((id) => newPlayerScores[id] === maxScore);
         }
     }
 
@@ -211,7 +228,10 @@ export function getNextPlayerId(playerIds: string[], currentPlayerId: string): s
 /**
  * Apply Timeline message to state
  */
-export function applyTimelineMessage(state: TimelineGameState, message: TimelineMessage): TimelineGameState {
+export function applyTimelineMessage(
+    state: TimelineGameState,
+    message: TimelineMessage
+): TimelineGameState {
     switch (message.type) {
         case 'startGame':
             return createInitialTimelineState(message.mode, message.cardsGoal);
@@ -223,7 +243,10 @@ export function applyTimelineMessage(state: TimelineGameState, message: Timeline
             if (state.status !== 'placing') return state;
             return {
                 ...state,
-                proposedPosition: Math.max(0, Math.min(state.placedEvents.length, message.position)),
+                proposedPosition: Math.max(
+                    0,
+                    Math.min(state.placedEvents.length, message.position)
+                ),
             };
 
         case 'placeCard':

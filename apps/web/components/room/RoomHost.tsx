@@ -22,7 +22,9 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
     const [roomState, setRoomState] = useState<RoomState | null>(null);
     const [gameState, setGameState] = useState<any>(null);
     const [socket, setSocket] = useState<PartySocket | null>(null);
-    const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+    const [connectionStatus, setConnectionStatus] = useState<
+        'connecting' | 'connected' | 'disconnected'
+    >('connecting');
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     // Create room and connect on mount
@@ -41,11 +43,13 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
             setConnectionStatus('connected');
 
             // Join as host and specify game type
-            conn.send(JSON.stringify({
-                type: 'join',
-                playerName: 'Host',
-                gameType: gameType
-            }));
+            conn.send(
+                JSON.stringify({
+                    type: 'join',
+                    playerName: 'Host',
+                    gameType: gameType,
+                })
+            );
         });
 
         conn.addEventListener('message', (evt) => {
@@ -171,16 +175,14 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
             <div className="w-full max-w-2xl">
                 {/* Back Button */}
                 <button
-                    onClick={() => window.location.href = `/games/${gameType}`}
+                    onClick={() => (window.location.href = `/games/${gameType}`)}
                     className="text-[#B0AEA5] hover:text-[#141413] flex items-center gap-2 mb-4 transition-colors"
                 >
                     ← Back
                 </button>
 
                 <div className="bg-white rounded-3xl p-8 shadow-lg border border-[#E8E6DC]">
-                    <h1 className="text-3xl font-bold text-center mb-6">
-                        Waiting for Players
-                    </h1>
+                    <h1 className="text-3xl font-bold text-center mb-6">Waiting for Players</h1>
 
                     {/* QR Code */}
                     <div className="bg-[#F0EFEA] rounded-2xl p-6 mb-6">
@@ -188,7 +190,12 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
                             Scan to join on mobile
                         </p>
                         <div className="flex justify-center">
-                            <canvas ref={canvasRef} width={300} height={300} className="rounded-xl" />
+                            <canvas
+                                ref={canvasRef}
+                                width={300}
+                                height={300}
+                                className="rounded-xl"
+                            />
                         </div>
                     </div>
 
@@ -215,23 +222,25 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
                     {/* Player List */}
                     <div className="bg-[#F0EFEA] rounded-xl p-4 mb-6">
                         <h3 className="font-semibold mb-3">
-                            Connected Players ({roomState.players.filter(p => !p.isHost).length})
+                            Connected Players ({roomState.players.filter((p) => !p.isHost).length})
                         </h3>
-                        {roomState.players.filter(p => !p.isHost).length === 0 ? (
+                        {roomState.players.filter((p) => !p.isHost).length === 0 ? (
                             <p className="text-sm text-[#B0AEA5] text-center py-4">
                                 Waiting for players to join...
                             </p>
                         ) : (
                             <ul className="space-y-2">
-                                {roomState.players.filter(p => !p.isHost).map((player) => (
-                                    <li
-                                        key={player.id}
-                                        className="flex items-center gap-2 bg-white rounded-lg px-3 py-2"
-                                    >
-                                        <span className="text-xl">{player.avatar || '👤'}</span>
-                                        <span className="font-medium">{player.name}</span>
-                                    </li>
-                                ))}
+                                {roomState.players
+                                    .filter((p) => !p.isHost)
+                                    .map((player) => (
+                                        <li
+                                            key={player.id}
+                                            className="flex items-center gap-2 bg-white rounded-lg px-3 py-2"
+                                        >
+                                            <span className="text-xl">{player.avatar || '👤'}</span>
+                                            <span className="font-medium">{player.name}</span>
+                                        </li>
+                                    ))}
                             </ul>
                         )}
                     </div>
@@ -240,7 +249,7 @@ export default function RoomHost({ gameType, children, onGameStart }: RoomHostPr
                     <Button
                         onClick={handleStart}
                         className="w-full"
-                    // disabled={roomState.players.length < 2}
+                        // disabled={roomState.players.length < 2}
                     >
                         Start Game
                     </Button>

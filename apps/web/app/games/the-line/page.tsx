@@ -8,16 +8,41 @@ import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 /* ── Inline SVG icons (Lucide-style, 24×24, stroke #D97757) ────────── */
 
 const SlidersIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-        <line x1="21" x2="14" y1="4" y2="4" /><line x1="10" x2="3" y1="4" y2="4" />
-        <line x1="21" x2="12" y1="12" y2="12" /><line x1="8" x2="3" y1="12" y2="12" />
-        <line x1="21" x2="16" y1="20" y2="20" /><line x1="12" x2="3" y1="20" y2="20" />
-        <circle cx="12" cy="4" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="14" cy="20" r="2" />
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#D97757"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="flex-shrink-0"
+    >
+        <line x1="21" x2="14" y1="4" y2="4" />
+        <line x1="10" x2="3" y1="4" y2="4" />
+        <line x1="21" x2="12" y1="12" y2="12" />
+        <line x1="8" x2="3" y1="12" y2="12" />
+        <line x1="21" x2="16" y1="20" y2="20" />
+        <line x1="12" x2="3" y1="20" y2="20" />
+        <circle cx="12" cy="4" r="2" />
+        <circle cx="10" cy="12" r="2" />
+        <circle cx="14" cy="20" r="2" />
     </svg>
 );
 
 const LayersIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#D97757"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="flex-shrink-0"
+    >
         <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
         <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
         <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
@@ -25,7 +50,17 @@ const LayersIcon = () => (
 );
 
 const ArrowLeftRightIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#D97757"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="flex-shrink-0"
+    >
         <polyline points="8 3 4 7 8 11" />
         <line x1="4" y1="7" x2="20" y2="7" />
         <polyline points="16 21 20 17 16 13" />
@@ -34,14 +69,34 @@ const ArrowLeftRightIcon = () => (
 );
 
 const CircleCheckIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#D97757"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="flex-shrink-0"
+    >
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
         <polyline points="22 4 12 14.01 9 11.01" />
     </svg>
 );
 
 const TrophyIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#D97757"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="flex-shrink-0"
+    >
         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
         <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
         <path d="M4 22h16" />
@@ -118,7 +173,8 @@ export default function TheLineLandingPage() {
                         transition={{ delay: 0.2 }}
                         className="text-[#141413] text-lg mb-6"
                     >
-                        Place events in order by weight, speed, population, and more. Can you find the right spot on the line?
+                        Place events in order by weight, speed, population, and more. Can you find
+                        the right spot on the line?
                     </motion.p>
 
                     {/* CTAs */}
@@ -182,9 +238,7 @@ export default function TheLineLandingPage() {
                             const Icon = stepIcons[i];
                             return (
                                 <div key={i}>
-                                    {i > 0 && (
-                                        <div className="h-px bg-[#E8E6DC] my-4" />
-                                    )}
+                                    {i > 0 && <div className="h-px bg-[#E8E6DC] my-4" />}
                                     <div className="flex items-center gap-3">
                                         <Icon />
                                         <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D97757] text-white text-[13px] font-bold flex items-center justify-center">

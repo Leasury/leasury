@@ -6,6 +6,7 @@ description: Use this skill to review and approve game-logic test snapshots afte
 # Approve Tests Skill
 
 Use this skill when:
+
 - `npm run test` fails due to snapshot mismatches (`.received.txt` ≠ `.approved.txt`)
 - You intentionally changed game logic and need to promote the new snapshots
 - The developer has confirmed the new behavior is correct
@@ -20,11 +21,11 @@ Read the output carefully. The `nodediff` reporter prints a colored diff for eac
 
 ## Step 2: Decide — bug or intended change?
 
-| Situation | Action |
-|---|---|
-| The new output looks **correct** (intentional change) | Proceed to Step 3 |
-| The new output looks **wrong** (regression/bug) | Fix the code, DO NOT promote — go back to Step 1 |
-| **Unsure** | Ask the developer to review the diff before proceeding |
+| Situation                                             | Action                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------ |
+| The new output looks **correct** (intentional change) | Proceed to Step 3                                      |
+| The new output looks **wrong** (regression/bug)       | Fix the code, DO NOT promote — go back to Step 1       |
+| **Unsure**                                            | Ask the developer to review the diff before proceeding |
 
 ## Step 3: Promote received → approved
 

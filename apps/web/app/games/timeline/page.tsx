@@ -15,11 +15,10 @@ export default function TimelineLandingPage() {
                 {/* Game Header */}
                 <div className="text-center mb-12">
                     <div className="text-7xl mb-4">⏳</div>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        Timeline
-                    </h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Timeline</h1>
                     <p className="text-[#B0AEA5] text-lg max-w-2xl mx-auto">
-                        Place historical events in chronological order. Test your knowledge of history with friends!
+                        Place historical events in chronological order. Test your knowledge of
+                        history with friends!
                     </p>
                 </div>
 
@@ -71,11 +70,16 @@ export default function TimelineLandingPage() {
                         </li>
                         <li className="flex gap-3">
                             <span className="font-bold">4.</span>
-                            <span>If correct, earn a point! If wrong, no points but the card stays</span>
+                            <span>
+                                If correct, earn a point! If wrong, no points but the card stays
+                            </span>
                         </li>
                         <li className="flex gap-3">
                             <span className="font-bold">5.</span>
-                            <span>Co-op: Reach the goal without losing all lives. Competitive: Get the most points!</span>
+                            <span>
+                                Co-op: Reach the goal without losing all lives. Competitive: Get the
+                                most points!
+                            </span>
                         </li>
                     </ol>
                 </div>
