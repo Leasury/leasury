@@ -1,4 +1,4 @@
-// @leasury/config - React ESLint configuration
+// @lesury/config - React ESLint configuration
 // For React packages (ui)
 
 import js from '@eslint/js';

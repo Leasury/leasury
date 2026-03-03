@@ -4,7 +4,7 @@
 
 set -e
 
-GAME_LOGIC_DIR="/home/clickout/Projekty/leasury/packages/game-logic/src"
+GAME_LOGIC_DIR="/home/clickout/Projekty/lesury/packages/game-logic/src"
 PROMOTED=0
 
 for received in "$GAME_LOGIC_DIR"/**/__tests__/*.received.txt; do

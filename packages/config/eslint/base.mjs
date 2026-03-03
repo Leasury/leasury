@@ -1,4 +1,4 @@
-// @leasury/config - Base ESLint configuration
+// @lesury/config - Base ESLint configuration
 // For non-React packages (game-logic, server)
 
 import js from '@eslint/js';
