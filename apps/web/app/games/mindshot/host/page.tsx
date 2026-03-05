@@ -10,7 +10,7 @@ function MindshotHostContent() {
     const searchParams = useSearchParams();
     const roomCode = searchParams.get('room');
 
-    const { roomState, gameState } = usePartyRoom<MindshotGameState>(roomCode, {
+    const { roomState, gameState, socket } = usePartyRoom<MindshotGameState>(roomCode, {
         asHost: true,
         gameType: 'mindshot',
     });
@@ -28,7 +28,7 @@ function MindshotHostContent() {
         );
     }
 
-    return <MindshotHost state={{ room: roomState, game: gameState }} />;
+    return <MindshotHost state={{ room: roomState, game: gameState }} socket={socket} />;
 }
 
 export default function MindshotHostPage() {

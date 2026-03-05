@@ -1,6 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import QRCode from 'qrcode';
+import { generateRoomUrl } from '@lesury/game-logic';
 import type { RoomState, MindshotGameState, MindshotFrameEvent, HexCoord } from '@lesury/game-logic';
 import { generateHexGrid, hexKey, hexRing, PLAYER_COLORS } from '@lesury/game-logic';
 
@@ -66,26 +69,47 @@ interface MindshotHostProps {
         room: RoomState;
         game: MindshotGameState;
     };
+    socket?: any;
 }
 
 const ALL_CELLS = generateHexGrid();
 
-export default function MindshotHost({ state }: MindshotHostProps) {
+export default function MindshotHost({ state, socket: propSocket }: MindshotHostProps) {
     const { room, game } = state;
     const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // Settings state
+    const [selectedHp, setSelectedHp] = useState(3);
+    const [shrinkSpeed, setShrinkSpeed] = useState<'slow' | 'normal' | 'fast'>('normal');
+
+    const getSocket = () => propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null);
 
     // Auto-advance frames in the resolving phase
     useEffect(() => {
         if (game.phase !== 'resolving') return;
 
         advanceTimerRef.current = setTimeout(() => {
-            (window as any).__partySocket?.send(JSON.stringify({ type: 'next_frame' }));
+            getSocket()?.send(JSON.stringify({ type: 'next_frame' }));
         }, FRAME_DELAY_MS);
 
         return () => {
             if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
         };
     }, [game.phase, game.currentFrame]);
+
+    // QR code generation for lobby screen
+    useEffect(() => {
+        if (game.phase !== 'lobby' || !canvasRef.current) return;
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+        const url = generateRoomUrl('mindshot', room.roomCode, baseUrl);
+        QRCode.toCanvas(
+            canvasRef.current,
+            url,
+            { width: 220, margin: 2, color: { dark: '#141413', light: '#F0EFEA' } },
+            (err) => { if (err) console.error('QR generation failed:', err); }
+        );
+    }, [game.phase, room.roomCode]);
 
     // Determine which state to render — current frame or live state
     const displayState =
@@ -102,9 +126,189 @@ export default function MindshotHost({ state }: MindshotHostProps) {
     const readyCount = Object.values(game.plans).filter((p) => p !== null).length;
 
     const handleStartGame = () => {
-        (window as any).__partySocket?.send(JSON.stringify({ type: 'start_game' }));
+        getSocket()?.send(JSON.stringify({
+            type: 'start_game',
+            maxHp: selectedHp,
+            shrinkSpeed,
+        }));
     };
 
+    // ── Lobby / Settings Screen ────────────────────────────────────────────────
+    if (game.phase === 'lobby') {
+        const nonHostPlayers = room.players.filter((p: any) => !p.isHost && p.name !== 'Host');
+
+        return (
+            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
+                <div className="flex gap-8 max-w-5xl w-full">
+                    {/* LEFT: QR Code + Room Code + Players */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                    >
+                        <p className="text-[#B0AEA5] text-center text-sm mb-4">
+                            Scan to join on mobile
+                        </p>
+                        <div className="flex justify-center mb-6">
+                            <canvas
+                                ref={canvasRef}
+                                width={220}
+                                height={220}
+                                className="rounded-xl"
+                            />
+                        </div>
+
+                        {/* Room Code */}
+                        <div className="bg-white rounded-xl p-4 mb-6 text-center">
+                            <p className="text-xs text-[#B0AEA5] mb-1">Room Code</p>
+                            <p className="text-4xl font-bold tracking-widest text-[#141413] tabular-nums">
+                                {room.roomCode}
+                            </p>
+                        </div>
+
+                        {/* Player list with kick buttons */}
+                        <div className="flex-1">
+                            <p className="text-sm font-bold text-[#141413] mb-2">
+                                Players ({nonHostPlayers.length})
+                            </p>
+                            {nonHostPlayers.length === 0 ? (
+                                <p className="text-[#B0AEA5] text-sm">
+                                    Waiting for players to join...
+                                </p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {nonHostPlayers.map((p: any) => (
+                                        <div
+                                            key={p.id}
+                                            className="bg-white px-3 py-2 rounded-xl text-sm font-bold text-[#141413] flex items-center gap-2"
+                                        >
+                                            <span className="text-lg">{p.avatar || '👤'}</span>
+                                            <span className="flex-1">{p.name}</span>
+                                            <button
+                                                onClick={() => {
+                                                    if (confirm(`Remove ${p.name} from the game?`)) {
+                                                        getSocket()?.send(JSON.stringify({ type: 'kick', playerId: p.id }));
+                                                    }
+                                                }}
+                                                className="text-[#B0AEA5] hover:text-red-500 transition-colors text-lg px-1"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+
+                    {/* RIGHT: Settings + Start */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                    >
+                        <h1 className="text-3xl font-bold text-[#141413] mb-2 text-center">
+                            Mindshot
+                        </h1>
+                        <p className="text-[#B0AEA5] text-center mb-8">Configure your game</p>
+
+                        {/* Max HP Slider */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-bold text-[#141413] mb-2">
+                                Starting HP:{' '}
+                                <span className="text-[#D97757] tabular-nums">{selectedHp}</span>
+                                {' '}
+                                <span className="text-[#B0AEA5] font-normal">
+                                    {'♥'.repeat(selectedHp)}
+                                </span>
+                            </label>
+                            <input
+                                type="range"
+                                min={1}
+                                max={5}
+                                value={selectedHp}
+                                onChange={(e) => setSelectedHp(Number(e.target.value))}
+                                className="w-full accent-[#D97757]"
+                            />
+                            <div className="flex justify-between text-xs text-[#B0AEA5] mt-1">
+                                <span>1 (Fast)</span>
+                                <span>5 (Tanky)</span>
+                            </div>
+                        </div>
+
+                        {/* Zone Shrink Speed */}
+                        <div className="mb-8">
+                            <label className="block text-sm font-bold text-[#141413] mb-2">
+                                Zone Speed
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {(['slow', 'normal', 'fast'] as const).map((speed) => (
+                                    <button
+                                        key={speed}
+                                        onClick={() => setShrinkSpeed(speed)}
+                                        className={`px-4 py-3 rounded-xl font-bold text-sm transition-all capitalize ${shrinkSpeed === speed
+                                            ? 'bg-[#D97757] text-white shadow-md'
+                                            : 'bg-white text-[#141413] hover:bg-[#E8E6DC]'
+                                            }`}
+                                    >
+                                        {speed === 'slow' ? '🐢 Slow' : speed === 'normal' ? '⚡ Normal' : '🔥 Fast'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex-1" />
+
+                        {/* Disabled info / Start Button */}
+                        {nonHostPlayers.length < 2 ? (
+                            <div className="w-full bg-[#E8E6DC] text-[#B0AEA5] px-6 py-4 rounded-xl font-bold text-lg text-center">
+                                Need at least 2 players
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleStartGame}
+                                className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors cursor-pointer"
+                            >
+                                Start Game
+                            </button>
+                        )}
+                    </motion.div>
+                </div>
+            </div>
+        );
+    }
+
+    // ── Game Over Screen ───────────────────────────────────────────────────────
+    if (game.phase === 'game_over') {
+        const winner = room.players.find((p) => p.id === game.winnerId);
+        return (
+            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-[#F0EFEA] rounded-3xl p-12 text-center max-w-md w-full shadow-2xl"
+                >
+                    <div className="text-7xl mb-4">🏆</div>
+                    {winner ? (
+                        <>
+                            <h2 className="text-4xl font-bold text-[#141413] mb-2">
+                                {winner.name} Wins!
+                            </h2>
+                            <p className="text-[#D97757] text-xl font-semibold">Last one standing!</p>
+                        </>
+                    ) : (
+                        <h2 className="text-4xl font-bold text-[#141413]">Draw!</h2>
+                    )}
+                    <p className="text-[#B0AEA5] text-sm mt-6">
+                        Players can request a rematch from their phones.
+                    </p>
+                </motion.div>
+            </div>
+        );
+    }
+
+    // ── Gameplay Screen (planning / resolving) ─────────────────────────────────
     return (
         <div className="min-h-screen bg-[#2A2A2A] flex flex-col items-center justify-center select-none overflow-hidden">
             {/* Header bar */}
@@ -112,7 +316,7 @@ export default function MindshotHost({ state }: MindshotHostProps) {
                 <div className="text-white/60 text-sm font-mono uppercase tracking-widest">
                     MINDSHOT
                 </div>
-                {game.phase !== 'lobby' && (
+                {game.round > 0 && (
                     <div className="text-white/60 text-sm font-mono">
                         Round {game.round}
                     </div>
@@ -176,11 +380,8 @@ export default function MindshotHost({ state }: MindshotHostProps) {
                                     transition: 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)',
                                 }}
                             >
-                                {/* Drop shadow */}
                                 <circle r={16} fill="rgba(0,0,0,0.25)" cy={2} />
-                                {/* Token body */}
                                 <circle r={15} fill={color} />
-                                {/* HP text */}
                                 <text
                                     textAnchor="middle"
                                     dominantBaseline="central"
@@ -191,12 +392,11 @@ export default function MindshotHost({ state }: MindshotHostProps) {
                                 >
                                     {player.hp}
                                 </text>
-                                {/* HP hearts below token */}
                                 <g transform="translate(0, 22)">
-                                    {Array.from({ length: 3 }, (_, i) => (
+                                    {Array.from({ length: selectedHp || 3 }, (_, i) => (
                                         <text
                                             key={i}
-                                            x={(i - 1) * 12}
+                                            x={(i - Math.floor((selectedHp || 3) / 2)) * 12}
                                             textAnchor="middle"
                                             dominantBaseline="central"
                                             fontSize={9}
@@ -261,52 +461,6 @@ export default function MindshotHost({ state }: MindshotHostProps) {
                         );
                     })}
             </div>
-
-            {/* Lobby overlay */}
-            {game.phase === 'lobby' && (
-                <div className="absolute inset-0 bg-[#2A2A2A]/95 flex flex-col items-center justify-center gap-8">
-                    <div className="text-7xl">🎯</div>
-                    <h1 className="text-5xl font-bold text-white">MINDSHOT</h1>
-                    <p className="text-white/60 text-lg">
-                        {room.players.filter((p) => !p.isHost).length} player(s) connected
-                    </p>
-                    {room.players.filter((p) => !p.isHost).length >= 2 ? (
-                        <button
-                            onClick={handleStartGame}
-                            className="bg-[#D97757] text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-[#CC785C] transition-colors"
-                        >
-                            Start Game
-                        </button>
-                    ) : (
-                        <p className="text-white/40 text-base">
-                            Waiting for at least 2 players…
-                        </p>
-                    )}
-                    <div className="text-white/30 text-sm font-mono">
-                        Room: {room.roomCode}
-                    </div>
-                </div>
-            )}
-
-            {/* Game Over overlay */}
-            {game.phase === 'game_over' && (
-                <div className="absolute inset-0 bg-[#2A2A2A]/95 flex flex-col items-center justify-center gap-8">
-                    <div className="text-7xl">🏆</div>
-                    {game.winnerId ? (
-                        <>
-                            <h2 className="text-4xl font-bold text-white">
-                                {room.players.find((p) => p.id === game.winnerId)?.name ?? 'Winner'}
-                            </h2>
-                            <p className="text-[#D97757] text-xl font-semibold">Last one standing!</p>
-                        </>
-                    ) : (
-                        <h2 className="text-4xl font-bold text-white">Draw!</h2>
-                    )}
-                    <p className="text-white/40 text-sm mt-4">
-                        Players can request a rematch from their phones.
-                    </p>
-                </div>
-            )}
         </div>
     );
 }

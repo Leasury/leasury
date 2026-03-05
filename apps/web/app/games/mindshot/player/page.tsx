@@ -15,7 +15,7 @@ function MindshotPlayerContent() {
         sessionKeyPrefix: 'lobby',
     });
 
-    if (!roomCode || !sessionId) {
+    if (!roomCode) {
         if (typeof window !== 'undefined') window.location.href = '/join';
         return null;
     }

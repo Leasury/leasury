@@ -54,15 +54,14 @@ export default function GamesPage() {
                         index={2}
                     />
 
-                    {/* Coming Soon Games */}
+                    {/* Mindshot */}
                     <GameCard
                         title="Mindshot"
-                        description="Battle Royale on a 10×10 grid. Plan your moves and shots in this strategic multiplayer game."
+                        description="Battle Royale on a hexagonal grid. Plan your moves and shots in secret, then watch chaos unfold."
                         emoji="🎯"
                         players="2-4"
                         duration="20-30 min"
                         href="/games/mindshot"
-                        comingSoon
                         index={2}
                     />
 
