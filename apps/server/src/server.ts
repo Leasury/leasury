@@ -353,16 +353,17 @@ export default class Server implements Party.Server {
         try {
             let gameState = this.state.game as MindshotGameState;
 
+            // Compute active connected player IDs (non-host)
+            const activePlayerIds = this.state.room.players
+                .filter((p) => !p.isHost)
+                .map((p) => p.id);
+
             if (msg.type === 'start_game') {
-                // Initialize state with all non-host player IDs at game start
-                const playerIds = this.state.room.players
-                    .filter((p) => !p.isHost)
-                    .map((p) => p.id);
-                gameState = createInitialMindshotState(playerIds);
-                gameState = applyMindshotMessage(gameState, msg, sender.id);
+                gameState = createInitialMindshotState(activePlayerIds);
+                gameState = applyMindshotMessage(gameState, msg, sender.id, activePlayerIds);
                 this.state.room.status = 'playing';
             } else {
-                gameState = applyMindshotMessage(gameState, msg, sender.id);
+                gameState = applyMindshotMessage(gameState, msg, sender.id, activePlayerIds);
             }
 
             this.state.game = gameState;

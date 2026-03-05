@@ -95,17 +95,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Featured Game */}
-            <section className="max-w-7xl mx-auto px-6 py-16">
-                <GameCard
-                    title="The Line"
-                    description="Sort events by weight, speed, population and more. Can you find the right spot on the line?"
-                    emoji="📏"
-                    players="2-8"
-                    duration="15-25 min"
-                    href="/games/the-line"
-                />
-            </section>
+
 
             {/* Footer */}
             <footer className="border-t border-[#E8E6DC] py-8">

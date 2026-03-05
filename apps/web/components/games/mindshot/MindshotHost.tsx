@@ -327,21 +327,21 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
             </div>
 
             {/* Phase banner */}
-            <div className="absolute top-16 left-0 right-0 flex justify-center pointer-events-none">
+            <div className="absolute top-20 left-0 right-0 flex justify-center pointer-events-none z-10">
                 {game.phase === 'planning' && (
                     <div className="bg-[#D97757] text-white px-6 py-2 rounded-xl font-bold text-lg shadow-lg">
                         Planning Phase — {readyCount}/{alivePlayers.length} ready
                     </div>
                 )}
                 {game.phase === 'resolving' && currentEvent && (
-                    <div className="bg-[#2A2A2A]/80 border border-white/20 text-white px-6 py-2 rounded-xl font-semibold text-lg backdrop-blur-sm">
+                    <div className="bg-[#2A2A2A]/80 border border-white/20 text-white px-6 py-2 rounded-xl font-semibold text-lg backdrop-blur-sm shadow-xl">
                         {describeEvent(currentEvent)}
                     </div>
                 )}
             </div>
 
             {/* Hex grid SVG */}
-            <div className="flex-1 flex items-center justify-center w-full">
+            <div className="flex-1 flex items-center justify-center w-full pt-12">
                 <svg
                     viewBox={`0 0 ${SVG_W} ${SVG_H}`}
                     className="max-h-[calc(100vh-160px)] w-auto"

@@ -32,16 +32,7 @@ export default function GamesPage() {
                         index={0}
                     />
 
-                    {/* Demo */}
-                    <GameCard
-                        title="Demo"
-                        description="A simple counter sync demo to test real-time connections across devices."
-                        emoji="🎮"
-                        players="2-12"
-                        duration="10-20 min"
-                        href="/games/demo"
-                        index={1}
-                    />
+
 
                     {/* Guessio */}
                     <GameCard

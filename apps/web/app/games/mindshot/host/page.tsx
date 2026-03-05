@@ -1,24 +1,30 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePartyRoom } from '@/hooks/usePartyRoom';
 import MindshotHost from '@/components/games/mindshot/MindshotHost';
 import type { MindshotGameState } from '@lesury/game-logic';
+import { generateRoomCode } from '@lesury/game-logic';
 
 function MindshotHostContent() {
     const searchParams = useSearchParams();
-    const roomCode = searchParams.get('room');
+    const roomParam = searchParams.get('room');
+
+    // Self-create a room if no ?room param (direct navigation from landing page)
+    const [roomCode] = useState(() => roomParam || generateRoomCode());
+
+    // Update URL to include room code for sharing/refreshing
+    useEffect(() => {
+        if (!roomParam && roomCode) {
+            window.history.replaceState({}, '', `/games/mindshot/host?room=${roomCode}`);
+        }
+    }, [roomParam, roomCode]);
 
     const { roomState, gameState, socket } = usePartyRoom<MindshotGameState>(roomCode, {
         asHost: true,
         gameType: 'mindshot',
     });
-
-    if (!roomCode) {
-        if (typeof window !== 'undefined') window.location.href = '/games/mindshot';
-        return null;
-    }
 
     if (!roomState || !gameState) {
         return (

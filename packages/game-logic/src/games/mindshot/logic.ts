@@ -24,12 +24,12 @@ export const MINDSHOT_SHRINK_COUNT = 6;
 
 /** Direction vectors for flat-top axial hex grid */
 export const HEX_DIRECTIONS: Record<HexDirection, HexCoord> = {
-    E:  { q:  1, r:  0 },
-    NE: { q:  1, r: -1 },
-    NW: { q:  0, r: -1 },
-    W:  { q: -1, r:  0 },
-    SW: { q: -1, r:  1 },
-    SE: { q:  0, r:  1 },
+    E: { q: 1, r: 0 },
+    NE: { q: 1, r: -1 },
+    NW: { q: 0, r: -1 },
+    W: { q: -1, r: 0 },
+    SW: { q: -1, r: 1 },
+    SE: { q: 0, r: 1 },
 };
 
 /** Player color palette (Lesury design system) */
@@ -134,7 +134,8 @@ export function createInitialMindshotState(playerIds: string[]): MindshotGameSta
 export function applyMindshotMessage(
     state: MindshotGameState,
     msg: MindshotMessage,
-    senderId: string
+    senderId: string,
+    activePlayerIds?: string[]
 ): MindshotGameState {
     switch (msg.type) {
         case 'start_game': {
@@ -148,11 +149,11 @@ export function applyMindshotMessage(
 
             const plans = { ...state.plans, [senderId]: msg.plan };
 
-            // Check if all alive players have submitted
+            // Check if all alive (and actively connected) players have submitted
             const alivePlayers = Object.values(state.players).filter(
-                (p) => p.status === 'alive'
+                (p) => p.status === 'alive' && (!activePlayerIds || activePlayerIds.includes(p.id))
             );
-            const allSubmitted = alivePlayers.every((p) => plans[p.id] !== null);
+            const allSubmitted = alivePlayers.length > 0 && alivePlayers.every((p) => plans[p.id] !== null);
 
             if (!allSubmitted) {
                 return { ...state, plans };
