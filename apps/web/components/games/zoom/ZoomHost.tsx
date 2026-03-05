@@ -9,21 +9,33 @@ import { generateRoomUrl, ZOOM_ROUND_DURATION_MS, PLAYER_COLORS } from '@lesury/
 export const MOCK_LEVELS: ZoomLevel[] = [
     {
         id: '1',
-        imageUrl: 'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&q=100&w=2560',
-        answers: ['kocka', 'kočka', 'cat', 'oko', 'eye'],
-        funFact: 'Kočičí oko dokáže vidět ve tmě až šestkrát lépe než lidské díky vrstvě tapetum lucidum.',
+        imageUrl: '/games/zoom/levels/01_dog.png',
+        answers: ['pes', 'pejsek', 'štěně', 'stene', 'dog', 'puppy'],
+        funFact: 'Věděli jste, že psí čich je 10 000x až 100 000x citlivější než lidský a psi dokážou cítit i lidské emoce?',
     },
     {
         id: '2',
-        imageUrl: 'https://images.unsplash.com/photo-1560089000-7433a4ebbd64?auto=format&fit=crop&q=100&w=2560',
-        answers: ['mince', 'penize', 'peníze', 'coin', 'koruna'],
-        funFact: 'První mince na světě vznikly v Lydii (dnešní Turecko) kolem roku 600 před naším letopočtem.',
+        imageUrl: '/games/zoom/levels/02_banana.jpg',
+        answers: ['banán', 'banan', 'banana'],
+        funFact: 'Věděli jste, že banánovník není strom, ale největší bylina na světě, a z botanického hlediska je banán vlastně bobule?',
     },
     {
         id: '3',
-        imageUrl: 'https://images.unsplash.com/photo-1550258987-190a2cf081b3?auto=format&fit=crop&q=100&w=2560',
-        answers: ['jahoda', 'strawberry', 'ovoce'],
-        funFact: 'Jahoda je jediné ovoce, které má semínka na povrchu. Průměrná jahoda jich má asi 200.',
+        imageUrl: '/games/zoom/levels/03_ant.png',
+        answers: ['mravenec', 'ant'],
+        funFact: 'Věděli jste, že mravenci nemají plíce a dýchají drobnými průduchy po stranách těla, navíc dokážou unést až 50x více než sami váží?',
+    },
+    {
+        id: '4',
+        imageUrl: '/games/zoom/levels/04_sun.jpg',
+        answers: ['slunce', 'sluníčko', 'slunicko', 'sun', 'hvězda', 'hvezda', 'star'],
+        funFact: 'Věděli jste, že Slunce tvoří 99,86 % veškeré hmoty v naší sluneční soustavě a světlo z něj k nám letí zhruba 8 minut a 20 sekund?',
+    },
+    {
+        id: '5',
+        imageUrl: '/games/zoom/levels/05_knife.png',
+        answers: ['nůž', 'nuz', 'nožík', 'nozik', 'kudla', 'knife', 'čepel', 'cepel', 'blade'],
+        funFact: 'Věděli jste, že nejstarší nalezené kamenné nože pocházejí z doby před 2,6 miliony let (oldovanská kultura) v dnešní Etiopii?',
     },
 ];
 
