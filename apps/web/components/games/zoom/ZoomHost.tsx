@@ -53,8 +53,10 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
     const getSocket = () => propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null);
 
     // Only active players (non-host) inside the room state
-    const connectedPlayers = room.players.filter((p) => !p.isHost);
-    const alivePlayers = Object.values(game.players);
+    const connectedPlayers = room?.players?.filter((p) => !p.isHost) ?? [];
+    // Guard against game.players being undefined during initial state hydration
+    const alivePlayers = Object.values(game?.players ?? {});
+
 
     // Local 60fps progress for smooth progress bar and zooming
     const [elapsedMs, setElapsedMs] = useState(0);
@@ -112,10 +114,13 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
     }, []);
 
     // ── Actions ─────────────────────────────────────────────────────────────
+    const [selectedRounds, setSelectedRounds] = useState(5);
+
     const handleStartGame = () => {
+        const levels = MOCK_LEVELS.slice(0, Math.min(selectedRounds, MOCK_LEVELS.length));
         getSocket()?.send(JSON.stringify({
             type: 'start_game',
-            levels: MOCK_LEVELS,
+            levels,
         }));
     };
 
@@ -128,60 +133,132 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
     };
 
     // ── Lobby View ──────────────────────────────────────────────────────────
+
     if (game.phase === 'lobby') {
-        const canStart = connectedPlayers.length > 0;
+        const nonHostPlayers = connectedPlayers;
+        const canStart = nonHostPlayers.length > 0;
+
         return (
-            <div className="min-h-screen bg-[#1A1A1A] flex text-white font-sans p-8">
-                {/* Left side: Setup & QR */}
-                <div className="w-[450px] flex flex-col justify-between h-full bg-[#2A2A2A] rounded-3xl p-8 mr-8 shadow-2xl">
-                    <div className="flex flex-col items-center">
-                        <h1 className="text-4xl font-extrabold tracking-tight mb-2 uppercase text-white">Zoom-Out</h1>
-                        <p className="text-white/60 mb-8 font-medium">Digital Zen Edition</p>
-
-                        <div className="bg-white p-4 rounded-2xl mb-8 shadow-inner">
-                            <canvas ref={canvasRef} width={250} height={250} className="rounded-xl block" style={{ width: 250, height: 250 }} />
+            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
+                <div className="flex gap-8 max-w-5xl w-full">
+                    {/* LEFT: QR Code + Room Code + Players */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                    >
+                        <p className="text-[#B0AEA5] text-center text-sm mb-4">
+                            Scan to join on mobile
+                        </p>
+                        <div className="flex justify-center mb-6">
+                            <canvas
+                                ref={canvasRef}
+                                width={250}
+                                height={250}
+                                className="rounded-xl"
+                            />
                         </div>
-                        <p className="text-white/60 mb-2 font-medium">or join at</p>
-                        <div className="text-4xl font-mono font-bold tracking-[0.2em] bg-white/5 px-6 py-4 rounded-xl border border-white/10 w-full text-center">
-                            {room.roomCode.toUpperCase()}
-                        </div>
-                    </div>
 
-                    <div className="w-full">
+                        {/* Room Code */}
+                        <div className="bg-white rounded-xl p-4 mb-6 text-center">
+                            <p className="text-xs text-[#B0AEA5] mb-1">Room Code</p>
+                            <p className="text-4xl font-bold tracking-widest text-[#141413] tabular-nums">
+                                {room.roomCode}
+                            </p>
+                        </div>
+
+                        {/* Player list */}
+                        <div className="flex-1">
+                            <p className="text-sm font-bold text-[#141413] mb-2">
+                                Players ({nonHostPlayers.length})
+                            </p>
+                            {nonHostPlayers.length === 0 ? (
+                                <p className="text-[#B0AEA5] text-sm">
+                                    Waiting for players to join…
+                                </p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {nonHostPlayers.map((p: any) => (
+                                        <div
+                                            key={p.id}
+                                            className="bg-white px-3 py-2 rounded-xl text-sm font-bold text-[#141413] flex items-center gap-2"
+                                        >
+                                            <span className="text-lg">{p.avatar || '👤'}</span>
+                                            <span className="flex-1">{p.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+
+                    {/* RIGHT: Game config + Start */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                    >
+                        <h1 className="text-3xl font-bold text-[#141413] mb-2 text-center">
+                            Zoom-Out
+                        </h1>
+                        <p className="text-[#B0AEA5] text-center mb-8">Configure your game</p>
+
+                        {/* Rounds Selector */}
+                        <div className="mb-8">
+                            <label className="block text-sm font-bold text-[#141413] mb-2">
+                                Rounds:{' '}
+                                <span className="text-[#D97757] tabular-nums">
+                                    {Math.min(selectedRounds, MOCK_LEVELS.length)}
+                                </span>
+                                <span className="text-[#B0AEA5] font-normal ml-1">
+                                    (max {MOCK_LEVELS.length})
+                                </span>
+                            </label>
+                            <input
+                                type="range"
+                                min={1}
+                                max={MOCK_LEVELS.length}
+                                value={selectedRounds}
+                                onChange={(e) => setSelectedRounds(Number(e.target.value))}
+                                className="w-full accent-[#D97757]"
+                            />
+                            <div className="flex justify-between text-xs text-[#B0AEA5] mt-1">
+                                <span>1</span>
+                                <span>{MOCK_LEVELS.length}</span>
+                            </div>
+                        </div>
+
+                        {/* Level preview chips */}
+                        <div className="mb-8">
+                            <p className="text-sm font-bold text-[#141413] mb-2">Image Set</p>
+                            <div className="flex flex-wrap gap-2">
+                                {MOCK_LEVELS.slice(0, selectedRounds).map((l, i) => (
+                                    <span
+                                        key={l.id}
+                                        className="bg-white text-[#141413] text-xs font-bold px-3 py-1.5 rounded-full border border-[#E8E6DC]"
+                                    >
+                                        {i + 1}. {l.answers[0]}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex-1" />
+
+                        {/* Start Game button */}
                         <button
                             onClick={handleStartGame}
                             disabled={!canStart}
-                            className={`w-full py-5 rounded-2xl font-bold text-2xl transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] outline-none border-t border-white/20 ${canStart
-                                ? 'bg-white text-black hover:scale-[1.02] cursor-pointer'
-                                : 'bg-white/10 text-white/30 cursor-not-allowed border-none'
+                            className={`w-full py-5 rounded-2xl font-bold text-xl transition-all ${canStart
+                                ? 'bg-[#D97757] text-white hover:brightness-110 cursor-pointer shadow-lg'
+                                : 'bg-[#E8E6DC] text-[#B0AEA5] cursor-not-allowed'
                                 }`}
                         >
-                            Start Game
+                            {canStart
+                                ? `Start Game (${nonHostPlayers.length} player${nonHostPlayers.length !== 1 ? 's' : ''})`
+                                : 'Waiting for players…'}
                         </button>
-                    </div>
-                </div>
-
-                {/* Right side: Players */}
-                <div className="flex-1 rounded-3xl p-8 flex flex-col flex-wrap content-start gap-4">
-                    <h2 className="w-full text-2xl font-bold mb-4 text-white/40 uppercase tracking-widest pl-2">
-                        Connected Players ({connectedPlayers.length})
-                    </h2>
-                    {connectedPlayers.map((p: any) => (
-                        <motion.div
-                            key={p.id}
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-4 min-w-[300px]"
-                        >
-                            <span className="text-3xl">{p.avatar || '👤'}</span>
-                            <span className="font-bold text-2xl">{p.name}</span>
-                        </motion.div>
-                    ))}
-                    {connectedPlayers.length === 0 && (
-                        <div className="text-white/20 text-3xl font-bold mt-12 w-full text-center">
-                            Waiting for players...
-                        </div>
-                    )}
+                    </motion.div>
                 </div>
             </div>
         );

@@ -1,55 +1,184 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Header from '@/app/components/Header';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+
+/* ── Inline SVG icons (Lucide-style, 24×24, stroke #D97757) ────────── */
+
+const TvIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <rect width="20" height="15" x="2" y="7" rx="2" ry="2" />
+        <polyline points="17 2 12 7 7 2" />
+    </svg>
+);
+
+const UsersIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+);
+
+const ZoomInIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        <line x1="11" y1="8" x2="11" y2="14" />
+        <line x1="8" y1="11" x2="14" y2="11" />
+    </svg>
+);
+
+const CircleCheckIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+);
+
+const TrophyIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+        <path d="M4 22h16" />
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+    </svg>
+);
+
+const stepIcons = [TvIcon, UsersIcon, ZoomInIcon, CircleCheckIcon, TrophyIcon];
+
+const steps = [
+    'Host opens the game on a TV or large screen — a room code and QR code appear automatically.',
+    'Players scan the QR code or enter the room code on their phones to join instantly.',
+    'A zoomed-in image appears on screen and slowly reveals itself over 90 seconds.',
+    'Type your guess on your phone — the faster you get it right, the more points you earn!',
+    'After each round results are shown. Most points after all rounds wins!',
+];
 
 export default function ZoomLandingPage() {
+    const device = useDeviceDetection();
+
     return (
-        <main className="min-h-screen bg-[#FAF9F5] flex flex-col items-center py-20 px-6 font-sans text-[#1A1A1A]">
-            <div className="max-w-3xl w-full text-center">
-                <div className="text-8xl mb-8">🔍</div>
-                <h1 className="text-6xl font-black tracking-tight mb-4 uppercase">Zoom-Out</h1>
-                <p className="text-2xl text-[#B0AEA5] font-medium mb-12">
-                    Digital Zen Edition. Can you recognize the object in extreme detail?
-                </p>
+        <div className="min-h-screen bg-[#FAF9F5]">
+            <Header />
 
-                <div className="bg-white rounded-3xl p-10 shadow-xl border border-[#E8E6DC] text-left mb-12">
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                        <span className="text-[#D97757]">✨</span> How to Play
-                    </h2>
-                    <ul className="space-y-4 text-lg text-[#1A1A1A]/80 font-medium">
-                        <li className="flex items-start gap-3">
-                            <span className="font-bold text-[#D97757]">1.</span>
-                            Host a game on your TV or main display.
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="font-bold text-[#D97757]">2.</span>
-                            Players join using the room code on their phones.
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="font-bold text-[#D97757]">3.</span>
-                            A 4K image will slowly zoom out over 90 seconds.
-                            The faster you type the right answer, the more points you get!
-                        </li>
-                    </ul>
+            <div className="max-w-[1100px] mx-auto px-6 py-12 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                {/* ── Left Column ─────────────────────────────────────── */}
+                <div className="flex-1 w-full text-center md:text-left">
+                    {/* Animated hero — zooming circle */}
+                    <div className="relative h-24 max-w-xs mx-auto md:mx-0 mb-4 flex items-center justify-center md:justify-start">
+                        <motion.div
+                            className="w-20 h-20 rounded-full bg-[#F0EFEA] border-2 border-[#E8E6DC] flex items-center justify-center text-4xl shadow-sm"
+                            initial={{ scale: 4, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 0.9, ease: 'easeOut' }}
+                        >
+                            🔍
+                        </motion.div>
+                    </div>
+
+                    {/* Title */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-4xl md:text-5xl font-bold mb-2"
+                    >
+                        Zoom-Out
+                    </motion.h1>
+
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-[#141413] text-lg mb-6"
+                    >
+                        A zoomed-in image gradually reveals itself. Race to guess what it is first!
+                    </motion.p>
+
+                    {/* CTAs */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex flex-col gap-3"
+                    >
+                        {device === 'unknown' ? (
+                            <div className="flex justify-center md:justify-start py-4">
+                                <div className="animate-spin w-6 h-6 border-2 border-[#E8E6DC] border-t-[#D97757] rounded-full" />
+                            </div>
+                        ) : device === 'desktop' ? (
+                            <>
+                                <Link
+                                    href="/games/zoom/host"
+                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-[#D97757] text-white shadow-lg hover:shadow-xl hover:brightness-110"
+                                >
+                                    Host Zoom-Out
+                                </Link>
+                                <Link
+                                    href="/join"
+                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-white text-[#141413] border-2 border-[#141413] hover:bg-[#F0EFEA] shadow-md hover:shadow-lg"
+                                >
+                                    Join a Game
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/join"
+                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-[#D97757] text-white shadow-lg hover:shadow-xl hover:brightness-110"
+                                >
+                                    Join a Game
+                                </Link>
+                                <Link
+                                    href="/games/zoom/host"
+                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-white text-[#141413] border-2 border-[#141413] hover:bg-[#F0EFEA] shadow-md hover:shadow-lg"
+                                >
+                                    Host Zoom-Out
+                                </Link>
+                            </>
+                        )}
+                    </motion.div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link
-                        href="/games/zoom/host"
-                        className="bg-[#1A1A1A] text-white px-10 py-5 rounded-2xl font-bold text-2xl hover:bg-[#333] transition-transform hover:scale-105 shadow-xl"
+                {/* ── Right Column — How to Play ─────────────────────── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex-1 w-full"
+                >
+                    <h3 className="text-lg font-bold mb-4">How to Play</h3>
+                    <div
+                        className="bg-white rounded-2xl p-7"
+                        style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}
                     >
-                        Host Zoom 📺
-                    </Link>
-                    <Link
-                        href="/join"
-                        className="bg-white text-[#1A1A1A] border-2 border-[#1A1A1A] px-10 py-5 rounded-2xl font-bold text-2xl hover:bg-[#F5F5F5] transition-transform hover:scale-105 shadow-xl"
-                    >
-                        Join Game 📱
-                    </Link>
-                </div>
+                        {steps.map((step, i) => {
+                            const Icon = stepIcons[i];
+                            return (
+                                <div key={i}>
+                                    {i > 0 && <div className="h-px bg-[#E8E6DC] my-4" />}
+                                    <div className="flex items-center gap-3">
+                                        <Icon />
+                                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D97757] text-white text-[13px] font-bold flex items-center justify-center">
+                                            {i + 1}
+                                        </span>
+                                        <span className="text-sm text-[#141413] leading-snug">
+                                            {step}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </motion.div>
             </div>
-
-            <div className="mt-20 text-[#B0AEA5] font-medium border border-[#E8E6DC] rounded-xl px-6 py-3 bg-white shadow-sm flex items-center gap-2 max-w-lg text-sm text-center">
-                <span className="text-xl">⚠️</span> MVP Demo Version: Typing exactly matching words is required. Example answers for testing: &quot;kocka&quot;, &quot;mince&quot;, &quot;jahoda&quot;.
-            </div>
-        </main>
+        </div>
     );
 }
