@@ -23,6 +23,11 @@ import {
     applyMindshotMessage,
     type MindshotGameState,
     type MindshotMessage,
+    // Zoom
+    createInitialZoomState,
+    applyZoomMessage,
+    type ZoomGameState,
+    type ZoomMessage,
 } from '@lesury/game-logic';
 
 // Pool of distinct emoji avatars for players
@@ -50,7 +55,7 @@ const AVATAR_POOL = [
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TheLineGameState | GuessioGameState | MindshotGameState;
+    game: DemoGameState | TheLineGameState | GuessioGameState | MindshotGameState | ZoomGameState;
 }
 
 export default class Server implements Party.Server {
@@ -138,6 +143,12 @@ export default class Server implements Party.Server {
             if (this.state.room.gameType === 'mindshot' && this.isMindshotMessage(msg)) {
                 console.log(`[onMessage] Routing to handleMindshotMessage`);
                 this.handleMindshotMessage(msg, sender);
+                return;
+            }
+
+            if (this.state.room.gameType === 'zoom' && this.isZoomMessage(msg)) {
+                console.log(`[onMessage] Routing to handleZoomMessage`);
+                this.handleZoomMessage(msg, sender);
                 return;
             }
 
@@ -370,6 +381,50 @@ export default class Server implements Party.Server {
             this.broadcastState();
         } catch (e) {
             console.error('[handleMindshotMessage] ERROR:', e);
+        }
+    }
+
+    // Zoom message handling
+    isZoomMessage(msg: any): msg is ZoomMessage {
+        return ['start_game', 'guess', 'time_up', 'next_round', 'pause', 'resume', 'play_again'].includes(msg.type);
+    }
+
+    handleZoomMessage(msg: ZoomMessage, sender: Party.Connection) {
+        try {
+            let gameState = this.state.game as ZoomGameState;
+
+            const activePlayerIds = this.state.room.players
+                .filter((p) => !p.isHost)
+                .map((p) => p.id);
+
+            if (msg.type === 'start_game') {
+                gameState = createInitialZoomState(activePlayerIds);
+                // The host sends the levels with start_game, so we pass it immediately
+                gameState = applyZoomMessage(gameState, msg, sender.id, activePlayerIds);
+                this.state.room.status = 'playing';
+            } else {
+                gameState = applyZoomMessage(gameState, msg, sender.id, activePlayerIds);
+            }
+
+            // Sync players names if they changed or joined
+            const players = { ...gameState.players };
+            let playersUpdated = false;
+            Object.keys(players).forEach((id) => {
+                const roomPlayer = this.state.room.players.find((p) => p.id === id);
+                if (roomPlayer && roomPlayer.name !== players[id].name) {
+                    players[id] = { ...players[id], name: roomPlayer.name };
+                    playersUpdated = true;
+                }
+            });
+
+            if (playersUpdated) {
+                gameState = { ...gameState, players };
+            }
+
+            this.state.game = gameState;
+            this.broadcastState();
+        } catch (e) {
+            console.error('[handleZoomMessage] ERROR:', e);
         }
     }
 

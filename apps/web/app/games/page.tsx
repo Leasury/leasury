@@ -62,8 +62,7 @@ export default function GamesPage() {
                         emoji="🔍"
                         players="2-12"
                         duration="10-20 min"
-                        href="/games/zoom-out"
-                        comingSoon
+                        href="/games/zoom"
                         index={3}
                     />
 
