@@ -2,11 +2,13 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export interface GameCardProps {
     title: string;
     description: string;
     emoji: string;
+    icon?: string; // Optional image path override (e.g. '/games/the-line/icon.png')
     players?: string;
     duration?: string;
     href: string;
@@ -18,6 +20,7 @@ export default function GameCard({
     title,
     description,
     emoji,
+    icon,
     players,
     duration,
     href,
@@ -37,10 +40,9 @@ export default function GameCard({
                 transition={{ delay: index * 0.1 }}
                 className={`
                     relative bg-[#F0EFEA] p-6 rounded-2xl shadow-md transition-all duration-200 h-full
-                    ${
-                        isAvailable
-                            ? 'cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:bg-white'
-                            : 'opacity-60 cursor-not-allowed'
+                    ${isAvailable
+                        ? 'cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:bg-white'
+                        : 'opacity-60 cursor-not-allowed'
                     }
                 `}
             >
@@ -50,7 +52,19 @@ export default function GameCard({
                     </div>
                 )}
 
-                <div className="text-5xl mb-4">{emoji}</div>
+                <div className="mb-4">
+                    {icon ? (
+                        <Image
+                            src={icon}
+                            alt={title}
+                            width={64}
+                            height={64}
+                            className="w-16 h-16 rounded-xl object-cover"
+                        />
+                    ) : (
+                        <span className="text-5xl">{emoji}</span>
+                    )}
+                </div>
                 <h3 className="text-xl font-bold text-[#141413] mb-2">{title}</h3>
                 <p className="text-[#B0AEA5] text-sm mb-4 line-clamp-2">{description}</p>
 
