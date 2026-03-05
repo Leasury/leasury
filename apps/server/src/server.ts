@@ -196,6 +196,8 @@ export default class Server implements Party.Server {
                         this.state.game = createInitialGuessioState([], []);
                     } else if (msg.gameType === 'mindshot') {
                         this.state.game = createInitialMindshotState([]);
+                    } else if (msg.gameType === 'zoom') {
+                        this.state.game = createInitialZoomState([]);
                     } else {
                         this.state.game = createInitialDemoState();
                     }
