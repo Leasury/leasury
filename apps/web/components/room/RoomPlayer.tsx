@@ -103,13 +103,8 @@ export default function RoomPlayer({ gameType, children, onGameStart }: RoomPlay
         }
     };
 
-    // If game is playing, show game component.
-    // Some games (The Line, Guessio) set roomState.status = 'playing'.
-    // Phase-based games (Zoom) have a game.phase field instead.
-    const gamePhaseBased = gameState?.phase && gameState.phase !== 'lobby';
-    const isGameActive = roomState?.status === 'playing' || gamePhaseBased;
-
-    if (isGameActive && gameState && roomState) {
+    // If game is playing, show game component
+    if (roomState?.status === 'playing' && gameState && roomState) {
         return <>{children({ room: roomState, game: gameState, myPlayerId })}</>;
     }
 
