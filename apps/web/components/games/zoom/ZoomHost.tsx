@@ -10,32 +10,33 @@ export const MOCK_LEVELS: ZoomLevel[] = [
     {
         id: '1',
         imageUrl: '/games/zoom/levels/01_dog.png',
-        answers: ['pes', 'pejsek', 'štěně', 'stene', 'dog', 'puppy'],
-        funFact: 'Věděli jste, že psí čich je 10 000x až 100 000x citlivější než lidský a psi dokážou cítit i lidské emoce?',
+        // First answer is the canonical English display word
+        answers: ['dog', 'puppy'],
+        funFact: 'Did you know that a dog\'s sense of smell is 10,000–100,000× stronger than a human\'s — and they can detect human emotions?',
     },
     {
         id: '2',
         imageUrl: '/games/zoom/levels/02_banana.jpg',
-        answers: ['banán', 'banan', 'banana'],
-        funFact: 'Věděli jste, že banánovník není strom, ale největší bylina na světě, a z botanického hlediska je banán vlastně bobule?',
+        answers: ['banana', 'bananas'],
+        funFact: 'Did you know that a banana plant is not actually a tree but the world\'s largest herbaceous plant? Botanically, bananas are classified as berries!',
     },
     {
         id: '3',
         imageUrl: '/games/zoom/levels/03_ant.png',
-        answers: ['mravenec', 'ant'],
-        funFact: 'Věděli jste, že mravenci nemají plíce a dýchají drobnými průduchy po stranách těla, navíc dokážou unést až 50x více než sami váží?',
+        answers: ['ant', 'ants'],
+        funFact: 'Did you know ants have no lungs? They breathe through tiny holes called spiracles along the sides of their body, and can carry 50× their own body weight.',
     },
     {
         id: '4',
         imageUrl: '/games/zoom/levels/04_sun.jpg',
-        answers: ['slunce', 'sluníčko', 'slunicko', 'sun', 'hvězda', 'hvezda', 'star'],
-        funFact: 'Věděli jste, že Slunce tvoří 99,86 % veškeré hmoty v naší sluneční soustavě a světlo z něj k nám letí zhruba 8 minut a 20 sekund?',
+        answers: ['sun', 'star'],
+        funFact: 'Did you know the Sun makes up 99.86% of all mass in our solar system, and light from it takes exactly 8 minutes and 20 seconds to reach Earth?',
     },
     {
         id: '5',
         imageUrl: '/games/zoom/levels/05_knife.png',
-        answers: ['nůž', 'nuz', 'nožík', 'nozik', 'kudla', 'knife', 'čepel', 'cepel', 'blade'],
-        funFact: 'Věděli jste, že nejstarší nalezené kamenné nože pocházejí z doby před 2,6 miliony let (oldovanská kultura) v dnešní Etiopii?',
+        answers: ['knife', 'blade'],
+        funFact: 'Did you know the oldest known stone knives date back 2.6 million years (Oldowan culture) in what is now Ethiopia?',
     },
 ];
 
@@ -117,7 +118,9 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
     const [selectedRounds, setSelectedRounds] = useState(5);
 
     const handleStartGame = () => {
-        const levels = MOCK_LEVELS.slice(0, Math.min(selectedRounds, MOCK_LEVELS.length));
+        const sliced = MOCK_LEVELS.slice(0, Math.min(selectedRounds, MOCK_LEVELS.length));
+        // Shuffle order randomly each game
+        const levels = [...sliced].sort(() => Math.random() - 0.5);
         getSocket()?.send(JSON.stringify({
             type: 'start_game',
             levels,
@@ -228,19 +231,12 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                             </div>
                         </div>
 
-                        {/* Level preview chips */}
+                        {/* Number of images info (no spoilers) */}
                         <div className="mb-8">
                             <p className="text-sm font-bold text-[#141413] mb-2">Image Set</p>
-                            <div className="flex flex-wrap gap-2">
-                                {MOCK_LEVELS.slice(0, selectedRounds).map((l, i) => (
-                                    <span
-                                        key={l.id}
-                                        className="bg-white text-[#141413] text-xs font-bold px-3 py-1.5 rounded-full border border-[#E8E6DC]"
-                                    >
-                                        {i + 1}. {l.answers[0]}
-                                    </span>
-                                ))}
-                            </div>
+                            <p className="text-[#B0AEA5] text-sm">
+                                {Math.min(selectedRounds, MOCK_LEVELS.length)} random images — mystery until they appear!
+                            </p>
                         </div>
 
                         <div className="flex-1" />

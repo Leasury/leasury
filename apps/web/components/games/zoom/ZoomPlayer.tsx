@@ -87,7 +87,7 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
                     >
                         <div className="text-6xl mb-6">✨</div>
                         <h2 className="text-3xl font-black mb-2 tracking-tight">
-                            {isCorrect ? 'Skvěle!' : 'Čas vypršel'}
+                            {isCorrect ? 'Got it!' : 'Time\'s up!'}
                         </h2>
 
                         {isCorrect && (
@@ -98,7 +98,11 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
 
                         {(game.phase === 'reveal' || game.phase === 'round_leaderboard') && currentLevel && (
                             <div className="mt-8 pt-8 border-t border-white/10 text-left">
-                                <p className="text-white/40 uppercase tracking-widest text-xs font-bold mb-2">Věděli jste, že...</p>
+                                <p className="text-white/40 uppercase tracking-widest text-xs font-bold mb-3">The answer was</p>
+                                <div className="text-3xl font-black text-white tracking-tight mb-6 capitalize">
+                                    {currentLevel.answers[0]}
+                                </div>
+                                <p className="text-white/40 uppercase tracking-widest text-xs font-bold mb-2">Did you know...</p>
                                 <p className="text-white/80 leading-relaxed font-medium">
                                     {currentLevel.funFact}
                                 </p>
@@ -107,7 +111,7 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
 
                         {game.phase === 'playing' && (
                             <p className="text-white/40 mt-8 font-medium">
-                                Čekáme na ostatní hráče...
+                                Waiting for other players...
                             </p>
                         )}
                     </motion.div>
@@ -128,7 +132,7 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
 
                 <div className="flex-1 flex flex-col justify-center items-center gap-8 max-w-md w-full mx-auto">
                     <div className="text-[#141413] text-2xl font-black tracking-tight text-center">
-                        Co je na obrázku?
+                        What&apos;s in the image?
                     </div>
 
                     <form onSubmit={handleSubmit} className="w-full relative">
@@ -141,7 +145,7 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
                                 type="text"
                                 value={guess}
                                 onChange={(e) => setGuess(e.target.value)}
-                                placeholder="Napiš svůj tip..."
+                                placeholder="Type your guess..."
                                 className="w-full bg-white border-2 border-[#E8E6DC] text-2xl font-bold rounded-2xl p-6 shadow-sm focus:outline-none focus:border-[#D97757] focus:ring-4 focus:ring-[#D97757]/20 transition-all text-center"
                                 autoFocus
                                 autoComplete="off"
@@ -155,13 +159,13 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
                             disabled={!guess.trim()}
                             className="w-full mt-6 bg-[#D97757] text-white py-5 rounded-2xl font-black text-xl hover:bg-[#CC785C] disabled:bg-[#E8E6DC] disabled:text-[#B0AEA5] transition-colors shadow-lg active:scale-95"
                         >
-                            Hádat
+                            Guess
                         </button>
                     </form>
 
                     {/* Future: Quick completion/autocomplete pills could go here */}
                     <p className="text-[#B0AEA5] text-sm text-center font-medium px-4 mt-8">
-                        Můžeš hádat kolikrát chceš. Není za to žádná penalizace!
+                        You can guess as many times as you like — no penalty!
                     </p>
                 </div>
             </div>
