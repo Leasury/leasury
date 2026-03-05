@@ -18,6 +18,11 @@ import {
     applyGuessioMessage,
     type GuessioGameState,
     type GuessioMessage,
+    // Mindshot
+    createInitialMindshotState,
+    applyMindshotMessage,
+    type MindshotGameState,
+    type MindshotMessage,
 } from '@lesury/game-logic';
 
 // Pool of distinct emoji avatars for players
@@ -45,7 +50,7 @@ const AVATAR_POOL = [
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TheLineGameState | GuessioGameState;
+    game: DemoGameState | TheLineGameState | GuessioGameState | MindshotGameState;
 }
 
 export default class Server implements Party.Server {
@@ -130,6 +135,12 @@ export default class Server implements Party.Server {
                 return;
             }
 
+            if (this.state.room.gameType === 'mindshot' && this.isMindshotMessage(msg)) {
+                console.log(`[onMessage] Routing to handleMindshotMessage`);
+                this.handleMindshotMessage(msg, sender);
+                return;
+            }
+
             console.log(
                 `[onMessage] Message NOT handled! gameType=${this.state.room.gameType}, msg.type=${msg.type}`
             );
@@ -172,6 +183,8 @@ export default class Server implements Party.Server {
                         } satisfies TheLineGameState;
                     } else if (msg.gameType === 'guessio') {
                         this.state.game = createInitialGuessioState([], []);
+                    } else if (msg.gameType === 'mindshot') {
+                        this.state.game = createInitialMindshotState([]);
                     } else {
                         this.state.game = createInitialDemoState();
                     }
@@ -328,6 +341,34 @@ export default class Server implements Party.Server {
             this.broadcastState();
         } catch (e) {
             console.error('[handleGuessioMessage] ERROR:', e);
+        }
+    }
+
+    // Mindshot game message handling
+    isMindshotMessage(msg: any): msg is MindshotMessage {
+        return ['start_game', 'submit_plan', 'next_frame', 'play_again'].includes(msg.type);
+    }
+
+    handleMindshotMessage(msg: MindshotMessage, sender: Party.Connection) {
+        try {
+            let gameState = this.state.game as MindshotGameState;
+
+            if (msg.type === 'start_game') {
+                // Initialize state with all non-host player IDs at game start
+                const playerIds = this.state.room.players
+                    .filter((p) => !p.isHost)
+                    .map((p) => p.id);
+                gameState = createInitialMindshotState(playerIds);
+                gameState = applyMindshotMessage(gameState, msg, sender.id);
+                this.state.room.status = 'playing';
+            } else {
+                gameState = applyMindshotMessage(gameState, msg, sender.id);
+            }
+
+            this.state.game = gameState;
+            this.broadcastState();
+        } catch (e) {
+            console.error('[handleMindshotMessage] ERROR:', e);
         }
     }
 

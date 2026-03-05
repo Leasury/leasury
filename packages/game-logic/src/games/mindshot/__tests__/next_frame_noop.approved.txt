@@ -1,0 +1,4 @@
+{
+  "currentFrame": 0,
+  "phase": "planning"
+}

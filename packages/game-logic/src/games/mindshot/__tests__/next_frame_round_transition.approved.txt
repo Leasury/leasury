@@ -1,0 +1,6 @@
+{
+  "allPlansNull": true,
+  "phase": "planning",
+  "plansRevealed": false,
+  "round": 2
+}

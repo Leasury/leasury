@@ -1,0 +1,6 @@
+{
+  "currentFrame": 0,
+  "framesGenerated": true,
+  "phase": "resolving",
+  "plansRevealed": true
+}

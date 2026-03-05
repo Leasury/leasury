@@ -1,0 +1,52 @@
+{
+  "neighbors": [
+    {
+      "dir": "E",
+      "neighbor": {
+        "q": 1,
+        "r": 0
+      },
+      "valid": true
+    },
+    {
+      "dir": "NE",
+      "neighbor": {
+        "q": 1,
+        "r": -1
+      },
+      "valid": true
+    },
+    {
+      "dir": "NW",
+      "neighbor": {
+        "q": 0,
+        "r": -1
+      },
+      "valid": true
+    },
+    {
+      "dir": "W",
+      "neighbor": {
+        "q": -1,
+        "r": 0
+      },
+      "valid": true
+    },
+    {
+      "dir": "SW",
+      "neighbor": {
+        "q": -1,
+        "r": 1
+      },
+      "valid": true
+    },
+    {
+      "dir": "SE",
+      "neighbor": {
+        "q": 0,
+        "r": 1
+      },
+      "valid": true
+    }
+  ]
+}
