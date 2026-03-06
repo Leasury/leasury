@@ -395,6 +395,9 @@ export default class Server implements Party.Server {
         try {
             let gameState = this.state.game as ZoomGameState;
 
+            // Resolve the canonical player ID (may differ from conn.id after a redirect/rejoin)
+            const canonicalSenderId = this.connToPlayer.get(sender.id) || sender.id;
+
             const activePlayerIds = this.state.room.players
                 .filter((p) => !p.isHost)
                 .map((p) => p.id);
@@ -402,10 +405,10 @@ export default class Server implements Party.Server {
             if (msg.type === 'start_game') {
                 gameState = createInitialZoomState(activePlayerIds);
                 // The host sends the levels with start_game, so we pass it immediately
-                gameState = applyZoomMessage(gameState, msg, sender.id, activePlayerIds);
+                gameState = applyZoomMessage(gameState, msg, canonicalSenderId, activePlayerIds);
                 this.state.room.status = 'playing';
             } else {
-                gameState = applyZoomMessage(gameState, msg, sender.id, activePlayerIds);
+                gameState = applyZoomMessage(gameState, msg, canonicalSenderId, activePlayerIds);
             }
 
             // Sync players names if they changed or joined
@@ -429,6 +432,7 @@ export default class Server implements Party.Server {
             console.error('[handleZoomMessage] ERROR:', e);
         }
     }
+
 
     // State sync
     syncToConnection(conn: Party.Connection) {
