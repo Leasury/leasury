@@ -104,7 +104,7 @@
     --chart-4: oklch(0.7499 0.0129 96.4777);
     --chart-5: oklch(0.9818 0.0054 95.0986);
 
-    --radius: 0.125rem;
+    --radius: 0.75rem;
 
     --sidebar: oklch(0.2346 0.0019 106.5439);
     --sidebar-foreground: oklch(0.9818 0.0054 95.0986);
@@ -232,6 +232,7 @@ body {
     * {
         @apply border-border outline-ring/50;
     }
+
     body {
         @apply bg-background text-foreground;
         letter-spacing: var(--tracking-normal);
