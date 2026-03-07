@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Header() {
     return (
@@ -23,13 +22,11 @@ export default function Header() {
                     <span className="text-2xl font-extrabold text-foreground">lesury</span>
                 </Link>
 
-                <div className="flex items-center gap-2">
-                    <ThemeToggle />
-                    <Button asChild className="rounded-full">
-                        <Link href="/games">Browse Games</Link>
-                    </Button>
-                </div>
+                <Button asChild className="rounded-full">
+                    <Link href="/games">Browse Games</Link>
+                </Button>
             </div>
         </header>
     );
 }
+
