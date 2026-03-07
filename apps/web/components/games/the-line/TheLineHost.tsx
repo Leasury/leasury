@@ -108,10 +108,10 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
         const url = generateRoomUrl('the-line', room.roomCode, baseUrl);
 
-        // Read computed CSS variable values so QR colors respect the active theme
-        const style = getComputedStyle(document.documentElement);
-        const darkColor = style.getPropertyValue('--foreground').trim();
-        const lightColor = style.getPropertyValue('--card').trim();
+        // Use hex colors keyed to the active theme — qrcode canvas does not support oklch
+        const qrColors = resolvedTheme === 'dark'
+            ? { dark: '#F0EFEA', light: '#2E2E2C' }   // ≈ --foreground / --card in dark mode
+            : { dark: '#191917', light: '#FFFFFF' };   // ≈ --foreground / --card in light mode
 
         QRCode.toCanvas(
             canvasRef.current,
@@ -119,7 +119,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
             {
                 width: 250,
                 margin: 2,
-                color: { dark: darkColor, light: lightColor },
+                color: qrColors,
             },
             (err) => {
                 if (err) console.error('QR generation failed:', err);
@@ -166,7 +166,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         animate={{ opacity: 1, x: 0 }}
                         className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-muted-foreground text-center text-sm mb-4">
+                        <p className="text-muted-foreground text-center text-base mb-4">
                             Scan to join
                         </p>
                         <div className="flex justify-center mb-6">
@@ -236,7 +236,7 @@ export default function TheLineHost({ state, socket: propSocket }: TheLineHostPr
                         animate={{ opacity: 1, x: 0 }}
                         className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-muted-foreground text-center mb-8">Set up game</p>
+                        <p className="text-muted-foreground text-center text-base mb-8">Set up game</p>
 
                         {/* Category Select */}
                         <div className="mb-6">
