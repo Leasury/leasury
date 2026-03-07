@@ -22,7 +22,6 @@ export default function GamesPage() {
                         title="The Line"
                         description="Sort events by weight, speed, population and more. Can you find the right spot on the line?"
                         emoji="📏"
-                        icon="/games/the-line/icon.png"
                         players="2-8"
                         duration="15-25 min"
                         href="/games/the-line"
@@ -51,9 +50,9 @@ export default function GamesPage() {
 
 
                     <GameCard
-                        title="Battle Royale"
+                        title="Mindshot"
                         description="Move, shoot, survive on a shrinking grid. Plan your moves in secret, then watch the chaos unfold!"
-                        emoji="⚔️"
+                        emoji="🎯"
                         players="2-4"
                         duration="5-10 min"
                         href="/games/battle-royale"
