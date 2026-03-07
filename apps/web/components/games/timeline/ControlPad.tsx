@@ -24,13 +24,13 @@ export default function ControlPad({
     const arrowButton = `
         ${buttonBase}
         w-20 h-20 rounded-2xl
-        ${disabled ? 'bg-[#E8E6DC] text-[#B0AEA5]' : 'bg-[#141413] text-[#FAF9F5] shadow-lg'}
+        ${disabled ? 'bg-border text-muted-foreground' : 'bg-primary text-primary-foreground shadow-lg'}
     `;
 
     const placeButton = `
         ${buttonBase}
         w-24 h-24 rounded-full
-        ${disabled ? 'bg-[#E8E6DC] text-[#B0AEA5]' : 'bg-[#D97757] text-[#FAF9F5] shadow-xl'}
+        ${disabled ? 'bg-border text-muted-foreground' : 'bg-accent text-primary-foreground shadow-xl'}
     `;
 
     return (

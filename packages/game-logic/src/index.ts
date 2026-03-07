@@ -23,3 +23,6 @@ export * from './games/mindshot';
 
 // Zoom Game
 export * from './games/zoom';
+
+// Battle Royale Game
+export * from './games/battle-royale';

@@ -12,7 +12,6 @@ function HostPageContent() {
         <RoomHost
             gameType={gameType}
             onGameStart={(roomState) => {
-                // Redirect to actual game host view
                 window.location.href = `/games/${gameType}/host?room=${roomState.roomCode}`;
             }}
         >
@@ -25,7 +24,7 @@ export default function HostPage() {
     return (
         <Suspense
             fallback={
-                <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
+                <div className="min-h-screen bg-background flex items-center justify-center">
                     Loading...
                 </div>
             }

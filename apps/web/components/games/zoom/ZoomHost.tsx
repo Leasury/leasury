@@ -148,9 +148,9 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-[#B0AEA5] text-center text-sm mb-4">
+                        <p className="text-muted-foreground text-center text-sm mb-4">
                             Scan to join on mobile
                         </p>
                         <div className="flex justify-center mb-6">
@@ -163,20 +163,20 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                         </div>
 
                         {/* Room Code */}
-                        <div className="bg-white rounded-xl p-4 mb-6 text-center">
-                            <p className="text-xs text-[#B0AEA5] mb-1">Room Code</p>
-                            <p className="text-4xl font-bold tracking-widest text-[#141413] tabular-nums">
+                        <div className="bg-card rounded-xl p-4 mb-6 text-center">
+                            <p className="text-xs text-muted-foreground mb-1">Room Code</p>
+                            <p className="text-4xl font-bold tracking-widest text-foreground tabular-nums">
                                 {room.roomCode}
                             </p>
                         </div>
 
                         {/* Player list */}
                         <div className="flex-1">
-                            <p className="text-sm font-bold text-[#141413] mb-2">
+                            <p className="text-sm font-bold text-foreground mb-2">
                                 Players ({nonHostPlayers.length})
                             </p>
                             {nonHostPlayers.length === 0 ? (
-                                <p className="text-[#B0AEA5] text-sm">
+                                <p className="text-muted-foreground text-sm">
                                     Waiting for players to join…
                                 </p>
                             ) : (
@@ -184,7 +184,7 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                                     {nonHostPlayers.map((p: any) => (
                                         <div
                                             key={p.id}
-                                            className="bg-white px-3 py-2 rounded-xl text-sm font-bold text-[#141413] flex items-center gap-2"
+                                            className="bg-card px-3 py-2 rounded-xl text-sm font-bold text-foreground flex items-center gap-2"
                                         >
                                             <span className="text-lg">{p.avatar || '👤'}</span>
                                             <span className="flex-1">{p.name}</span>
@@ -199,21 +199,21 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
                     >
-                        <h1 className="text-3xl font-bold text-[#141413] mb-2 text-center">
+                        <h1 className="text-3xl font-bold text-foreground mb-2 text-center">
                             Zoom-Out
                         </h1>
-                        <p className="text-[#B0AEA5] text-center mb-8">Configure your game</p>
+                        <p className="text-muted-foreground text-center mb-8">Configure your game</p>
 
                         {/* Rounds Selector */}
                         <div className="mb-8">
-                            <label className="block text-sm font-bold text-[#141413] mb-2">
+                            <label className="block text-sm font-bold text-foreground mb-2">
                                 Rounds:{' '}
-                                <span className="text-[#D97757] tabular-nums">
+                                <span className="text-accent tabular-nums">
                                     {Math.min(selectedRounds, MOCK_LEVELS.length)}
                                 </span>
-                                <span className="text-[#B0AEA5] font-normal ml-1">
+                                <span className="text-muted-foreground font-normal ml-1">
                                     (max {MOCK_LEVELS.length})
                                 </span>
                             </label>
@@ -223,9 +223,9 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                                 max={MOCK_LEVELS.length}
                                 value={selectedRounds}
                                 onChange={(e) => setSelectedRounds(Number(e.target.value))}
-                                className="w-full accent-[#D97757]"
+                                className="w-full accent-accent"
                             />
-                            <div className="flex justify-between text-xs text-[#B0AEA5] mt-1">
+                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                 <span>1</span>
                                 <span>{MOCK_LEVELS.length}</span>
                             </div>
@@ -233,8 +233,8 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
 
                         {/* Number of images info (no spoilers) */}
                         <div className="mb-8">
-                            <p className="text-sm font-bold text-[#141413] mb-2">Image Set</p>
-                            <p className="text-[#B0AEA5] text-sm">
+                            <p className="text-sm font-bold text-foreground mb-2">Image Set</p>
+                            <p className="text-muted-foreground text-sm">
                                 {Math.min(selectedRounds, MOCK_LEVELS.length)} random images — mystery until they appear!
                             </p>
                         </div>
@@ -246,8 +246,8 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                             onClick={handleStartGame}
                             disabled={!canStart}
                             className={`w-full py-5 rounded-2xl font-bold text-xl transition-all ${canStart
-                                ? 'bg-[#D97757] text-white hover:brightness-110 cursor-pointer shadow-lg'
-                                : 'bg-[#E8E6DC] text-[#B0AEA5] cursor-not-allowed'
+                                ? 'bg-accent text-accent-foreground hover:bg-accent-hover cursor-pointer shadow-lg'
+                                : 'bg-border text-muted-foreground cursor-not-allowed'
                                 }`}
                         >
                             {canStart

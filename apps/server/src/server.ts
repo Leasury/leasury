@@ -28,6 +28,11 @@ import {
     applyZoomMessage,
     type ZoomGameState,
     type ZoomMessage,
+    // Battle Royale
+    createInitialBattleRoyaleState,
+    applyBattleRoyaleMessage,
+    type BattleRoyaleGameState,
+    type BattleRoyaleMessage,
 } from '@lesury/game-logic';
 
 // Pool of distinct emoji avatars for players
@@ -55,7 +60,7 @@ const AVATAR_POOL = [
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TheLineGameState | GuessioGameState | MindshotGameState | ZoomGameState;
+    game: DemoGameState | TheLineGameState | GuessioGameState | MindshotGameState | ZoomGameState | BattleRoyaleGameState;
 }
 
 export default class Server implements Party.Server {
@@ -152,6 +157,12 @@ export default class Server implements Party.Server {
                 return;
             }
 
+            if (this.state.room.gameType === 'battle-royale' && this.isBattleRoyaleMessage(msg)) {
+                console.log(`[onMessage] Routing to handleBattleRoyaleMessage`);
+                this.handleBattleRoyaleMessage(msg, sender);
+                return;
+            }
+
             console.log(
                 `[onMessage] Message NOT handled! gameType=${this.state.room.gameType}, msg.type=${msg.type}`
             );
@@ -198,6 +209,8 @@ export default class Server implements Party.Server {
                         this.state.game = createInitialMindshotState([]);
                     } else if (msg.gameType === 'zoom') {
                         this.state.game = createInitialZoomState([]);
+                    } else if (msg.gameType === 'battle-royale') {
+                        this.state.game = createInitialBattleRoyaleState([]);
                     } else {
                         this.state.game = createInitialDemoState();
                     }
@@ -433,6 +446,46 @@ export default class Server implements Party.Server {
         }
     }
 
+
+    // Battle Royale message handling
+    isBattleRoyaleMessage(msg: any): msg is BattleRoyaleMessage {
+        return ['start_game', 'submit_actions', 'unlock_actions', 'end_planning', 'advance_phase', 'play_again'].includes(msg.type);
+    }
+
+    handleBattleRoyaleMessage(msg: BattleRoyaleMessage, sender: Party.Connection) {
+        try {
+            let gameState = this.state.game as BattleRoyaleGameState;
+
+            const canonicalSenderId = this.connToPlayer.get(sender.id) || sender.id;
+
+            const activePlayerIds = this.state.room.players
+                .filter((p) => !p.isHost)
+                .map((p) => p.id);
+
+            if (msg.type === 'start_game') {
+                gameState = createInitialBattleRoyaleState(activePlayerIds);
+                gameState = applyBattleRoyaleMessage(gameState, msg, canonicalSenderId, activePlayerIds);
+                this.state.room.status = 'playing';
+
+                // Sync player names from room
+                for (const roomPlayer of this.state.room.players) {
+                    if (gameState.players[roomPlayer.id]) {
+                        gameState.players[roomPlayer.id] = {
+                            ...gameState.players[roomPlayer.id],
+                            name: roomPlayer.name,
+                        };
+                    }
+                }
+            } else {
+                gameState = applyBattleRoyaleMessage(gameState, msg, canonicalSenderId, activePlayerIds);
+            }
+
+            this.state.game = gameState;
+            this.broadcastState();
+        } catch (e) {
+            console.error('[handleBattleRoyaleMessage] ERROR:', e);
+        }
+    }
 
     // State sync
     syncToConnection(conn: Party.Connection) {

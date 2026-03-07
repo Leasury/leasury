@@ -48,7 +48,7 @@ function DirectionPicker({ label, selected, onSelect, disabled, accentColor, com
 
     return (
         <div className="flex flex-col items-center gap-2 w-full max-w-[200px]">
-            <span className="text-[#B0AEA5] text-xs font-bold uppercase tracking-widest text-center h-6">
+            <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest text-center h-6">
                 {label}
             </span>
             <div className="grid grid-cols-3 gap-1.5 w-max">
@@ -61,7 +61,7 @@ function DirectionPicker({ label, selected, onSelect, disabled, accentColor, com
                                     className={`${btnSize} flex items-center justify-center`}
                                 >
                                     {ri === 1 && ci === 1 && (
-                                        <div className="w-2 h-2 rounded-full bg-[#E8E6DC]" />
+                                        <div className="w-2 h-2 rounded-full bg-border" />
                                     )}
                                 </div>
                             );
@@ -140,15 +140,15 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
     // ── Lobby screen ────────────────────────────────────────────────────────
     if (game.phase === 'lobby') {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center gap-6 p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 p-6">
                 <div className="text-6xl">🎯</div>
-                <h1 className="text-3xl font-bold text-[#141413]">Mindshot</h1>
-                <p className="text-[#B0AEA5] text-center max-w-xs">
+                <h1 className="text-3xl font-bold text-foreground">Mindshot</h1>
+                <p className="text-muted-foreground text-center max-w-xs">
                     Look at the shared screen — Waiting for the host to start the game.
                 </p>
-                <div className="flex items-center gap-2 mt-4 bg-white px-5 py-3 rounded-2xl shadow-sm border border-[#E8E6DC]">
+                <div className="flex items-center gap-2 mt-4 bg-card px-5 py-3 rounded-2xl shadow-sm border border-border">
                     <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: myColor }} />
-                    <span className="text-[#141413] font-medium">
+                    <span className="text-foreground font-medium">
                         {room.players.find((p) => p.id === myPlayerId)?.name ?? 'You'}
                     </span>
                 </div>
@@ -159,10 +159,10 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
     // ── Eliminated screen ───────────────────────────────────────────────────
     if (isEliminated && game.phase !== 'game_over') {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center gap-6 p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 p-6">
                 <div className="text-7xl">💀</div>
-                <h2 className="text-3xl font-bold text-[#141413]">Eliminated</h2>
-                <p className="text-[#B0AEA5] text-center max-w-[250px]">
+                <h2 className="text-3xl font-bold text-foreground">Eliminated</h2>
+                <p className="text-muted-foreground text-center max-w-[250px]">
                     You have been defeated! Watch the rest of the battle unfold on the shared screen.
                 </p>
             </div>
@@ -173,14 +173,14 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
     if (game.phase === 'game_over') {
         const isWinner = game.winnerId === myPlayerId;
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center gap-6 p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 p-6">
                 <div className="text-8xl mb-4">{isWinner ? '🏆' : '💀'}</div>
-                <h2 className="text-3xl font-bold text-[#141413]">
+                <h2 className="text-3xl font-bold text-foreground">
                     {isWinner ? 'Victory!' : 'Defeat'}
                 </h2>
                 <button
                     onClick={handlePlayAgain}
-                    className="bg-[#D97757] text-white px-8 py-4 rounded-xl font-bold text-xl hover:bg-[#CC785C] transition-colors mt-8 shadow-lg active:scale-95"
+                    className="bg-accent text-accent-foreground px-8 py-4 rounded-xl font-bold text-xl hover:bg-accent-hover transition-colors mt-8 shadow-lg active:scale-95"
                 >
                     Play Again
                 </button>
@@ -191,21 +191,21 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
     // ── Resolving / waiting screen ──────────────────────────────────────────
     if (game.phase === 'resolving') {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center gap-6 p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 p-6">
                 <div
                     className="w-20 h-20 rounded-full animate-pulse shadow-[0_0_30px_rgba(0,0,0,0.15)] flex items-center justify-center"
                     style={{ backgroundColor: myColor }}
                 >
-                    <span className="text-3xl text-white font-bold tracking-widest uppercase">
+                    <span className="text-3xl text-accent-foreground font-bold tracking-widest uppercase">
                         {myPlayer?.id.slice(0, 2) ?? 'Me'}
                     </span>
                 </div>
-                <h2 className="text-2xl font-bold text-[#141413] mt-4">Look up! 📺</h2>
-                <p className="text-[#B0AEA5] text-center max-w-[250px]">
+                <h2 className="text-2xl font-bold text-foreground mt-4">Look up! 📺</h2>
+                <p className="text-muted-foreground text-center max-w-[250px]">
                     The round is resolving. Watch the shared screen to see what happens.
                 </p>
                 {myPlayer && (
-                    <div className="flex gap-2 mt-6 bg-white px-6 py-3 rounded-full shadow-sm border border-[#E8E6DC]">
+                    <div className="flex gap-2 mt-6 bg-card px-6 py-3 rounded-full shadow-sm border border-border">
                         {Array.from({ length: 3 }, (_, i) => (
                             <span
                                 key={i}
@@ -226,12 +226,12 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
 
     if (planSubmitted) {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center gap-6 p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 p-6">
                 <div className="text-7xl">✓</div>
-                <h2 className="text-3xl font-bold text-[#141413]">Locked In</h2>
-                <p className="text-[#B0AEA5] text-center">Waiting for others to finish...</p>
+                <h2 className="text-3xl font-bold text-foreground">Locked In</h2>
+                <p className="text-muted-foreground text-center">Waiting for others to finish...</p>
                 {myPlayer && (
-                    <div className="flex gap-2 mt-6 bg-white px-6 py-3 rounded-full shadow-sm border border-[#E8E6DC]">
+                    <div className="flex gap-2 mt-6 bg-card px-6 py-3 rounded-full shadow-sm border border-border">
                         {Array.from({ length: 3 }, (_, i) => (
                             <span
                                 key={i}
@@ -250,14 +250,14 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
     const allSelected = move1 && move2 && shoot;
 
     return (
-        <div className="min-h-screen bg-[#FAF9F5] flex flex-col relative w-full overflow-hidden">
+        <div className="min-h-screen bg-background flex flex-col relative w-full overflow-hidden">
             {/* Round header */}
-            <div className="flex items-center justify-between p-5 bg-white shadow-sm z-10 sticky top-0">
+            <div className="flex items-center justify-between p-5 bg-card shadow-sm z-10 sticky top-0">
                 <div className="flex items-center gap-3">
                     <div className="w-4 h-4 rounded-full" style={{ backgroundColor: myColor }} />
                     <div>
-                        <p className="text-[10px] text-[#B0AEA5] uppercase tracking-wider font-bold">Round {game.round}</p>
-                        <p className="text-lg font-bold text-[#141413] leading-none">Plan Moves</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Round {game.round}</p>
+                        <p className="text-lg font-bold text-foreground leading-none">Plan Moves</p>
                     </div>
                 </div>
                 {myPlayer && (
@@ -280,7 +280,7 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
                 <div className="flex flex-col items-center justify-center min-h-full py-8 gap-y-10 px-4">
 
                     {/* Top row: 2 moves side-by-side or stacked on very small screens */}
-                    <div className="flex justify-center gap-4 w-full max-w-md bg-white p-5 rounded-3xl border border-[#E8E6DC] shadow-sm">
+                    <div className="flex justify-center gap-4 w-full max-w-md bg-card p-5 rounded-3xl border border-border shadow-sm">
                         <DirectionPicker
                             label="Move 1"
                             selected={move1}
@@ -288,7 +288,7 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
                             accentColor={myColor}
                             compact
                         />
-                        <div className="w-px bg-[#F0EFEA] self-stretch mx-1" />
+                        <div className="w-px bg-muted self-stretch mx-1" />
                         <DirectionPicker
                             label="Move 2"
                             selected={move2}
@@ -299,7 +299,7 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
                     </div>
 
                     {/* Bottom: Shoot */}
-                    <div className="flex justify-center w-full max-w-[240px] bg-white p-6 rounded-3xl border border-[#E8E6DC] shadow-sm relative overflow-hidden">
+                    <div className="flex justify-center w-full max-w-[240px] bg-card p-6 rounded-3xl border border-border shadow-sm relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E63946]/30 to-transparent" />
                         <DirectionPicker
                             label="Shoot"
@@ -312,7 +312,7 @@ export default function MindshotPlayer({ state, myPlayerId }: MindshotPlayerProp
             </div>
 
             {/* Fixed bottom action bar */}
-            <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-[#FAF9F5] via-[#FAF9F5] to-transparent z-20 pointer-events-none pb-8">
+            <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-background via-background to-transparent z-20 pointer-events-none pb-8">
                 <button
                     onClick={handleSubmit}
                     disabled={!allSelected}

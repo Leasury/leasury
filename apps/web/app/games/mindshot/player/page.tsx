@@ -22,8 +22,8 @@ function MindshotPlayerContent() {
 
     if (!roomState || !gameState) {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-[#141413] rounded-full" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-border border-t-foreground rounded-full" />
             </div>
         );
     }
@@ -38,7 +38,7 @@ function MindshotPlayerContent() {
 
 export default function MindshotPlayerPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#FAF9F5]" />}>
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
             <MindshotPlayerContent />
         </Suspense>
     );

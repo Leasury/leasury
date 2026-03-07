@@ -16,9 +16,6 @@ export default function GuessioPlayer({ state }: GuessioPlayerProps) {
     // The player id inside game state should match the room canonical player id
     const currentPlayerId = room.players.find(p => p.id === (window as any)?.__partySocket?.id)?.id || 'unknown'; // Note: session ID could be used instead
 
-    // We'll just show everything for now until we identify the player ID properly and implement the view logic
-    const isActivePlayer = game?.activePlayerId && game?.players?.[currentPlayerId]?.id === game.activePlayerId;
-
     // In actual implementation, we'll need true auth/session ID matching here
     const handleSelectWord = (word: string, bet: number) => {
         const socket = (window as any).__partySocket;
@@ -64,7 +61,7 @@ export default function GuessioPlayer({ state }: GuessioPlayerProps) {
 
                 <div className="bg-white/10 p-6 rounded-2xl w-full max-w-md border border-white/20 mb-6">
                     <h2 className="text-xl border-b border-white/20 pb-2 mb-4">Current Turn</h2>
-                    <p>Status: <span className="font-bold capitalize text-[#D97757]">{game.status}</span></p>
+                    <p>Status: <span className="font-bold capitalize text-accent">{game.status}</span></p>
                     <p>Category: <span className="font-bold capitalize">{game.activeCategory}</span></p>
                 </div>
 
@@ -81,7 +78,7 @@ export default function GuessioPlayer({ state }: GuessioPlayerProps) {
                                             <button
                                                 key={bet}
                                                 onClick={() => handleSelectWord(word, bet)}
-                                                className="bg-[#D97757] hover:bg-[#CC785C] active:scale-95 transition-all text-white font-bold w-12 h-12 rounded-full"
+                                                className="bg-accent hover:bg-accent-hover active:scale-95 transition-all text-accent-foreground font-bold w-12 h-12 rounded-full"
                                             >
                                                 {bet}
                                             </button>
@@ -96,7 +93,7 @@ export default function GuessioPlayer({ state }: GuessioPlayerProps) {
                 {/* Status when reporting resolution */}
                 {game.status === 'recording_resolution' && (
                     <div className="w-full max-w-md mt-4">
-                        <div className="bg-[#141413] border border-white/20 p-6 rounded-2xl text-center">
+                        <div className="bg-primary text-primary-foreground border border-white/20 p-6 rounded-2xl text-center">
                             <h3 className="text-2xl mb-4">Timer is running!</h3>
                             <div className="flex gap-4">
                                 <button

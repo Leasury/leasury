@@ -22,7 +22,7 @@ function TheLinePlayerContent() {
     if (!roomState || !gameState) {
         return (
             <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-[#E8E6DC] border-t-white rounded-full" />
+                <div className="animate-spin w-8 h-8 border-2 border-border border-t-white rounded-full" />
             </div>
         );
     }

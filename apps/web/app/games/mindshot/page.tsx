@@ -3,22 +3,20 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Header from '@/app/components/Header';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
-/* ── Inline SVG icons (Lucide-style, 24×24, stroke #D97757) ─────────── */
-
 const CrosshairIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="22" y1="12" x2="18" y2="12" />
-        <line x1="6" y1="12" x2="2" y2="12" />
-        <line x1="12" y1="6" x2="12" y2="2" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <circle cx="12" cy="12" r="10" /><line x1="22" y1="12" x2="18" y2="12" />
+        <line x1="6" y1="12" x2="2" y2="12" /><line x1="12" y1="6" x2="12" y2="2" />
         <line x1="12" y1="22" x2="12" y2="18" />
     </svg>
 );
 
 const EyeOffIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
         <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
         <line x1="1" y1="1" x2="23" y2="23" />
@@ -26,21 +24,20 @@ const EyeOffIcon = () => (
 );
 
 const ZapIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
 );
 
 const ShieldIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
 );
 
 const TrophyIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
         <path d="M4 22h16" />
         <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
         <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
@@ -57,11 +54,9 @@ const steps = [
     'Last player standing with HP wins! Eliminated players watch the battle unfold.',
 ];
 
-// ── Mini hex grid hero ────────────────────────────────────────────────────────
-
 function HexHero() {
     const hexes = [
-        { q: 0, r: 0, fill: '#D97757', delay: 0 },      // center (player)
+        { q: 0, r: 0, fill: '#D97757', delay: 0 },
         { q: 1, r: -1, fill: '#6A9BCC', delay: 0.1 },
         { q: -1, r: 1, fill: '#788C5D', delay: 0.2 },
         { q: 1, r: 0, fill: '#F0EFEA', delay: 0.05 },
@@ -115,140 +110,74 @@ function HexHero() {
                     />
                 );
             })}
-            {/* Player token on center hex */}
-            <motion.circle
-                cx={CX} cy={CY} r={12}
-                fill="#D97757"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, duration: 0.35, ease: 'easeOut' }}
-                style={{ transformOrigin: `${CX}px ${CY}px` }}
-            />
-            <motion.text
-                x={CX} y={CY}
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize={10}
-                fontWeight="bold"
-                fill="white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.65 }}
-            >
-                3
-            </motion.text>
+            <motion.circle cx={CX} cy={CY} r={12} fill="#D97757" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: 0.35, ease: 'easeOut' }} style={{ transformOrigin: `${CX}px ${CY}px` }} />
+            <motion.text x={CX} y={CY} textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight="bold" fill="white" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 }}>3</motion.text>
         </svg>
     );
 }
-
-// ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MindshotLandingPage() {
     const device = useDeviceDetection();
 
     return (
-        <div className="min-h-screen bg-[#FAF9F5]">
+        <div className="min-h-screen bg-background">
             <Header />
 
             <div className="max-w-[1100px] mx-auto px-6 py-12 flex flex-col md:flex-row items-center gap-10 md:gap-16">
-                {/* ── Left Column ─────────────────────────────────────── */}
                 <div className="flex-1 w-full text-center md:text-left">
-                    {/* Animated hex grid hero */}
                     <div className="flex justify-center md:justify-start mb-4">
                         <HexHero />
                     </div>
 
-                    {/* Title */}
-                    <motion.h1
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-4xl md:text-5xl font-bold mb-2"
-                    >
+                    <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-5xl font-bold mb-2">
                         Mindshot
                     </motion.h1>
 
-                    {/* Subtitle */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-[#141413] text-lg mb-6"
-                    >
-                        Battle Royale on a hexagonal grid. Plan your moves in secret,
-                        then watch chaos unfold simultaneously.
+                    <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-foreground text-lg mb-6">
+                        Battle Royale on a hexagonal grid. Plan your moves in secret, then watch chaos unfold simultaneously.
                     </motion.p>
 
-                    {/* CTAs */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="flex flex-col gap-3"
-                    >
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-col gap-3">
                         {device === 'unknown' ? (
                             <div className="flex justify-center py-4">
-                                <div className="animate-spin w-6 h-6 border-2 border-[#E8E6DC] border-t-[#D97757] rounded-full" />
+                                <div className="animate-spin w-6 h-6 border-2 border-border border-t-accent rounded-full" />
                             </div>
                         ) : device === 'desktop' ? (
                             <>
-                                <Link
-                                    href="/host?game=mindshot"
-                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-[#D97757] text-white shadow-lg hover:shadow-xl hover:brightness-110"
-                                >
-                                    Host Mindshot
-                                </Link>
-                                <Link
-                                    href="/join"
-                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-white text-[#141413] border-2 border-[#141413] hover:bg-[#F0EFEA] shadow-md hover:shadow-lg"
-                                >
-                                    Join a Game
-                                </Link>
+                                <Button asChild className="rounded-full px-8 py-4 h-auto text-lg font-bold bg-accent text-accent-foreground hover:bg-accent-hover shadow-lg hover:shadow-xl">
+                                    <Link href="/host?game=mindshot">Host Mindshot</Link>
+                                </Button>
+                                <Button asChild variant="outline" className="rounded-full px-8 py-4 h-auto text-lg font-bold shadow-md hover:shadow-lg">
+                                    <Link href="/join">Join a Game</Link>
+                                </Button>
                             </>
                         ) : (
                             <>
-                                <Link
-                                    href="/join"
-                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-[#D97757] text-white shadow-lg hover:shadow-xl hover:brightness-110"
-                                >
-                                    Join a Game
-                                </Link>
-                                <Link
-                                    href="/host?game=mindshot"
-                                    className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 active:scale-[0.98] bg-white text-[#141413] border-2 border-[#141413] hover:bg-[#F0EFEA] shadow-md hover:shadow-lg"
-                                >
-                                    Host Mindshot
-                                </Link>
+                                <Button asChild className="rounded-full px-8 py-4 h-auto text-lg font-bold bg-accent text-accent-foreground hover:bg-accent-hover shadow-lg hover:shadow-xl">
+                                    <Link href="/join">Join a Game</Link>
+                                </Button>
+                                <Button asChild variant="outline" className="rounded-full px-8 py-4 h-auto text-lg font-bold shadow-md hover:shadow-lg">
+                                    <Link href="/host?game=mindshot">Host Mindshot</Link>
+                                </Button>
                             </>
                         )}
                     </motion.div>
                 </div>
 
-                {/* ── Right Column — How to Play ─────────────────────── */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="flex-1 w-full"
-                >
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex-1 w-full">
                     <h3 className="text-lg font-bold mb-4">How to Play</h3>
-                    <div
-                        className="bg-white rounded-2xl p-7"
-                        style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}
-                    >
+                    <div className="bg-card rounded-2xl p-7 shadow-md">
                         {steps.map((step, i) => {
                             const Icon = stepIcons[i];
                             return (
                                 <div key={i}>
-                                    {i > 0 && <div className="h-px bg-[#E8E6DC] my-4" />}
-                                    <div className="flex items-center gap-3">
+                                    {i > 0 && <Separator className="my-4" />}
+                                    <div className="flex items-center gap-3 text-accent">
                                         <Icon />
-                                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D97757] text-white text-[13px] font-bold flex items-center justify-center">
+                                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent text-accent-foreground text-[13px] font-bold flex items-center justify-center">
                                             {i + 1}
                                         </span>
-                                        <span className="text-sm text-[#141413] leading-snug">
-                                            {step}
-                                        </span>
+                                        <span className="text-sm text-foreground leading-snug">{step}</span>
                                     </div>
                                 </div>
                             );

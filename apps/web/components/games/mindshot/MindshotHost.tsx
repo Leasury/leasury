@@ -144,9 +144,9 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-[#B0AEA5] text-center text-sm mb-4">
+                        <p className="text-muted-foreground text-center text-sm mb-4">
                             Scan to join on mobile
                         </p>
                         <div className="flex justify-center mb-6">
@@ -159,20 +159,20 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                         </div>
 
                         {/* Room Code */}
-                        <div className="bg-white rounded-xl p-4 mb-6 text-center">
-                            <p className="text-xs text-[#B0AEA5] mb-1">Room Code</p>
-                            <p className="text-4xl font-bold tracking-widest text-[#141413] tabular-nums">
+                        <div className="bg-card rounded-xl p-4 mb-6 text-center">
+                            <p className="text-xs text-muted-foreground mb-1">Room Code</p>
+                            <p className="text-4xl font-bold tracking-widest text-foreground tabular-nums">
                                 {room.roomCode}
                             </p>
                         </div>
 
                         {/* Player list with kick buttons */}
                         <div className="flex-1">
-                            <p className="text-sm font-bold text-[#141413] mb-2">
+                            <p className="text-sm font-bold text-foreground mb-2">
                                 Players ({nonHostPlayers.length})
                             </p>
                             {nonHostPlayers.length === 0 ? (
-                                <p className="text-[#B0AEA5] text-sm">
+                                <p className="text-muted-foreground text-sm">
                                     Waiting for players to join...
                                 </p>
                             ) : (
@@ -180,7 +180,7 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                                     {nonHostPlayers.map((p: any) => (
                                         <div
                                             key={p.id}
-                                            className="bg-white px-3 py-2 rounded-xl text-sm font-bold text-[#141413] flex items-center gap-2"
+                                            className="bg-card px-3 py-2 rounded-xl text-sm font-bold text-foreground flex items-center gap-2"
                                         >
                                             <span className="text-lg">{p.avatar || '👤'}</span>
                                             <span className="flex-1">{p.name}</span>
@@ -190,7 +190,7 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                                                         getSocket()?.send(JSON.stringify({ type: 'kick', playerId: p.id }));
                                                     }
                                                 }}
-                                                className="text-[#B0AEA5] hover:text-red-500 transition-colors text-lg px-1"
+                                                className="text-muted-foreground hover:text-red-500 transition-colors text-lg px-1"
                                             >
                                                 ✕
                                             </button>
@@ -205,20 +205,20 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-[#F0EFEA] rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
                     >
-                        <h1 className="text-3xl font-bold text-[#141413] mb-2 text-center">
+                        <h1 className="text-3xl font-bold text-foreground mb-2 text-center">
                             Mindshot
                         </h1>
-                        <p className="text-[#B0AEA5] text-center mb-8">Configure your game</p>
+                        <p className="text-muted-foreground text-center mb-8">Configure your game</p>
 
                         {/* Max HP Slider */}
                         <div className="mb-6">
-                            <label className="block text-sm font-bold text-[#141413] mb-2">
+                            <label className="block text-sm font-bold text-foreground mb-2">
                                 Starting HP:{' '}
-                                <span className="text-[#D97757] tabular-nums">{selectedHp}</span>
+                                <span className="text-accent tabular-nums">{selectedHp}</span>
                                 {' '}
-                                <span className="text-[#B0AEA5] font-normal">
+                                <span className="text-muted-foreground font-normal">
                                     {'♥'.repeat(selectedHp)}
                                 </span>
                             </label>
@@ -228,9 +228,9 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                                 max={5}
                                 value={selectedHp}
                                 onChange={(e) => setSelectedHp(Number(e.target.value))}
-                                className="w-full accent-[#D97757]"
+                                className="w-full accent-accent"
                             />
-                            <div className="flex justify-between text-xs text-[#B0AEA5] mt-1">
+                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                 <span>1 (Fast)</span>
                                 <span>5 (Tanky)</span>
                             </div>
@@ -238,7 +238,7 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
 
                         {/* Zone Shrink Speed */}
                         <div className="mb-8">
-                            <label className="block text-sm font-bold text-[#141413] mb-2">
+                            <label className="block text-sm font-bold text-foreground mb-2">
                                 Zone Speed
                             </label>
                             <div className="grid grid-cols-3 gap-2">
@@ -247,8 +247,8 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                                         key={speed}
                                         onClick={() => setShrinkSpeed(speed)}
                                         className={`px-4 py-3 rounded-xl font-bold text-sm transition-all capitalize ${shrinkSpeed === speed
-                                            ? 'bg-[#D97757] text-white shadow-md'
-                                            : 'bg-white text-[#141413] hover:bg-[#E8E6DC]'
+                                            ? 'bg-accent text-accent-foreground shadow-md'
+                                            : 'bg-card text-foreground hover:bg-border'
                                             }`}
                                     >
                                         {speed === 'slow' ? '🐢 Slow' : speed === 'normal' ? '⚡ Normal' : '🔥 Fast'}
@@ -261,14 +261,14 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
 
                         {/* Disabled info / Start Button */}
                         {nonHostPlayers.length < 2 ? (
-                            <div className="w-full bg-[#E8E6DC] text-[#B0AEA5] px-6 py-4 rounded-xl font-bold text-lg text-center">
+                            <div className="w-full bg-border text-muted-foreground px-6 py-4 rounded-xl font-bold text-lg text-center">
                                 Need at least 2 players
                             </div>
                         ) : (
                             <button
                                 type="button"
                                 onClick={handleStartGame}
-                                className="w-full bg-[#D97757] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#CC785C] transition-colors cursor-pointer"
+                                className="w-full bg-accent text-accent-foreground px-6 py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-colors cursor-pointer"
                             >
                                 Start Game
                             </button>
@@ -287,20 +287,20 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-[#F0EFEA] rounded-3xl p-12 text-center max-w-md w-full shadow-2xl"
+                    className="bg-muted rounded-3xl p-12 text-center max-w-md w-full shadow-2xl"
                 >
                     <div className="text-7xl mb-4">🏆</div>
                     {winner ? (
                         <>
-                            <h2 className="text-4xl font-bold text-[#141413] mb-2">
+                            <h2 className="text-4xl font-bold text-foreground mb-2">
                                 {winner.name} Wins!
                             </h2>
-                            <p className="text-[#D97757] text-xl font-semibold">Last one standing!</p>
+                            <p className="text-accent text-xl font-semibold">Last one standing!</p>
                         </>
                     ) : (
-                        <h2 className="text-4xl font-bold text-[#141413]">Draw!</h2>
+                        <h2 className="text-4xl font-bold text-foreground">Draw!</h2>
                     )}
-                    <p className="text-[#B0AEA5] text-sm mt-6">
+                    <p className="text-muted-foreground text-sm mt-6">
                         Players can request a rematch from their phones.
                     </p>
                 </motion.div>
@@ -329,7 +329,7 @@ export default function MindshotHost({ state, socket: propSocket }: MindshotHost
             {/* Phase banner */}
             <div className="absolute top-20 left-0 right-0 flex justify-center pointer-events-none z-10">
                 {game.phase === 'planning' && (
-                    <div className="bg-[#D97757] text-white px-6 py-2 rounded-xl font-bold text-lg shadow-lg">
+                    <div className="bg-accent text-accent-foreground px-6 py-2 rounded-xl font-bold text-lg shadow-lg">
                         Planning Phase — {readyCount}/{alivePlayers.length} ready
                     </div>
                 )}

@@ -32,7 +32,7 @@ export default function ResultOverlay({
                     exit={{ opacity: 0 }}
                     className={`
                         fixed inset-0 z-50 flex items-center justify-center
-                        ${isCorrect ? 'bg-[#788C5D]/30' : 'bg-[#CC785C]/30'}
+                        ${isCorrect ? 'bg-accent-green/30' : 'bg-accent-hover/30'}
                     `}
                 >
                     <motion.div
@@ -42,9 +42,9 @@ export default function ResultOverlay({
                         className="text-center"
                     >
                         {isCorrect ? (
-                            <div className="text-[200px] text-[#788C5D]">✓</div>
+                            <div className="text-[200px] text-accent-green">✓</div>
                         ) : (
-                            <div className="text-[200px] text-[#CC785C]">✗</div>
+                            <div className="text-[200px] text-accent-hover">✗</div>
                         )}
                     </motion.div>
                 </motion.div>

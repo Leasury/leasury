@@ -3,12 +3,13 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
 
 export interface GameCardProps {
     title: string;
     description: string;
     emoji: string;
-    icon?: string; // Optional image path override (e.g. '/games/the-line/icon.png')
+    icon?: string;
     players?: string;
     duration?: string;
     href: string;
@@ -29,27 +30,29 @@ export default function GameCard({
 }: GameCardProps) {
     const isAvailable = !comingSoon;
 
+    const Wrapper = comingSoon ? 'div' : Link;
+    const wrapperProps = comingSoon
+        ? { className: 'block cursor-not-allowed' }
+        : { href, className: 'block' };
+
     return (
-        <Link
-            href={comingSoon ? '#' : href}
-            className={`block ${comingSoon ? 'cursor-not-allowed' : ''}`}
-        >
+        <Wrapper {...(wrapperProps as any)}>
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={`
-                    relative bg-[#F0EFEA] p-6 rounded-2xl shadow-md transition-all duration-200 h-full
+                    group relative bg-secondary p-6 rounded-2xl shadow-md transition-all duration-200 h-full overflow-hidden
                     ${isAvailable
-                        ? 'cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:bg-white'
+                        ? 'cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:bg-card hover:ring-2 hover:ring-accent/40'
                         : 'opacity-60 cursor-not-allowed'
                     }
                 `}
             >
                 {comingSoon && (
-                    <div className="absolute top-4 right-4 bg-[#B0AEA5] text-[#FAF9F5] text-xs font-semibold px-2 py-1 rounded-full">
+                    <Badge variant="secondary" className="absolute top-4 right-4 bg-muted-foreground text-primary-foreground">
                         Coming Soon
-                    </div>
+                    </Badge>
                 )}
 
                 <div className="mb-4">
@@ -65,11 +68,11 @@ export default function GameCard({
                         <span className="text-5xl">{emoji}</span>
                     )}
                 </div>
-                <h3 className="text-xl font-bold text-[#141413] mb-2">{title}</h3>
-                <p className="text-[#B0AEA5] text-sm mb-4 line-clamp-2">{description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
+                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{description}</p>
 
                 {(players || duration) && (
-                    <div className="flex gap-4 text-sm text-[#B0AEA5]">
+                    <div className="flex gap-4 text-sm text-muted-foreground">
                         {players && (
                             <div className="flex items-center gap-1">
                                 <span>👥</span>
@@ -85,13 +88,12 @@ export default function GameCard({
                     </div>
                 )}
 
-                {/* Hover Overlay - CSS only for smooth animation */}
                 {isAvailable && (
-                    <div className="absolute inset-0 bg-[#141413] bg-opacity-90 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                        <span className="text-[#FAF9F5] font-bold text-lg">Play Now →</span>
+                    <div className="absolute bottom-0 inset-x-0 bg-accent py-2.5 flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-200">
+                        <span className="text-accent-foreground font-bold text-sm tracking-wide">Play Now →</span>
                     </div>
                 )}
             </motion.div>
-        </Link>
+        </Wrapper>
     );
 }

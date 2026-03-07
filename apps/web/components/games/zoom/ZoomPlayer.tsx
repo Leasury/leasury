@@ -59,11 +59,11 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
     // ── Lobby View ──────────────────────────────────────────────────────────
     if (game.phase === 'lobby') {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center p-6 text-center">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
                 <div className="text-6xl mb-6">🔍</div>
-                <h1 className="text-3xl font-black text-[#141413] mb-4">Zoom-Out</h1>
-                <p className="text-[#B0AEA5]">Look at the TV. The game will start soon.</p>
-                <div className="mt-8 px-6 py-3 bg-white border border-[#E8E6DC] shadow-sm rounded-full font-bold">
+                <h1 className="text-3xl font-black text-foreground mb-4">Zoom-Out</h1>
+                <p className="text-muted-foreground">Look at the TV. The game will start soon.</p>
+                <div className="mt-8 px-6 py-3 bg-card border border-border shadow-sm rounded-full font-bold">
                     {room.players.find((p) => p.id === myPlayerId)?.name ?? 'You'}
                 </div>
             </div>
@@ -124,14 +124,14 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
 
         // Active Guessing UI
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col p-6 relative">
+            <div className="min-h-screen bg-background flex flex-col p-6 relative">
                 <div className="flex justify-between items-center mb-12 mt-4 px-2">
-                    <span className="text-[#B0AEA5] font-bold uppercase tracking-widest text-sm">Round {game.round}</span>
-                    <span className="font-bold text-[#141413]">{myPlayer?.score} pts</span>
+                    <span className="text-muted-foreground font-bold uppercase tracking-widest text-sm">Round {game.round}</span>
+                    <span className="font-bold text-foreground">{myPlayer?.score} pts</span>
                 </div>
 
                 <div className="flex-1 flex flex-col justify-center items-center gap-8 max-w-md w-full mx-auto">
-                    <div className="text-[#141413] text-2xl font-black tracking-tight text-center">
+                    <div className="text-foreground text-2xl font-black tracking-tight text-center">
                         What&apos;s in the image?
                     </div>
 
@@ -146,7 +146,7 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
                                 value={guess}
                                 onChange={(e) => setGuess(e.target.value)}
                                 placeholder="Type your guess..."
-                                className="w-full bg-white border-2 border-[#E8E6DC] text-2xl font-bold rounded-2xl p-6 shadow-sm focus:outline-none focus:border-[#D97757] focus:ring-4 focus:ring-[#D97757]/20 transition-all text-center"
+                                className="w-full bg-card border-2 border-border text-2xl font-bold rounded-2xl p-6 shadow-sm focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all text-center"
                                 autoFocus
                                 autoComplete="off"
                                 autoCorrect="off"
@@ -157,14 +157,14 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
                         <button
                             type="submit"
                             disabled={!guess.trim()}
-                            className="w-full mt-6 bg-[#D97757] text-white py-5 rounded-2xl font-black text-xl hover:bg-[#CC785C] disabled:bg-[#E8E6DC] disabled:text-[#B0AEA5] transition-colors shadow-lg active:scale-95"
+                            className="w-full mt-6 bg-accent text-accent-foreground py-5 rounded-2xl font-black text-xl hover:bg-accent-hover disabled:bg-border disabled:text-muted-foreground transition-colors shadow-lg active:scale-95"
                         >
                             Guess
                         </button>
                     </form>
 
                     {/* Future: Quick completion/autocomplete pills could go here */}
-                    <p className="text-[#B0AEA5] text-sm text-center font-medium px-4 mt-8">
+                    <p className="text-muted-foreground text-sm text-center font-medium px-4 mt-8">
                         You can guess as many times as you like — no penalty!
                     </p>
                 </div>
@@ -179,17 +179,17 @@ export default function ZoomPlayer({ state, myPlayerId }: ZoomPlayerProps) {
             <div className="min-h-screen bg-[#1A1A1A] flex flex-col items-center justify-center gap-6 p-6 text-white text-center">
                 <div className="text-8xl mb-4">{isWinner ? '👑' : '👏'}</div>
                 <h2 className="text-4xl font-black tracking-tight mb-2">
-                    {isWinner ? 'Vítězství!' : 'Konec hry'}
+                    {isWinner ? 'Victory!' : 'Game Over'}
                 </h2>
                 <div className="text-3xl font-bold text-white/50 mb-12">
-                    {myPlayer?.score} bodů
+                    {myPlayer?.score} pts
                 </div>
 
                 <button
                     onClick={handlePlayAgain}
-                    className="bg-white text-black px-10 py-5 rounded-2xl font-bold text-xl hover:scale-105 transition-transform shadow-xl w-full max-w-sm"
+                    className="bg-card text-card-foreground px-10 py-5 rounded-2xl font-bold text-xl hover:scale-105 transition-transform shadow-xl w-full max-w-sm"
                 >
-                    Zpět do Lobby
+                    Back to Lobby
                 </button>
             </div>
         );

@@ -25,14 +25,12 @@ export default function TimelineHost({ state }: TimelineHostProps) {
     // Auto-scroll to keep active slot centered
     useEffect(() => {
         if (game.status === 'placing' && timelineRef.current) {
-            // Calculate scroll position to center active slot
             const container = timelineRef.current;
-            const activeSlotIndex = game.proposedPosition;
             const cardWidth = 160; // w-40 = 160px
-            const slotWidth = game.proposedPosition === activeSlotIndex ? 160 : 8;
+            const slotWidth = 160;
             const gap = 12; // gap-3 = 12px
 
-            const scrollPosition = activeSlotIndex * (cardWidth + gap + slotWidth);
+            const scrollPosition = game.proposedPosition * (cardWidth + gap + slotWidth);
             const containerCenter = container.offsetWidth / 2;
             const scrollTo = scrollPosition - containerCenter + cardWidth / 2;
 
@@ -53,17 +51,17 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                   : 'Game Over';
 
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-background flex items-center justify-center p-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-white rounded-3xl p-12 text-center max-w-2xl shadow-xl"
+                    className="bg-card rounded-3xl p-12 text-center max-w-2xl shadow-xl"
                 >
                     <div className="text-7xl mb-6">🏆</div>
-                    <h1 className="text-4xl font-bold mb-4 text-[#141413]">{winner}</h1>
+                    <h1 className="text-4xl font-bold mb-4 text-foreground">{winner}</h1>
 
                     {game.mode === 'coop' && (
-                        <p className="text-xl text-[#B0AEA5] mb-6">
+                        <p className="text-xl text-muted-foreground mb-6">
                             {game.winner
                                 ? `You placed ${game.cardsPlaced} cards successfully!`
                                 : 'Better luck next time!'}
@@ -77,12 +75,12 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                 .map(([playerId, score], idx) => (
                                     <div
                                         key={playerId}
-                                        className="flex justify-between items-center p-3 bg-[#F0EFEA] rounded-xl"
+                                        className="flex justify-between items-center p-3 bg-muted rounded-xl"
                                     >
                                         <span className="font-bold">
                                             #{idx + 1} {playerId}
                                         </span>
-                                        <span className="font-bold text-[#D97757]">
+                                        <span className="font-bold text-accent">
                                             {score} pts
                                         </span>
                                     </div>
@@ -92,7 +90,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
 
                     <button
                         onClick={() => (window.location.href = '/games/timeline')}
-                        className="bg-[#D97757] text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-[#CC785C] transition-colors shadow-lg"
+                        className="bg-accent text-accent-foreground px-8 py-4 rounded-xl text-lg font-bold hover:bg-accent-hover transition-colors shadow-lg"
                     >
                         Play Again
                     </button>
@@ -103,11 +101,11 @@ export default function TimelineHost({ state }: TimelineHostProps) {
 
     return (
         <GameLayout backUrl="/games/timeline" theme="light">
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+            <div className="min-h-screen bg-background flex flex-col">
                 {/* Header Bar */}
-                <div className="bg-[#F0EFEA] border-b border-[#E8E6DC] py-4 px-6">
+                <div className="bg-muted border-b border-border py-4 px-6">
                     <div className="max-w-7xl mx-auto flex items-center justify-between">
-                        <h1 className="text-2xl font-bold text-[#141413]">Timeline</h1>
+                        <h1 className="text-2xl font-bold text-foreground">Timeline</h1>
 
                         {/* Player Scores / Status */}
                         <div className="flex gap-3">
@@ -117,7 +115,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                         {'❤️'.repeat(game.lives)}
                                         {'🤍'.repeat(Math.max(0, 3 - game.lives))}
                                     </div>
-                                    <div className="text-lg font-bold text-[#141413]">
+                                    <div className="text-lg font-bold text-foreground">
                                         {game.cardsPlaced} / {game.cardsGoal} cards
                                     </div>
                                 </div>
@@ -127,8 +125,8 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                         key={playerId}
                                         className={`px-4 py-2 rounded-full font-bold transition-all ${
                                             playerId === game.activePlayerId
-                                                ? 'bg-[#D97757] text-white shadow-md'
-                                                : 'bg-white text-[#141413]'
+                                                ? 'bg-accent text-accent-foreground shadow-md'
+                                                : 'bg-card text-foreground'
                                         }`}
                                     >
                                         {playerName(playerId)}: {score}
@@ -152,7 +150,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                         {/* Timeline horizontal scroll container */}
                         <div className="relative min-w-max">
                             {/* Timeline line */}
-                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#E8E6DC] -translate-y-1/2" />
+                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-border -translate-y-1/2" />
 
                             {/* Cards and slots */}
                             <div className="relative z-10 flex items-center gap-3">
@@ -174,7 +172,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                                         initial={{ width: 8, opacity: 0 }}
                                                         animate={{ width: 160, opacity: 1 }}
                                                         exit={{ width: 8, opacity: 0 }}
-                                                        className="h-64 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex items-center justify-center"
+                                                        className="h-64 bg-accent/20 border-2 border-dashed border-accent rounded-2xl flex items-center justify-center"
                                                     >
                                                         <motion.div
                                                             initial={{ scale: 0.9 }}
@@ -191,7 +189,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                                 )}
 
                                                 {!showActiveHere && (
-                                                    <div className="w-2 h-12 bg-[#E8E6DC]/50 rounded-full" />
+                                                    <div className="w-2 h-12 bg-border/50 rounded-full" />
                                                 )}
 
                                                 {/* Placed card */}
@@ -225,12 +223,12 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                         game.activeEvent &&
                                         game.proposedPosition === game.placedEvents.length && (
                                             <>
-                                                <div className="w-2 h-12 bg-[#E8E6DC]/50 rounded-full" />
+                                                <div className="w-2 h-12 bg-border/50 rounded-full" />
                                                 <motion.div
                                                     initial={{ width: 8, opacity: 0 }}
                                                     animate={{ width: 160, opacity: 1 }}
                                                     exit={{ width: 8, opacity: 0 }}
-                                                    className="h-64 bg-[#D97757]/20 border-2 border-dashed border-[#D97757] rounded-2xl flex items-center justify-center"
+                                                    className="h-64 bg-accent/20 border-2 border-dashed border-accent rounded-2xl flex items-center justify-center"
                                                 >
                                                     <motion.div
                                                         initial={{ scale: 0.9 }}
@@ -251,13 +249,13 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                         </div>
 
                         {/* Gradient fade indicators */}
-                        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#FAF9F5] to-transparent pointer-events-none" />
-                        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#FAF9F5] to-transparent pointer-events-none" />
+                        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+                        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent pointer-events-none" />
                     </div>
                 </div>
 
                 {/* Footer Bar */}
-                <div className="bg-[#F0EFEA] border-t border-[#E8E6DC] py-4 px-6">
+                <div className="bg-muted border-t border-border py-4 px-6">
                     <div className="max-w-7xl mx-auto flex items-center justify-between">
                         {/* Current card preview */}
                         <div className="flex items-center gap-4">
@@ -267,8 +265,8 @@ export default function TimelineHost({ state }: TimelineHostProps) {
                                         {getCategoryIcon(game.activeEvent.category)}
                                     </div>
                                     <div>
-                                        <p className="text-sm text-[#B0AEA5]">Current Card</p>
-                                        <p className="font-bold text-[#141413]">
+                                        <p className="text-sm text-muted-foreground">Current Card</p>
+                                        <p className="font-bold text-foreground">
                                             {game.activeEvent.title}
                                         </p>
                                     </div>
@@ -278,8 +276,8 @@ export default function TimelineHost({ state }: TimelineHostProps) {
 
                         {/* Current turn */}
                         <div className="text-right">
-                            <p className="text-sm text-[#B0AEA5]">Current Turn</p>
-                            <p className="font-bold text-[#D97757] text-lg">
+                            <p className="text-sm text-muted-foreground">Current Turn</p>
+                            <p className="font-bold text-accent text-lg">
                                 {game.activePlayerId
                                     ? playerName(game.activePlayerId)
                                     : 'Waiting...'}

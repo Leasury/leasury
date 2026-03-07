@@ -108,18 +108,18 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
 
     if (kicked) {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-background flex items-center justify-center p-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center max-w-sm"
                 >
                     <div className="text-6xl mb-4">👋</div>
-                    <h2 className="text-2xl font-bold text-[#141413] mb-2">Removed from Game</h2>
-                    <p className="text-[#B0AEA5] mb-8">The host removed you from this game.</p>
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Removed from Game</h2>
+                    <p className="text-muted-foreground mb-8">The host removed you from this game.</p>
                     <button
                         onClick={() => (window.location.href = '/')}
-                        className="w-full bg-[#141413] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#2A2A2A] transition-colors"
+                        className="w-full bg-primary text-primary-foreground px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#2A2A2A] transition-colors"
                     >
                         Home
                     </button>
@@ -132,7 +132,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
 
     if (game.status === 'setup') {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-background flex items-center justify-center p-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -145,8 +145,8 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                     >
                         📏
                     </motion.div>
-                    <h2 className="text-2xl font-bold text-[#141413] mb-2">Get Ready!</h2>
-                    <p className="text-lg text-[#B0AEA5]">Waiting for host to start...</p>
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Get Ready!</h2>
+                    <p className="text-lg text-muted-foreground">Waiting for host to start...</p>
                 </motion.div>
             </div>
         );
@@ -160,28 +160,28 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         const myRank = sortedScores.findIndex(([pid]) => pid === playerId) + 1;
 
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-background flex items-center justify-center p-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-[#F0EFEA] rounded-3xl p-8 text-center max-w-md shadow-xl w-full"
+                    className="bg-muted rounded-3xl p-8 text-center max-w-md shadow-xl w-full"
                 >
                     <div className="text-6xl mb-4">
                         {myRank === 1 ? '🏆' : myRank === 2 ? '🥈' : myRank === 3 ? '🥉' : '🎮'}
                     </div>
-                    <h2 className="text-2xl font-bold mb-2 text-[#141413]">
+                    <h2 className="text-2xl font-bold mb-2 text-foreground">
                         {myRank === 1 ? 'You Win!' : `#${myRank} Place`}
                     </h2>
-                    <div className="bg-white rounded-xl p-4 mb-6 shadow-md">
-                        <p className="text-sm text-[#B0AEA5]">Your Score</p>
-                        <p className="text-4xl font-bold text-[#D97757] tabular-nums">{myScore}</p>
+                    <div className="bg-card rounded-xl p-4 mb-6 shadow-md">
+                        <p className="text-sm text-muted-foreground">Your Score</p>
+                        <p className="text-4xl font-bold text-accent tabular-nums">{myScore}</p>
                     </div>
-                    <p className="text-[#B0AEA5] text-sm mb-4">
+                    <p className="text-muted-foreground text-sm mb-4">
                         Waiting for host to start a new game...
                     </p>
                     <button
                         onClick={() => (window.location.href = '/')}
-                        className="w-full bg-[#141413] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2A2A2A] transition-colors"
+                        className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-[#2A2A2A] transition-colors"
                     >
                         Home
                     </button>
@@ -198,7 +198,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
         const activePlayerAvatar = activePlayer?.avatar || '⏳';
 
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+            <div className="min-h-screen bg-background flex flex-col">
                 <div className="flex-1 flex items-center justify-center p-6">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -212,14 +212,14 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                         >
                             {activePlayerAvatar}
                         </motion.div>
-                        <p className="text-2xl font-bold mb-2 text-[#141413]">
+                        <p className="text-2xl font-bold mb-2 text-foreground">
                             {activePlayerName} is playing
                         </p>
-                        <p className="text-lg text-[#B0AEA5]">Watch the TV!</p>
+                        <p className="text-lg text-muted-foreground">Watch the TV!</p>
 
-                        <div className="mt-6 bg-[#F0EFEA] rounded-xl p-4 shadow-md">
-                            <p className="text-sm text-[#B0AEA5]">Your Score</p>
-                            <p className="text-3xl font-bold text-[#141413] tabular-nums">
+                        <div className="mt-6 bg-muted rounded-xl p-4 shadow-md">
+                            <p className="text-sm text-muted-foreground">Your Score</p>
+                            <p className="text-3xl font-bold text-foreground tabular-nums">
                                 {game.scores[playerId] || 0}
                             </p>
                         </div>
@@ -255,8 +255,8 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
 
     if (!game.activeEvent) {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
-                <div className="text-xl text-[#B0AEA5]">Loading...</div>
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-xl text-muted-foreground">Loading...</div>
             </div>
         );
     }
@@ -265,7 +265,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
 
     if (game.status === 'revealing') {
         return (
-            <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+            <div className="min-h-screen bg-background flex flex-col">
                 {/* Result display */}
                 <div className="flex-1 flex items-center justify-center p-6">
                     <motion.div
@@ -287,11 +287,11 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
                             >
-                                <p className="text-2xl font-bold text-[#141413] tabular-nums">
+                                <p className="text-2xl font-bold text-foreground tabular-nums">
                                     {formatDisplayValue(game.last_action.display_value)}{' '}
                                     {game.last_action.unit}
                                 </p>
-                                <p className="text-[#B0AEA5] text-sm mt-2 max-w-xs mx-auto">
+                                <p className="text-muted-foreground text-sm mt-2 max-w-xs mx-auto">
                                     {game.last_action.funfact}
                                 </p>
                             </motion.div>
@@ -301,10 +301,10 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
 
                 {/* Passive countdown */}
                 <div className="p-6">
-                    <p className="text-center text-[#B0AEA5] text-sm mb-3">Next turn starting...</p>
-                    <div className="w-full bg-[#E8E6DC] rounded-full h-2 overflow-hidden">
+                    <p className="text-center text-muted-foreground text-sm mb-3">Next turn starting...</p>
+                    <div className="w-full bg-border rounded-full h-2 overflow-hidden">
                         <motion.div
-                            className="h-full bg-[#D97757] rounded-full"
+                            className="h-full bg-accent rounded-full"
                             style={{ width: `${countdownProgress}%` }}
                         />
                     </div>
@@ -316,16 +316,16 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
     // ─── Active turn — Placing ─────────────────────────────────────────────────
 
     return (
-        <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
+        <div className="min-h-screen bg-background flex flex-col">
             {/* Event Info — Top 2/3 */}
-            <div className="flex-[2] bg-[#F0EFEA] p-6 flex items-center justify-center">
+            <div className="flex-[2] bg-muted p-6 flex items-center justify-center">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center max-w-md"
                 >
                     {/* Category badge */}
-                    <span className="inline-block text-xs font-bold uppercase px-3 py-1 rounded-full bg-[#D97757]/10 text-[#D97757] mb-4">
+                    <span className="inline-block text-xs font-bold uppercase px-3 py-1 rounded-full bg-accent/10 text-accent mb-4">
                         {game.selectedCategory}
                     </span>
 
@@ -347,32 +347,32 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                     )}
 
                     {/* Event Title */}
-                    <h2 className="text-3xl font-extrabold mb-2 text-[#141413]">
+                    <h2 className="text-3xl font-extrabold mb-2 text-foreground">
                         {game.activeEvent.title}
                     </h2>
 
                     {/* Fun Fact */}
                     {game.activeEvent.funfact && (
-                        <p className="text-sm text-[#B0AEA5] italic mb-4 leading-relaxed max-w-xs mx-auto">
+                        <p className="text-sm text-muted-foreground italic mb-4 leading-relaxed max-w-xs mx-auto">
                             {game.activeEvent.funfact}
                         </p>
                     )}
 
                     {/* Instructions */}
-                    <p className="text-lg text-[#B0AEA5]">Where does this belong on the line?</p>
+                    <p className="text-lg text-muted-foreground">Where does this belong on the line?</p>
 
                     {/* Position indicator */}
                     <motion.div
                         key={game.cursorIndex}
                         initial={{ scale: 0.9 }}
                         animate={{ scale: 1 }}
-                        className="mt-6 bg-white rounded-xl p-4 shadow-md"
+                        className="mt-6 bg-card rounded-xl p-4 shadow-md"
                     >
-                        <p className="text-sm text-[#B0AEA5] mb-1">Position</p>
-                        <p className="text-5xl font-bold text-[#D97757] tabular-nums">
+                        <p className="text-sm text-muted-foreground mb-1">Position</p>
+                        <p className="text-5xl font-bold text-accent tabular-nums">
                             {game.cursorIndex + 1}
                         </p>
-                        <p className="text-xs text-[#B0AEA5] mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             of {game.line.length + 1} slots
                         </p>
                     </motion.div>
@@ -380,20 +380,20 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
             </div>
 
             {/* Controls — Bottom 1/3 */}
-            <div className="flex-1 bg-[#E8E6DC] flex flex-col items-center justify-center p-6 gap-4">
+            <div className="flex-1 bg-border flex flex-col items-center justify-center p-6 gap-4">
                 {/* Arrow buttons */}
                 <div className="flex gap-4 w-full max-w-md">
                     <button
                         onClick={() => handleMove('left')}
                         disabled={game.cursorIndex === 0}
-                        className="flex-1 bg-white text-[#141413] py-6 rounded-xl font-bold text-3xl hover:bg-[#F0EFEA] transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-md"
+                        className="flex-1 bg-card text-foreground py-6 rounded-xl font-bold text-3xl hover:bg-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-md"
                     >
                         ←
                     </button>
                     <button
                         onClick={() => handleMove('right')}
                         disabled={game.cursorIndex >= game.line.length}
-                        className="flex-1 bg-white text-[#141413] py-6 rounded-xl font-bold text-3xl hover:bg-[#F0EFEA] transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-md"
+                        className="flex-1 bg-card text-foreground py-6 rounded-xl font-bold text-3xl hover:bg-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-md"
                     >
                         →
                     </button>
@@ -402,7 +402,7 @@ export default function TheLinePlayer({ state, myPlayerId = '' }: TheLinePlayerP
                 {/* Place button */}
                 <button
                     onClick={handlePlace}
-                    className="w-full max-w-md bg-[#D97757] text-white px-6 py-5 rounded-xl font-bold text-xl hover:bg-[#CC785C] transition-colors active:scale-95 shadow-lg"
+                    className="w-full max-w-md bg-accent text-accent-foreground px-6 py-5 rounded-xl font-bold text-xl hover:bg-accent-hover transition-colors active:scale-95 shadow-lg"
                 >
                     Place Event ✓
                 </button>

@@ -36,15 +36,15 @@ export default function EventCard({
     };
 
     // Border color based on state
-    let borderColor = 'border-[#E8E6DC]'; // lightGray
-    if (result === 'correct') borderColor = 'border-[#788C5D]'; // sage
-    if (result === 'incorrect') borderColor = 'border-[#CC785C]'; // antiqueBrass
-    if (isActive) borderColor = 'border-[#D97757]'; // terracotta
+    let borderColor = 'border-border';
+    if (result === 'correct') borderColor = 'border-accent-green';
+    if (result === 'incorrect') borderColor = 'border-accent-hover';
+    if (isActive) borderColor = 'border-accent';
 
     // Background color based on state
-    let bgColor = 'bg-[#F0EFEA]'; // cararra
-    if (result === 'correct') bgColor = 'bg-[#788C5D]/10';
-    if (result === 'incorrect') bgColor = 'bg-[#CC785C]/10';
+    let bgColor = 'bg-muted';
+    if (result === 'correct') bgColor = 'bg-accent-green/10';
+    if (result === 'incorrect') bgColor = 'bg-accent-hover/10';
 
     const categoryColor = getCategoryColor(event.category);
 
@@ -58,7 +58,7 @@ export default function EventCard({
         >
             {/* Event Image */}
             <div
-                className={`${imageHeightClasses[size]} bg-[#E8E6DC]/50 relative flex items-center justify-center`}
+                className={`${imageHeightClasses[size]} bg-border/50 relative flex items-center justify-center`}
             >
                 {event.imageUrl && event.imageUrl !== 'placeholder' ? (
                     <img
@@ -78,7 +78,7 @@ export default function EventCard({
             {/* Event Info */}
             <div className="p-2 flex flex-col justify-between flex-1">
                 {/* Title */}
-                <p className="text-xs font-semibold text-[#141413] line-clamp-3 mb-1">
+                <p className="text-xs font-semibold text-foreground line-clamp-3 mb-1">
                     {event.title}
                 </p>
 
@@ -97,11 +97,11 @@ export default function EventCard({
 
                     {/* Year */}
                     {showYear && (
-                        <span className="text-sm font-bold text-[#141413] tabular-nums">
+                        <span className="text-sm font-bold text-foreground tabular-nums">
                             {formatYear(event)}
                         </span>
                     )}
-                    {!showYear && <span className="text-sm font-bold text-[#B0AEA5]">???</span>}
+                    {!showYear && <span className="text-sm font-bold text-muted-foreground">???</span>}
                 </div>
             </div>
         </div>
