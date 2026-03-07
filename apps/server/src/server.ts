@@ -18,6 +18,13 @@ import {
     applyGuessioMessage,
     type GuessioGameState,
     type GuessioMessage,
+    // Timeline
+    createInitialTimelineState,
+    applyTimelineMessage,
+    type TimelineGameState,
+    type TimelineMessage,
+    dealNextEvent,
+    getNextPlayerId,
     // Zoom
     createInitialZoomState,
     applyZoomMessage,
@@ -55,7 +62,7 @@ const AVATAR_POOL = [
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TheLineGameState | GuessioGameState | ZoomGameState | BattleRoyaleGameState;
+    game: DemoGameState | TheLineGameState | GuessioGameState | TimelineGameState | ZoomGameState | BattleRoyaleGameState;
 }
 
 export default class Server implements Party.Server {
@@ -140,6 +147,12 @@ export default class Server implements Party.Server {
                 return;
             }
 
+            if (this.state.room.gameType === 'timeline' && this.isTimelineMessage(msg)) {
+                console.log(`[onMessage] Routing to handleTimelineMessage`);
+                this.handleTimelineMessage(msg, sender);
+                return;
+            }
+
             if (this.state.room.gameType === 'zoom' && this.isZoomMessage(msg)) {
                 console.log(`[onMessage] Routing to handleZoomMessage`);
                 this.handleZoomMessage(msg, sender);
@@ -194,6 +207,8 @@ export default class Server implements Party.Server {
                         } satisfies TheLineGameState;
                     } else if (msg.gameType === 'guessio') {
                         this.state.game = createInitialGuessioState([], []);
+                    } else if (msg.gameType === 'timeline') {
+                        this.state.game = createInitialTimelineState();
                     } else if (msg.gameType === 'zoom') {
                         this.state.game = createInitialZoomState([]);
                     } else if (msg.gameType === 'battle-royale') {
@@ -354,6 +369,46 @@ export default class Server implements Party.Server {
             this.broadcastState();
         } catch (e) {
             console.error('[handleGuessioMessage] ERROR:', e);
+        }
+    }
+
+    // Timeline message handling
+    isTimelineMessage(msg: any): msg is TimelineMessage {
+        return ['startGame', 'moveCard', 'setPosition', 'placeCard', 'nextTurn'].includes(msg.type);
+    }
+
+    handleTimelineMessage(msg: TimelineMessage, sender: Party.Connection) {
+        try {
+            let gameState = this.state.game as TimelineGameState;
+            const canonicalSenderId = this.connToPlayer.get(sender.id) || sender.id;
+
+            if (msg.type === 'startGame') {
+                gameState = createInitialTimelineState(msg.mode, msg.cardsGoal);
+                const playerIds = this.state.room.players
+                    .filter((p) => !p.isHost)
+                    .map((p) => p.id);
+                if (playerIds.length > 0) {
+                    gameState = dealNextEvent(gameState, playerIds[0]);
+                    gameState.playerScores = {};
+                    for (const pid of playerIds) {
+                        gameState.playerScores[pid] = 0;
+                    }
+                }
+                this.state.room.status = 'playing';
+            } else if (msg.type === 'nextTurn') {
+                const playerIds = this.state.room.players
+                    .filter((p) => !p.isHost)
+                    .map((p) => p.id);
+                const nextPlayerId = getNextPlayerId(playerIds, gameState.activePlayerId);
+                gameState = dealNextEvent(gameState, nextPlayerId);
+            } else {
+                gameState = applyTimelineMessage(gameState, msg);
+            }
+
+            this.state.game = gameState;
+            this.broadcastState();
+        } catch (e) {
+            console.error('[handleTimelineMessage] ERROR:', e);
         }
     }
 

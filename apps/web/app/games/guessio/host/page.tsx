@@ -1,23 +1,28 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePartyRoom } from '@/hooks/usePartyRoom';
 import GuessioHost from '@/components/games/guessio/GuessioHost';
 import type { GuessioGameState } from '@lesury/game-logic';
+import { generateRoomCode } from '@lesury/game-logic';
 
 function GuessioHostContent() {
     const searchParams = useSearchParams();
-    const roomCode = searchParams.get('room');
+    const roomParam = searchParams.get('room');
 
-    const { roomState, gameState } = usePartyRoom<GuessioGameState>(roomCode, {
+    const [roomCode] = useState(() => roomParam || generateRoomCode());
+
+    useEffect(() => {
+        if (!roomParam && roomCode) {
+            window.history.replaceState({}, '', `/games/guessio/host?room=${roomCode}`);
+        }
+    }, [roomParam, roomCode]);
+
+    const { roomState, gameState, socket } = usePartyRoom<GuessioGameState>(roomCode, {
         asHost: true,
+        gameType: 'guessio',
     });
-
-    if (!roomCode) {
-        if (typeof window !== 'undefined') window.location.href = '/games/guessio';
-        return null;
-    }
 
     if (!roomState || !gameState) {
         return (
@@ -27,7 +32,7 @@ function GuessioHostContent() {
         );
     }
 
-    return <GuessioHost state={{ room: roomState, game: gameState }} />;
+    return <GuessioHost state={{ room: roomState, game: gameState }} socket={socket} />;
 }
 
 export default function GuessioHostPage() {

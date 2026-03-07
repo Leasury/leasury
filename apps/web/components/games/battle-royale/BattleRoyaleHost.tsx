@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
 import QRCode from 'qrcode';
 import { generateRoomUrl } from '@lesury/game-logic';
 import type { RoomState, BattleRoyaleGameState, ArenaSize, Phase, Direction, Position, RoundEvent } from '@lesury/game-logic';
@@ -61,6 +64,7 @@ export default function BattleRoyaleHost({ state, socket: propSocket }: BattleRo
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const planningTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const { resolvedTheme } = useTheme();
 
     // Settings state
     const [arenaSize, setArenaSize] = useState<ArenaSize>('medium');
@@ -224,13 +228,18 @@ export default function BattleRoyaleHost({ state, socket: propSocket }: BattleRo
         if (game.phase !== 'lobby' || !canvasRef.current) return;
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
         const url = generateRoomUrl('battle-royale', room.roomCode, baseUrl);
+
+        const qrColors = resolvedTheme === 'dark'
+            ? { dark: '#F0EFEA', light: '#2E2E2C' }
+            : { dark: '#191917', light: '#FFFFFF' };
+
         QRCode.toCanvas(
             canvasRef.current,
             url,
-            { width: 220, margin: 2, color: { dark: '#141413', light: '#F0EFEA' } },
+            { width: 250, margin: 2, color: qrColors },
             (err) => { if (err) console.error('QR generation failed:', err); }
         );
-    }, [game.phase, room.roomCode]);
+    }, [game.phase, room.roomCode, resolvedTheme]);
 
     // Count ready players
     const alivePlayers = Object.values(game.players).filter((p) => p.status === 'alive');
@@ -253,22 +262,38 @@ export default function BattleRoyaleHost({ state, socket: propSocket }: BattleRo
         const nonHostPlayers = room.players.filter((p: any) => !p.isHost && p.name !== 'Host');
 
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 gap-4 relative">
+                <Link
+                    href="/"
+                    className="absolute top-6 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
+                    <Image
+                        src="/logo.png"
+                        alt="Lesury"
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="text-lg font-bold text-foreground">lesury</span>
+                </Link>
+
+                <h1 className="text-3xl font-bold text-foreground text-center">Mindshot</h1>
+
                 <div className="flex gap-8 max-w-5xl w-full">
                     {/* LEFT: QR + Room Code + Players */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-muted-foreground text-center text-sm mb-4">
-                            Scan to join on mobile
+                        <p className="text-muted-foreground text-center text-base mb-4">
+                            Scan to join
                         </p>
                         <div className="flex justify-center mb-6">
-                            <canvas ref={canvasRef} width={220} height={220} className="rounded-xl" />
+                            <canvas ref={canvasRef} width={250} height={250} className="rounded-md" />
                         </div>
 
-                        <div className="bg-card rounded-xl p-4 mb-6 text-center">
+                        <div className="bg-background rounded-md p-4 mb-6 text-center border border-border">
                             <p className="text-xs text-muted-foreground mb-1">Room Code</p>
                             <p className="text-4xl font-bold tracking-widest text-foreground tabular-nums">
                                 {room.roomCode}
@@ -277,25 +302,30 @@ export default function BattleRoyaleHost({ state, socket: propSocket }: BattleRo
 
                         <div className="flex-1">
                             <p className="text-sm font-bold text-foreground mb-2">
-                                Players ({nonHostPlayers.length}/4)
+                                Players ({nonHostPlayers.length})
                             </p>
                             {nonHostPlayers.length === 0 ? (
-                                <p className="text-muted-foreground text-sm">Waiting for players to join...</p>
+                                <p className="text-muted-foreground text-sm">Waiting for players to join…</p>
                             ) : (
                                 <div className="space-y-2">
                                     {nonHostPlayers.map((p: any) => (
-                                        <div key={p.id} className="bg-card px-3 py-2 rounded-xl text-sm font-bold text-foreground flex items-center gap-2">
+                                        <div
+                                            key={p.id}
+                                            className="bg-background px-3 py-2 rounded-md text-sm font-bold text-foreground flex items-center gap-2 border border-border"
+                                        >
                                             <span className="text-lg">{p.avatar || '👤'}</span>
                                             <span className="flex-1">{p.name}</span>
                                             <button
                                                 onClick={() => {
                                                     if (confirm(`Remove ${p.name} from the game?`)) {
-                                                        getSocket()?.send(JSON.stringify({ type: 'kick', playerId: p.id }));
+                                                        getSocket()?.send(
+                                                            JSON.stringify({ type: 'kick', playerId: p.id })
+                                                        );
                                                     }
                                                 }}
-                                                className="text-muted-foreground hover:text-red-500 transition-colors text-lg px-1 cursor-pointer"
+                                                className="text-muted-foreground hover:text-destructive transition-colors text-lg px-1"
                                             >
-                                                {'✕'}
+                                                ✕
                                             </button>
                                         </div>
                                     ))}
@@ -308,54 +338,50 @@ export default function BattleRoyaleHost({ state, socket: propSocket }: BattleRo
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
                     >
-                        <h1 className="text-3xl font-bold text-foreground mb-2 text-center">
-                            Battle Royale
-                        </h1>
-                        <p className="text-muted-foreground text-center mb-8">Configure your game</p>
+                        <p className="text-muted-foreground text-center text-base mb-8">Set up game</p>
 
                         {/* Arena Size */}
                         <div className="mb-6">
                             <label className="block text-sm font-bold text-foreground mb-2">
                                 Arena Size
                             </label>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                                 {([
-                                    { value: 'small' as const, label: 'Small 8\u00D78', desc: 'Fast & intense' },
-                                    { value: 'medium' as const, label: 'Medium 10\u00D710', desc: 'Balanced' },
-                                    { value: 'large' as const, label: 'Large 12\u00D712', desc: 'Strategic' },
+                                    { value: 'small' as const, label: 'Small 8\u00D78' },
+                                    { value: 'medium' as const, label: 'Medium 10\u00D710' },
+                                    { value: 'large' as const, label: 'Large 12\u00D712' },
                                 ]).map((opt) => (
                                     <button
                                         key={opt.value}
                                         onClick={() => setArenaSize(opt.value)}
-                                        className={`px-3 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                                        className={`px-4 py-3 rounded-md font-bold text-sm transition-all ${
                                             arenaSize === opt.value
                                                 ? 'bg-accent text-accent-foreground shadow-md'
-                                                : 'bg-card text-foreground hover:bg-border'
+                                                : 'bg-background text-foreground border border-border hover:bg-secondary'
                                         }`}
                                     >
-                                        <div>{opt.label}</div>
-                                        <div className="text-[10px] font-normal opacity-70">{opt.desc}</div>
+                                        {opt.label}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Timer Duration */}
+                        {/* Planning Timer */}
                         <div className="mb-8">
                             <label className="block text-sm font-bold text-foreground mb-2">
                                 Planning Timer
                             </label>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                                 {([15, 20, 30] as const).map((dur) => (
                                     <button
                                         key={dur}
                                         onClick={() => setPlanningDuration(dur)}
-                                        className={`px-4 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                                        className={`px-4 py-3 rounded-md font-bold text-sm transition-all ${
                                             planningDuration === dur
                                                 ? 'bg-accent text-accent-foreground shadow-md'
-                                                : 'bg-card text-foreground hover:bg-border'
+                                                : 'bg-background text-foreground border border-border hover:bg-secondary'
                                         }`}
                                     >
                                         {dur}s
@@ -366,19 +392,19 @@ export default function BattleRoyaleHost({ state, socket: propSocket }: BattleRo
 
                         <div className="flex-1" />
 
-                        {nonHostPlayers.length < 2 ? (
-                            <div className="w-full bg-border text-muted-foreground px-6 py-4 rounded-xl font-bold text-lg text-center">
-                                Need at least 2 players
-                            </div>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={handleStartGame}
-                                className="w-full bg-accent text-accent-foreground px-6 py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-colors cursor-pointer"
-                            >
-                                Start Game
-                            </button>
-                        )}
+                        <button
+                            type="button"
+                            onClick={handleStartGame}
+                            className={`w-full px-6 py-4 rounded-md font-bold text-lg transition-opacity cursor-pointer ${
+                                nonHostPlayers.length >= 2
+                                    ? 'bg-accent text-accent-foreground hover:opacity-90'
+                                    : 'bg-muted text-muted-foreground cursor-not-allowed'
+                            }`}
+                        >
+                            {nonHostPlayers.length >= 2
+                                ? `Start Game (${nonHostPlayers.length} player${nonHostPlayers.length !== 1 ? 's' : ''})`
+                                : 'Start Game'}
+                        </button>
                     </motion.div>
                 </div>
             </div>

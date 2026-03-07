@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from 'next-themes';
 import QRCode from 'qrcode';
 import type { RoomState, ZoomGameState, ZoomLevel } from '@lesury/game-logic';
 import { generateRoomUrl, ZOOM_ROUND_DURATION_MS } from '@lesury/game-logic';
@@ -51,6 +54,7 @@ interface ZoomHostProps {
 export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
     const { room, game } = state;
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const { resolvedTheme } = useTheme();
     const getSocket = () => propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null);
 
     // Only active players (non-host) inside the room state
@@ -68,19 +72,23 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
         const url = generateRoomUrl('zoom', room.roomCode, baseUrl);
 
+        const qrColors = resolvedTheme === 'dark'
+            ? { dark: '#F0EFEA', light: '#2E2E2C' }
+            : { dark: '#191917', light: '#FFFFFF' };
+
         QRCode.toCanvas(
             canvasRef.current,
             url,
             {
                 width: 250,
                 margin: 2,
-                color: { dark: '#141413', light: '#FAF9F5' },
+                color: qrColors,
             },
             (err) => {
                 if (err) console.error('QR failed', err);
             }
         );
-    }, [game.phase, room.roomCode]);
+    }, [game.phase, room.roomCode, resolvedTheme]);
 
     // ── Timer loop ─────────────────────────────────────────────────────────
     useEffect(() => {
@@ -109,7 +117,7 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
     // ── Preload images ──────────────────────────────────────────────────────
     useEffect(() => {
         MOCK_LEVELS.forEach(level => {
-            const img = new Image();
+            const img = document.createElement('img');
             img.src = level.imageUrl;
         });
     }, []);
@@ -139,38 +147,51 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
 
     if (game.phase === 'lobby') {
         const nonHostPlayers = connectedPlayers;
-        const canStart = nonHostPlayers.length > 0;
 
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 gap-4 relative">
+                <Link
+                    href="/"
+                    className="absolute top-6 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
+                    <Image
+                        src="/logo.png"
+                        alt="Lesury"
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="text-lg font-bold text-foreground">lesury</span>
+                </Link>
+
+                <h1 className="text-3xl font-bold text-foreground text-center">Zoom-Out</h1>
+
                 <div className="flex gap-8 max-w-5xl w-full">
                     {/* LEFT: QR Code + Room Code + Players */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
                     >
-                        <p className="text-muted-foreground text-center text-sm mb-4">
-                            Scan to join on mobile
+                        <p className="text-muted-foreground text-center text-base mb-4">
+                            Scan to join
                         </p>
                         <div className="flex justify-center mb-6">
                             <canvas
                                 ref={canvasRef}
                                 width={250}
                                 height={250}
-                                className="rounded-xl"
+                                className="rounded-md"
                             />
                         </div>
 
-                        {/* Room Code */}
-                        <div className="bg-card rounded-xl p-4 mb-6 text-center">
+                        <div className="bg-background rounded-md p-4 mb-6 text-center border border-border">
                             <p className="text-xs text-muted-foreground mb-1">Room Code</p>
                             <p className="text-4xl font-bold tracking-widest text-foreground tabular-nums">
                                 {room.roomCode}
                             </p>
                         </div>
 
-                        {/* Player list */}
                         <div className="flex-1">
                             <p className="text-sm font-bold text-foreground mb-2">
                                 Players ({nonHostPlayers.length})
@@ -184,10 +205,22 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                                     {nonHostPlayers.map((p: any) => (
                                         <div
                                             key={p.id}
-                                            className="bg-card px-3 py-2 rounded-xl text-sm font-bold text-foreground flex items-center gap-2"
+                                            className="bg-background px-3 py-2 rounded-md text-sm font-bold text-foreground flex items-center gap-2 border border-border"
                                         >
                                             <span className="text-lg">{p.avatar || '👤'}</span>
                                             <span className="flex-1">{p.name}</span>
+                                            <button
+                                                onClick={() => {
+                                                    if (confirm(`Remove ${p.name} from the game?`)) {
+                                                        getSocket()?.send(
+                                                            JSON.stringify({ type: 'kick', playerId: p.id })
+                                                        );
+                                                    }
+                                                }}
+                                                className="text-muted-foreground hover:text-destructive transition-colors text-lg px-1"
+                                            >
+                                                ✕
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -199,12 +232,9 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex-1 bg-muted rounded-3xl p-8 shadow-2xl flex flex-col"
+                        className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
                     >
-                        <h1 className="text-3xl font-bold text-foreground mb-2 text-center">
-                            Zoom-Out
-                        </h1>
-                        <p className="text-muted-foreground text-center mb-8">Configure your game</p>
+                        <p className="text-muted-foreground text-center text-base mb-8">Set up game</p>
 
                         {/* Rounds Selector */}
                         <div className="mb-8">
@@ -213,9 +243,6 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                                 <span className="text-accent tabular-nums">
                                     {Math.min(selectedRounds, MOCK_LEVELS.length)}
                                 </span>
-                                <span className="text-muted-foreground font-normal ml-1">
-                                    (max {MOCK_LEVELS.length})
-                                </span>
                             </label>
                             <input
                                 type="range"
@@ -223,7 +250,7 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                                 max={MOCK_LEVELS.length}
                                 value={selectedRounds}
                                 onChange={(e) => setSelectedRounds(Number(e.target.value))}
-                                className="w-full accent-accent"
+                                className="w-full accent-[var(--ring)]"
                             />
                             <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                 <span>1</span>
@@ -231,7 +258,7 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
                             </div>
                         </div>
 
-                        {/* Number of images info (no spoilers) */}
+                        {/* Image set info (no spoilers) */}
                         <div className="mb-8">
                             <p className="text-sm font-bold text-foreground mb-2">Image Set</p>
                             <p className="text-muted-foreground text-sm">
@@ -241,18 +268,18 @@ export default function ZoomHost({ state, socket: propSocket }: ZoomHostProps) {
 
                         <div className="flex-1" />
 
-                        {/* Start Game button */}
                         <button
+                            type="button"
                             onClick={handleStartGame}
-                            disabled={!canStart}
-                            className={`w-full py-5 rounded-2xl font-bold text-xl transition-all ${canStart
-                                ? 'bg-accent text-accent-foreground hover:bg-accent-hover cursor-pointer shadow-lg'
-                                : 'bg-border text-muted-foreground cursor-not-allowed'
-                                }`}
+                            className={`w-full px-6 py-4 rounded-md font-bold text-lg transition-opacity cursor-pointer ${
+                                nonHostPlayers.length > 0
+                                    ? 'bg-accent text-accent-foreground hover:opacity-90'
+                                    : 'bg-muted text-muted-foreground cursor-not-allowed'
+                            }`}
                         >
-                            {canStart
+                            {nonHostPlayers.length > 0
                                 ? `Start Game (${nonHostPlayers.length} player${nonHostPlayers.length !== 1 ? 's' : ''})`
-                                : 'Waiting for players…'}
+                                : 'Start Game'}
                         </button>
                     </motion.div>
                 </div>

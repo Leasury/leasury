@@ -30,7 +30,7 @@ export default function TimelineLandingPage() {
                             <p className="text-muted-foreground mb-6">
                                 Start a Timeline game and display the timeline on the big screen.
                             </p>
-                            <Button href="/host?game=timeline" className="w-full max-w-md mx-auto">
+                            <Button href="/games/timeline/host" className="w-full max-w-md mx-auto">
                                 Host Timeline Game
                             </Button>
                         </CardContent>

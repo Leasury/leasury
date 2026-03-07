@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { TimelineGameState, PlacedEvent } from '@lesury/game-logic';
-import { formatYear, getCategoryIcon } from '@lesury/game-logic';
+import { useTheme } from 'next-themes';
+import QRCode from 'qrcode';
+import type { TimelineGameState, PlacedEvent, GameMode } from '@lesury/game-logic';
+import { formatYear, getCategoryIcon, generateRoomUrl } from '@lesury/game-logic';
 import type { RoomState } from '@lesury/game-logic';
 import GameLayout from '@/components/layout/GameLayout';
 import EventCard from './EventCard';
@@ -13,22 +17,49 @@ interface TimelineHostProps {
         room: RoomState;
         game: TimelineGameState;
     };
+    socket?: any;
 }
 
-export default function TimelineHost({ state }: TimelineHostProps) {
+export default function TimelineHost({ state, socket: propSocket }: TimelineHostProps) {
     const { room, game } = state;
     const timelineRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const { resolvedTheme } = useTheme();
+    const [selectedMode, setSelectedMode] = useState<GameMode>('coop');
+
+    const getSocket = useCallback(
+        () => propSocket ?? (typeof window !== 'undefined' ? (window as any).__partySocket : null),
+        [propSocket]
+    );
 
     const playerName = (id: string) =>
         room.players.find((p: { id: string; name: string }) => p.id === id)?.name ?? id;
+
+    // QR code generation for lobby
+    useEffect(() => {
+        if (game.status !== 'waiting' || !canvasRef.current) return;
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+        const url = generateRoomUrl('timeline', room.roomCode, baseUrl);
+
+        const qrColors = resolvedTheme === 'dark'
+            ? { dark: '#F0EFEA', light: '#2E2E2C' }
+            : { dark: '#191917', light: '#FFFFFF' };
+
+        QRCode.toCanvas(
+            canvasRef.current,
+            url,
+            { width: 250, margin: 2, color: qrColors },
+            (err) => { if (err) console.error('QR generation failed:', err); }
+        );
+    }, [game.status, room.roomCode, resolvedTheme]);
 
     // Auto-scroll to keep active slot centered
     useEffect(() => {
         if (game.status === 'placing' && timelineRef.current) {
             const container = timelineRef.current;
-            const cardWidth = 160; // w-40 = 160px
+            const cardWidth = 160;
             const slotWidth = 160;
-            const gap = 12; // gap-3 = 12px
+            const gap = 12;
 
             const scrollPosition = game.proposedPosition * (cardWidth + gap + slotWidth);
             const containerCenter = container.offsetWidth / 2;
@@ -41,7 +72,155 @@ export default function TimelineHost({ state }: TimelineHostProps) {
         }
     }, [game.proposedPosition, game.status]);
 
-    // Game Over Screen
+    // ── Lobby ────────────────────────────────────────────────────────────────
+    if (game.status === 'waiting') {
+        const nonHostPlayers = room.players.filter((p: any) => !p.isHost && p.name !== 'Host');
+
+        const handleStartGame = () => {
+            const s = getSocket();
+            if (!s) return;
+            s.send(JSON.stringify({
+                type: 'startGame',
+                mode: selectedMode,
+                cardsGoal: 20,
+            }));
+        };
+
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 gap-4 relative">
+                <Link
+                    href="/"
+                    className="absolute top-6 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
+                    <Image
+                        src="/logo.png"
+                        alt="Lesury"
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="text-lg font-bold text-foreground">lesury</span>
+                </Link>
+
+                <h1 className="text-3xl font-bold text-foreground text-center">Timeline</h1>
+
+                <div className="flex gap-8 max-w-5xl w-full">
+                    {/* LEFT: QR Code + Room Code + Players */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
+                    >
+                        <p className="text-muted-foreground text-center text-base mb-4">
+                            Scan to join
+                        </p>
+                        <div className="flex justify-center mb-6">
+                            <canvas
+                                ref={canvasRef}
+                                width={250}
+                                height={250}
+                                className="rounded-md"
+                            />
+                        </div>
+
+                        <div className="bg-background rounded-md p-4 mb-6 text-center border border-border">
+                            <p className="text-xs text-muted-foreground mb-1">Room Code</p>
+                            <p className="text-4xl font-bold tracking-widest text-foreground tabular-nums">
+                                {room.roomCode}
+                            </p>
+                        </div>
+
+                        <div className="flex-1">
+                            <p className="text-sm font-bold text-foreground mb-2">
+                                Players ({nonHostPlayers.length})
+                            </p>
+                            {nonHostPlayers.length === 0 ? (
+                                <p className="text-muted-foreground text-sm">
+                                    Waiting for players to join…
+                                </p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {nonHostPlayers.map((p: any) => (
+                                        <div
+                                            key={p.id}
+                                            className="bg-background px-3 py-2 rounded-md text-sm font-bold text-foreground flex items-center gap-2 border border-border"
+                                        >
+                                            <span className="text-lg">{p.avatar || '👤'}</span>
+                                            <span className="flex-1">{p.name}</span>
+                                            <button
+                                                onClick={() => {
+                                                    if (confirm(`Remove ${p.name} from the game?`)) {
+                                                        getSocket()?.send(
+                                                            JSON.stringify({ type: 'kick', playerId: p.id })
+                                                        );
+                                                    }
+                                                }}
+                                                className="text-muted-foreground hover:text-destructive transition-colors text-lg px-1"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+
+                    {/* RIGHT: Settings + Start */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 bg-card rounded-xl p-8 shadow-2xl flex flex-col"
+                    >
+                        <p className="text-muted-foreground text-center text-base mb-8">Set up game</p>
+
+                        {/* Mode selector */}
+                        <div className="mb-8">
+                            <label className="block text-sm font-bold text-foreground mb-2">
+                                Game Mode
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {([
+                                    { value: 'coop' as const, label: 'Co-op' },
+                                    { value: 'competitive' as const, label: 'Competitive' },
+                                ]).map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => setSelectedMode(opt.value)}
+                                        className={`px-4 py-3 rounded-md font-bold text-sm transition-all ${
+                                            selectedMode === opt.value
+                                                ? 'bg-accent text-accent-foreground shadow-md'
+                                                : 'bg-background text-foreground border border-border hover:bg-secondary'
+                                        }`}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex-1" />
+
+                        <button
+                            type="button"
+                            onClick={handleStartGame}
+                            className={`w-full px-6 py-4 rounded-md font-bold text-lg transition-opacity cursor-pointer ${
+                                nonHostPlayers.length > 0
+                                    ? 'bg-accent text-accent-foreground hover:opacity-90'
+                                    : 'bg-muted text-muted-foreground cursor-not-allowed'
+                            }`}
+                        >
+                            {nonHostPlayers.length > 0
+                                ? `Start Game (${nonHostPlayers.length} player${nonHostPlayers.length !== 1 ? 's' : ''})`
+                                : 'Start Game'}
+                        </button>
+                    </motion.div>
+                </div>
+            </div>
+        );
+    }
+
+    // ── Game Over Screen ─────────────────────────────────────────────────────
     if (game.status === 'gameOver') {
         const winner =
             game.winner === 'team'
@@ -99,6 +278,7 @@ export default function TimelineHost({ state }: TimelineHostProps) {
         );
     }
 
+    // ── Gameplay ──────────────────────────────────────────────────────────────
     return (
         <GameLayout backUrl="/games/timeline" theme="light">
             <div className="min-h-screen bg-background flex flex-col">

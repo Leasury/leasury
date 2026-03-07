@@ -29,7 +29,7 @@ export default function GuessioLandingPage() {
                             <p className="text-muted-foreground mb-6">
                                 Start a game session, show the board, and display a QR code for others to join.
                             </p>
-                            <Button href="/host?game=guessio" className="w-full max-w-md mx-auto">
+                            <Button href="/games/guessio/host" className="w-full max-w-md mx-auto">
                                 Host Guessio
                             </Button>
                         </CardContent>

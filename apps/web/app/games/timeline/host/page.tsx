@@ -1,39 +1,43 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePartyRoom } from '@/hooks/usePartyRoom';
 import TimelineHost from '@/components/games/timeline/TimelineHost';
 import type { TimelineGameState } from '@lesury/game-logic';
+import { generateRoomCode } from '@lesury/game-logic';
 
 function TimelineHostContent() {
     const searchParams = useSearchParams();
-    const roomCode = searchParams.get('room');
+    const roomParam = searchParams.get('room');
 
-    const { roomState, gameState } = usePartyRoom<TimelineGameState>(roomCode, {
+    const [roomCode] = useState(() => roomParam || generateRoomCode());
+
+    useEffect(() => {
+        if (!roomParam && roomCode) {
+            window.history.replaceState({}, '', `/games/timeline/host?room=${roomCode}`);
+        }
+    }, [roomParam, roomCode]);
+
+    const { roomState, gameState, socket } = usePartyRoom<TimelineGameState>(roomCode, {
         asHost: true,
         gameType: 'timeline',
     });
 
-    if (!roomCode) {
-        if (typeof window !== 'undefined') window.location.href = '/games/timeline';
-        return null;
-    }
-
     if (!roomState || !gameState || roomState.gameType !== 'timeline') {
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-border border-t-white rounded-full" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-border border-t-foreground rounded-full" />
             </div>
         );
     }
 
-    return <TimelineHost state={{ room: roomState, game: gameState }} />;
+    return <TimelineHost state={{ room: roomState, game: gameState }} socket={socket} />;
 }
 
 export default function TimelineHostPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#2A2A2A]" />}>
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
             <TimelineHostContent />
         </Suspense>
     );
