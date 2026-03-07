@@ -21,8 +21,8 @@ function TheLinePlayerContent() {
 
     if (!roomState || !gameState) {
         return (
-            <div className="min-h-screen bg-[#2A2A2A] flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-border border-t-white rounded-full" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-border border-t-foreground rounded-full" />
             </div>
         );
     }
@@ -32,7 +32,7 @@ function TheLinePlayerContent() {
 
 export default function TheLinePlayerPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#2A2A2A]" />}>
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
             <TheLinePlayerContent />
         </Suspense>
     );
