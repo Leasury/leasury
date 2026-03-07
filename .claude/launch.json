@@ -2,19 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Web (Next.js)",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--workspace=apps/web"],
-      "port": 3000
-    },
-    {
-      "name": "Server (PartyKit)",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--workspace=apps/server"],
-      "port": 1999
-    },
-    {
-      "name": "All (Turbo)",
+      "name": "web",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
