@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Source_Code_Pro } from 'next/font/google';
 import Script from 'next/script';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 
 const sourceCodePro = Source_Code_Pro({
@@ -25,7 +26,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 {/* Google Analytics */}
                 <Script
@@ -42,7 +43,9 @@ export default function RootLayout({
                 </Script>
             </head>
             <body className={`${sourceCodePro.variable} antialiased`}>
-                {children}
+                <ThemeProvider>
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     );
