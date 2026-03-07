@@ -1,5 +1,0 @@
-{
-  "isValid": false,
-  "radius": 4,
-  "ring": 5
-}

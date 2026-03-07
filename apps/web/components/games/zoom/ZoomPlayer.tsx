@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { RoomState, ZoomGameState } from '@lesury/game-logic';
-import { PLAYER_COLORS } from '@lesury/game-logic';
+
+const PLAYER_COLORS = ['#D97757', '#6A9BCC', '#788C5D', '#E8C547', '#C86DD7', '#4ECDC4'];
 
 interface ZoomPlayerProps {
     state: {

@@ -1,7 +1,0 @@
-{
-  "beyond": {
-    "q": 5,
-    "r": 0
-  },
-  "valid": false
-}

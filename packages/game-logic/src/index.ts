@@ -18,9 +18,6 @@ export * from './games/timeline';
 // Guessio Game
 export * from './games/guessio';
 
-// Mindshot Game
-export * from './games/mindshot';
-
 // Zoom Game
 export * from './games/zoom';
 

@@ -18,11 +18,6 @@ import {
     applyGuessioMessage,
     type GuessioGameState,
     type GuessioMessage,
-    // Mindshot
-    createInitialMindshotState,
-    applyMindshotMessage,
-    type MindshotGameState,
-    type MindshotMessage,
     // Zoom
     createInitialZoomState,
     applyZoomMessage,
@@ -60,7 +55,7 @@ const AVATAR_POOL = [
  */
 interface ServerState {
     room: RoomState;
-    game: DemoGameState | TheLineGameState | GuessioGameState | MindshotGameState | ZoomGameState | BattleRoyaleGameState;
+    game: DemoGameState | TheLineGameState | GuessioGameState | ZoomGameState | BattleRoyaleGameState;
 }
 
 export default class Server implements Party.Server {
@@ -145,12 +140,6 @@ export default class Server implements Party.Server {
                 return;
             }
 
-            if (this.state.room.gameType === 'mindshot' && this.isMindshotMessage(msg)) {
-                console.log(`[onMessage] Routing to handleMindshotMessage`);
-                this.handleMindshotMessage(msg, sender);
-                return;
-            }
-
             if (this.state.room.gameType === 'zoom' && this.isZoomMessage(msg)) {
                 console.log(`[onMessage] Routing to handleZoomMessage`);
                 this.handleZoomMessage(msg, sender);
@@ -205,8 +194,6 @@ export default class Server implements Party.Server {
                         } satisfies TheLineGameState;
                     } else if (msg.gameType === 'guessio') {
                         this.state.game = createInitialGuessioState([], []);
-                    } else if (msg.gameType === 'mindshot') {
-                        this.state.game = createInitialMindshotState([]);
                     } else if (msg.gameType === 'zoom') {
                         this.state.game = createInitialZoomState([]);
                     } else if (msg.gameType === 'battle-royale') {
@@ -367,35 +354,6 @@ export default class Server implements Party.Server {
             this.broadcastState();
         } catch (e) {
             console.error('[handleGuessioMessage] ERROR:', e);
-        }
-    }
-
-    // Mindshot game message handling
-    isMindshotMessage(msg: any): msg is MindshotMessage {
-        return ['start_game', 'submit_plan', 'next_frame', 'play_again'].includes(msg.type);
-    }
-
-    handleMindshotMessage(msg: MindshotMessage, sender: Party.Connection) {
-        try {
-            let gameState = this.state.game as MindshotGameState;
-
-            // Compute active connected player IDs (non-host)
-            const activePlayerIds = this.state.room.players
-                .filter((p) => !p.isHost)
-                .map((p) => p.id);
-
-            if (msg.type === 'start_game') {
-                gameState = createInitialMindshotState(activePlayerIds);
-                gameState = applyMindshotMessage(gameState, msg, sender.id, activePlayerIds);
-                this.state.room.status = 'playing';
-            } else {
-                gameState = applyMindshotMessage(gameState, msg, sender.id, activePlayerIds);
-            }
-
-            this.state.game = gameState;
-            this.broadcastState();
-        } catch (e) {
-            console.error('[handleMindshotMessage] ERROR:', e);
         }
     }
 

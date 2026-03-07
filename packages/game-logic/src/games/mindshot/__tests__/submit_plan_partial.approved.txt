@@ -1,5 +1,0 @@
-{
-  "p1PlanNull": false,
-  "p2PlanNull": true,
-  "phase": "planning"
-}

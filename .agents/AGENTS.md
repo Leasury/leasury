@@ -10,13 +10,24 @@ This file is read automatically at the start of every agent session. Follow all 
 
 ## Project Overview
 
-Lesury is a **multiplayer party game platform** built as a monorepo:
+Lesury is a **multiplayer party game platform** built as a Turbo monorepo with npm workspaces:
 
-| Package               | Purpose                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `packages/game-logic` | All game logic, types, and utilities. Pure TypeScript, no framework dependencies.          |
-| `apps/server`         | PartyKit server. Handles connections, routing, state broadcasting. **No game logic here.** |
-| `apps/web`            | Next.js frontend. Displays state, sends messages. **No game logic here.**                  |
+| Package | Purpose |
+|---|---|
+| `packages/game-logic` | All game logic, types, and utilities. Pure TypeScript, no framework dependencies. |
+| `apps/server` | PartyKit server. Handles connections, routing, state broadcasting. **No game logic here.** |
+| `apps/web` | Next.js frontend. Displays state, sends messages. **No game logic here.** |
+| `packages/config` | Shared ESLint and TypeScript configs. |
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS v4**, **ShadCN UI** |
+| Real-time server | **PartyKit** + **partysocket** (WebSocket-based state sync) |
+| Animation | **Framer Motion** |
+| Icons | **Lucide React** (`lucide-react`) — the ShadCN default |
+| Font | **Source Code Pro** (loaded via `next/font/google`, mapped to all three font families) |
 
 ---
 
@@ -47,11 +58,10 @@ packages/game-logic/src/games/<gameName>/index.ts   ← re-export everything
 
 ## Rule 3: TypeScript Everywhere + Always Build After Changes
 
-- All files must be `.ts` or `.tsx`. No `.js` files in source.
+- All files must be `.ts` or `.tsx`. No `.js` or `.jsx` files in source. Avoid `any` — use proper types or `unknown` with narrowing.
 - **After every code change**, run `npm run build` from the monorepo root and fix any TypeScript errors before finishing.
 
 ```bash
-cd /home/clickout/Projekty/lesury
 npm run build
 ```
 
@@ -66,17 +76,16 @@ All game logic in `packages/game-logic` must be covered by approval tests.
 **Run tests after every change to game-logic:**
 
 ```bash
-cd /home/clickout/Projekty/lesury
 npm run test
 ```
 
 ### If tests fail:
 
-| Situation                                                     | Action                                                                                           |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Situation | Action |
+|---|---|
 | You changed logic intentionally and the snapshot is now wrong | Promote received→approved: `cp *.received.txt *.approved.txt` for the affected test, then re-run |
-| The failure looks like a regression/bug                       | Fix the code, don't change the approved file                                                     |
-| Unsure if the behavior change is intentional                  | **Ask the developer before promoting snapshots**                                                 |
+| The failure looks like a regression/bug | Fix the code, don't change the approved file |
+| Unsure if the behavior change is intentional | **Ask the developer before promoting snapshots** |
 
 ### Adding tests for new logic:
 
@@ -103,36 +112,6 @@ for f in packages/game-logic/src/**/__tests__/*.received.txt; do cp "$f" "${f/.r
 
 ---
 
-## Design System
-
-**Color palette:**
-| Token | Hex | Usage |
-|---|---|---|
-| Background | `#FAF9F5` | Page backgrounds |
-| Surface | `#F0EFEA` | Cards, panels |
-| Border | `#E8E6DC` | Dividers, input borders |
-| Text primary | `#141413` | Headings, body |
-| Text muted | `#B0AEA5` | Captions, labels |
-| Accent | `#D97757` | Primary buttons, highlights |
-| Accent dark | `#CC785C` | Hover states |
-| Dark bg | `#2A2A2A` | Host screens |
-
-**Typography:** System font stack. Font-bold for headings, tabular-nums for counters.
-
-**Component conventions:**
-
-- Rounded corners: `rounded-xl` (inputs), `rounded-2xl` (cards), `rounded-3xl` (modals)
-- Animations: use `framer-motion`. Prefer `motion.div` with `initial/animate` for entrances.
-- Buttons: use `bg-[#D97757] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#CC785C] transition-colors`
-
----
-
-## Architecture: Adding a New Game
-
-See `/home/clickout/Projekty/lesury/.agents/workflows/add-new-game.md` for the full step-by-step.
-
----
-
 ## Rule 6: Utility and Generation Scripts
 
 - One-off scripts (e.g., data generation, API scrapers, image generators) must live in the `scripts/` folder at the monorepo root.
@@ -146,6 +125,115 @@ See `/home/clickout/Projekty/lesury/.agents/workflows/add-new-game.md` for the f
 
 - If an ongoing task requires tracking state between sessions (like tracking generated images, rate limits, or a checklist), keep this context in `.agents/handoff_plan.md` (or similarly named files in `.agents/`).
 - Do not clutter the root directory with agent-only markdown scratchpads (other than standard project docs like `README.md` and `DEPLOYMENT.md`).
+
+---
+
+## Rule 8: Git — CRITICAL
+
+> [!CAUTION]
+> **The agent must NEVER run `git commit`, `git push`, `git add`, or any other git write command.**
+> Only the user commits and pushes to the repository.
+
+- Make code changes freely, but **stop before any git operation**.
+- When changes are ready, tell the user which files changed and let them commit.
+- The only git commands the agent may run are **read-only**: `git status`, `git diff`, `git log`, `git branch`, etc.
+
+---
+
+## Styling & Design System
+
+### Colors — Use Tokens Only
+
+**Never hardcode hex values.** Always use CSS variable design tokens:
+
+| Token | Usage |
+|---|---|
+| `bg-background` / `text-foreground` | Page backgrounds and primary text |
+| `bg-card` / `text-card-foreground` | Cards, panels |
+| `bg-secondary` | Subtle surface areas |
+| `bg-muted` / `text-muted-foreground` | Subdued backgrounds, captions, labels |
+| `bg-accent` / `text-accent-foreground` | Primary buttons, highlights (terracotta in dark mode) |
+| `bg-border` | Dividers, input borders |
+| `bg-destructive` | Error and danger states |
+
+All tokens automatically adapt to light/dark mode. Source of truth: `apps/web/app/globals.css`.
+
+### Dark Mode
+
+The project uses `next-themes` with `attribute="class"`. The `.dark` class is toggled on `<html>`. All design tokens already have dark-mode overrides in `globals.css`. Do **not** write `dark:` Tailwind variants unless a specific override is unavoidable — the tokens handle it.
+
+### Typography
+
+- **Font:** Source Code Pro — applied globally. Do **not** specify `font-mono` or `font-sans` per-element.
+- **Weight conventions:** `font-normal` (body) → `font-medium` (labels) → `font-semibold`/`font-bold` (headings) → `font-black` (hero/display).
+- Use `tabular-nums` for counters and numbers.
+
+### Tailwind & Components
+
+- **Tailwind CSS v4 utilities only.** No `tailwind.config.js` — all config lives in `apps/web/app/globals.css` via `@theme inline`.
+- No custom CSS files or `style={{}}` props unless absolutely unavoidable.
+- Mobile-first: default styles for mobile, `md:` / `lg:` for larger screens.
+- Animations via **Framer Motion** (`framer-motion`). Use `motion.div` with `initial/animate` for entrances.
+- Rounded corners: `rounded-xl` (inputs), `rounded-2xl` (cards), `rounded-3xl` (modals/panels).
+- **Buttons:** use the shadcn `<Button>` component. For primary actions: `bg-accent text-accent-foreground`.
+
+### Component Reuse — Critical
+
+1. **Before creating any component**, search `apps/web/components/` and `apps/web/app/components/` first.
+2. **Never duplicate** functionality already covered by an existing component, ShadCN primitive, or game-logic function.
+3. If a ShadCN component is not yet installed: `npx shadcn@latest add <component>` (run inside `apps/web`).
+
+---
+
+## Game Architecture Pattern
+
+Every game **must** follow this structure exactly:
+
+```
+app/games/<game>/page.tsx                      ← landing page (description + start/join CTAs)
+app/games/<game>/host/page.tsx                 ← host page (TV screen)
+app/games/<game>/player/page.tsx               ← player page (phone controller)
+
+components/games/<game>/<Game>Host.tsx         ← host display & game board logic
+components/games/<game>/<Game>Player.tsx       ← player controls & input logic
+
+packages/game-logic/src/games/<game>/types.ts  ← state + message types
+packages/game-logic/src/games/<game>/logic.ts  ← pure reducer (createInitial* + apply*)
+packages/game-logic/src/games/<game>/index.ts  ← re-exports
+packages/game-logic/src/games/<game>/__tests__/logic.test.ts ← approval tests
+
+apps/server/src/server.ts                      ← PartyKit message routing handler
+```
+
+- **Host page** uses `usePartyRoom({ asHost: true, gameType: '<game>' })`.
+- **Player page** uses `usePartyRoom({ sessionKeyPrefix: 'lobby' })`.
+- The server handler must call `this.connToPlayer.get(sender.id) || sender.id` to resolve the **canonical player ID** before passing to `apply*Message` — never use raw `sender.id` as a player key.
+
+See `.agents/workflows/add-new-game.md` for the full step-by-step checklist.
+
+---
+
+## Host Lobby Screen
+
+All host lobby screens must follow `.agents/host-lobby-design-spec.md`. Summary:
+
+- Dark background (`bg-background`) with two `bg-card` panels side by side (`max-w-5xl`)
+- Game title centered **above** both panels
+- Left panel: QR code + room code + player list (subtitle: **"Scan to join"**)
+- Right panel: game settings (up to 2 controls) + Start Game button (subtitle: **"Set up game"**)
+- Accent color (`bg-accent / text-accent-foreground`) for active selections and the Start button
+
+---
+
+## Real-Time Communication
+
+- Server uses **PartyKit** for WebSocket state sync.
+- Clients connect via **partysocket** (`PartySocket`).
+- Game state is managed **server-side**; clients send action messages and receive `sync` broadcasts.
+- Send messages from components via `(window as any).__partySocket.send(JSON.stringify({ type: '...' }))`.
+- The `usePartyRoom` hook handles all connection boilerplate — use it instead of raw PartySocket in pages.
+
+---
 
 ## File Structure Reference
 
@@ -161,6 +249,7 @@ apps/
       <Name>Player.tsx          ← pure display + sends messages via window.__partySocket
     hooks/
       usePartyRoom.ts           ← shared PartySocket hook
+    app/globals.css             ← Tailwind v4 theme, design tokens, dark mode variables
 
 packages/
   game-logic/src/

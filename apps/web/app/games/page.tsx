@@ -40,24 +40,15 @@ export default function GamesPage() {
                     />
 
                     <GameCard
-                        title="Mindshot"
-                        description="Battle Royale on a hexagonal grid. Plan your moves and shots in secret, then watch chaos unfold."
-                        emoji="🎯"
-                        players="2-4"
-                        duration="20-30 min"
-                        href="/games/mindshot"
-                        index={2}
-                    />
-
-                    <GameCard
                         title="Zoom-out"
                         description="A zoomed-in image gradually reveals itself. Race to guess what it is first!"
                         emoji="🔍"
                         players="2-12"
                         duration="10-20 min"
                         href="/games/zoom"
-                        index={3}
+                        index={2}
                     />
+
 
                     <GameCard
                         title="Battle Royale"

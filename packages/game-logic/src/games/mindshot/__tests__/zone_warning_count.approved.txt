@@ -1,4 +1,0 @@
-{
-  "expectedCount": 6,
-  "warningCount": 6
-}

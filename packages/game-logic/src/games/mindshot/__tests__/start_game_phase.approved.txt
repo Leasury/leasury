@@ -1,4 +1,0 @@
-{
-  "phase": "planning",
-  "round": 1
-}

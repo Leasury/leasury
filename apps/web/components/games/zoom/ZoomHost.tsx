@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import QRCode from 'qrcode';
 import type { RoomState, ZoomGameState, ZoomLevel } from '@lesury/game-logic';
-import { generateRoomUrl, ZOOM_ROUND_DURATION_MS, PLAYER_COLORS } from '@lesury/game-logic';
+import { generateRoomUrl, ZOOM_ROUND_DURATION_MS } from '@lesury/game-logic';
 
 export const MOCK_LEVELS: ZoomLevel[] = [
     {
